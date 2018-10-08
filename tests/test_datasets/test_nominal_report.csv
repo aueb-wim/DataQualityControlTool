@@ -1,0 +1,3 @@
+variable_name,count,desc,type,not_null_%,type_estimated,category_levels,total_levels,bottom_5_text_values,top_5_text_values
+Diagnosis Categories,86,,nominal,86,nominal,"'NL’, ‘AD’, ‘MCI’",3,,
+Gender_num,98,,nominal,98,nominal,"1,2",2,,

@@ -1,0 +1,7 @@
+INFO 2018-09-24 18:46:47,618 - constructor DatasetCsv(edsd_merge.csv, metadata.csv)
+DEBUG 2018-09-24 18:46:47,618 - # Read the dataset csv file
+DEBUG 2018-09-24 18:46:47,627 - # Read the metdata csv file
+DEBUG 2018-09-24 18:46:47,627 -  Get the filename without the extension
+DEBUG 2018-09-24 18:46:47,921 - # Get the current date
+DEBUG 2018-09-24 18:46:47,922 -  # Find the number of rows with no patient id
+DEBUG 2018-09-24 18:46:47,922 -  # Find the number of rows with only patient id

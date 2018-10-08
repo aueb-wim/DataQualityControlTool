@@ -1,0 +1,11 @@
+variable_name,type
+Patient_id,
+Left Inf Lat Vent Volume(cm3),
+Right IOG inferior occipital gyrus Volume(cm3),
+Right MOrG medial orbital gyrus Volume(cm3),
+Left MCgG middle cingulate gyrus Volume(cm3),
+Right Calc calcarine cortex Volume(cm3),
+Left FO frontal operculum Volume(cm3),
+Right Accumbens Area Volume(cm3),
+Right Cerebral White Matter Volume(cm3),
+Left Lateral Ventricle Volume(cm3),
