@@ -41,7 +41,6 @@ def outliers(numbers, times):
     """
 
     # TODO: Add  checks, asserts and exceptions
-    # TODO: Include it to unitest
 
     mean, std = numbers.mean(), numbers.std()
     # Define upper bound of the space of non-outliers
@@ -82,7 +81,7 @@ class DatasetCsv(object):
             LOGGER.debug("# Read the metdata csv file")
             self.metadata = pd.read_csv(metafile)
 
-            # Get the filename without the extension
+            # Get the filename
             self.filename = os.path.basename(csvfile)
 
             # Get the path of the csv file
@@ -199,9 +198,8 @@ class DatasetCsv(object):
                                       'variable_name'])
         df1 = df1.merge(self._calc_string_values(text_variables, 5),
                         on='variable_name', how='left')
-
+        LOGGER.debug(df1.dtypes)
         self.variablestats = df1
-
 
     def _calc_categories(self, cat_variables):
         """ Returns the categories and the number of categories of the given
@@ -236,7 +234,6 @@ class DatasetCsv(object):
                              'top_{0}_text_values'.format(total): top_values,
                              'bottom_{0}_text_values'.format(total): bottom_values})
 
-
     def _calc_vstat_outliers(self, times):
         """Calculates the # of outliers per numerical variable
         returns a df with a column '#_of_outliers' and as index is used
@@ -247,7 +244,6 @@ class DatasetCsv(object):
         for variable in numeric_variables:
             df1.at[variable, "#_of_outliers"] = outliers(self.data[variable], times)
         return df1
-
 
     def _rough_estimate_types(self):
         """Estimates the data type of the dataset variables"""
@@ -268,11 +264,11 @@ class DatasetCsv(object):
         df_result['variable_name'] = df_result.index
         return df_result
 
-
     def calcdataset(self, id_column):
         """Method that calculates the dataset stats and update the datasetstats property.
         """
         # TODO: correct the __version__
+        # TODO: calculate 'rows_complete'
 
         self.datasetstats.at[0, 'name_of_file'] = self.dataset_name
         # Get the current date
@@ -298,23 +294,28 @@ class DatasetCsv(object):
         # convert the Series item to df, transpose so categories become columns
         # and drop index
         notnullcat = notnullcat.to_frame().transpose().reset_index(drop=True)
-        self.datasetstats = self.datasetstats.merge(notnullcat,
+        d = {'#_0-19.99%': [0], '#_20-39.99%': [0], '#_40-59.99%': [0],
+             '#_60-79.99%': [0], '#_80-99.99%': [0], '#_100%': [0]}
+        df2 = pd.DataFrame(d)
+        df2.update(notnullcat)
+        self.datasetstats = self.datasetstats.merge(df2,
                                                     left_index=True,
                                                     right_index=True,
                                                     how='left')
+        self.datasetsats = self.datasetstats.combine_first(df2)
+
+
+        LOGGER.debug(self.datasetstats.dtypes)
 
     def export_csv(self):
         """Exports the datasetstats and variablestats dataframes to a csv.
         """
-        exportfile = os.path.join(self.path, self.filename + '_report.csv')
-        self.datasetstats.to_csv(exportfile, index=False)
-        with open(exportfile, 'a') as fd:
-            fd.write('\n')
-            fd.write('Variables info\n')
-            fd.write('\n')
+        exportfile = os.path.join(self.path, self.dataset_name + '_report.csv')
+        exportfile_ds = os.path.join(self.path, self.dataset_name + '_dataset_report.csv')
+        self.datasetstats.to_csv(exportfile_ds, index=False)
         self.variablestats.drop(labels=['not_null_bins'],
                                 axis=1).to_csv(exportfile,
-                                               index=False, mode='a')
+                                                index=False)
 
     def export_html(self):
         """Exports the datasetstats and variablestats dataframe to html.
@@ -336,4 +337,3 @@ if __name__ == '__main__':
     ARGS = PARSER.parse_args()
     testcsv = DatasetCsv(ARGS.input_csv, ARGS.meta_csv, ARGS.id_column)
     testcsv.export_csv()
-    testcsv.export_html()
