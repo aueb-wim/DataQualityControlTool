@@ -7,4 +7,10 @@ General
 
 QCtab
 
+1 Testing
+    - load various format of csvs (diff sep, quoted values)
+    - additional test for fields of numerical variables
+    - fields for categorical variables
+    - dataset statistics
+
 QCmri

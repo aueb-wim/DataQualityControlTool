@@ -64,6 +64,8 @@ class DatasetCsv(object):
         # TODO: add exceptions
         # TODO: datasetstats -> better to be a dict
         # TODO: add outlier and total critirion to the arguments
+        # TODO: impove the export_html method for prettier results
+        # TODO: add export_pdf method
 
         LOGGER.info("constructor DatasetCsv({0}, {1})".format(csvfile, metafile))
         self.required_metadata = ["variable_name", "type"]
@@ -76,10 +78,10 @@ class DatasetCsv(object):
             # This has the effect that the dates and categorical
             # variables will be represented as 'object' dtype
             LOGGER.debug("# Read the dataset csv file")
-            self.data = pd.read_csv(csvfile)
+            self.data = pd.read_csv(csvfile, index_col=None)
             # Read the metadata csv file
             LOGGER.debug("# Read the metdata csv file")
-            self.metadata = pd.read_csv(metafile)
+            self.metadata = pd.read_csv(metafile, index_col=None)
 
             # Get the filename
             self.filename = os.path.basename(csvfile)
@@ -270,6 +272,7 @@ class DatasetCsv(object):
         # TODO: correct the __version__
         # TODO: calculate 'rows_complete'
 
+        # name_of_file, date_qc_ran, qctool_version, total_rows, total_variables
         self.datasetstats.at[0, 'name_of_file'] = self.dataset_name
         # Get the current date
         LOGGER.debug('# Get the current date')
@@ -277,17 +280,27 @@ class DatasetCsv(object):
         self.datasetstats.at[0, 'qctool_version'] = __version__
         self.datasetstats.at[0, 'total_rows'] = self.data.shape[0]
         self.datasetstats.at[0, 'total_variables'] = self.data.shape[1]
+
+        # rows_no_id
         criterion = self.data[id_column].map(lambda x: pd.isnull(x))
         # Find the number of rows with no patient id
         LOGGER.debug(" # Find the number of rows with no patient id")
         self.datasetstats.at[0, "rows_no_id"] = self.data[criterion].shape[0]
+
+        # rows_no_data
         # Find the number of rows with only patient id and no data at all
         LOGGER.debug(" # Find the number of rows with only patient id")
-        # get the columns names of the dataset
-        dataset_columns = list(self.data.columns)
-        # remove the patient id column
-        dataset_columns.remove(id_column)
-        self.datasetstats.at[0, 'rows_no_data'] = sum(self.data[dataset_columns].isnull().all(axis=1))
+        dataset_columns = list(self.data.columns) # get the columns names of the dataset
+        dataset_columns.remove(id_column)  # remove the patient id column
+        df_temp1 = self.data[dataset_columns].isnull()
+        self.datasetstats.at[0, 'rows_no_data'] = sum(df_temp1.all(axis=1))
+        df_temp1 = None
+
+        # rows_complete
+        # Find the number of rows with all the columns being filled
+        df_temp1 = ~self.data.isnull()
+        self.datasetstats.at[0, 'rows_complete'] = sum(df_temp1.all(axis=1))
+        df_temp1 = None
 
         # get the counts of variables not null categories
         notnullcat = self.variablestats.loc[:, 'not_null_bins'].value_counts(dropna=False)
