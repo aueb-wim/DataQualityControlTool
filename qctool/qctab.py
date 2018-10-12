@@ -62,7 +62,6 @@ class DatasetCsv(object):
         """
         # TODO: update the docstring
         # TODO: add exceptions
-        # TODO: datasetstats -> better to be a dict
         # TODO: add outlier and total critirion to the arguments
         # TODO: impove the export_html method for prettier results
         # TODO: add export_pdf method
@@ -270,7 +269,6 @@ class DatasetCsv(object):
         """Method that calculates the dataset stats and update the datasetstats property.
         """
         # TODO: correct the __version__
-        # TODO: calculate 'rows_complete'
 
         # name_of_file, date_qc_ran, qctool_version, total_rows, total_variables
         self.datasetstats.at[0, 'name_of_file'] = self.dataset_name
@@ -298,10 +296,12 @@ class DatasetCsv(object):
 
         # rows_complete
         # Find the number of rows with all the columns being filled
-        df_temp1 = ~self.data.isnull()
+        df_temp1 = ~self.data.isnull() # reverse the boolean values
         self.datasetstats.at[0, 'rows_complete'] = sum(df_temp1.all(axis=1))
         df_temp1 = None
 
+        # '#_0-19.99%', '#_20-39.99%', '#_40-59.99%','#_60-79.99%'
+        # '#_80-99.99%', '#_100%'
         # get the counts of variables not null categories
         notnullcat = self.variablestats.loc[:, 'not_null_bins'].value_counts(dropna=False)
         # convert the Series item to df, transpose so categories become columns
