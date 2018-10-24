@@ -5,12 +5,22 @@ General
 3 Create beautiful reports in pdfs
 4 Manual!
 
-QCtab
 
-1 Testing
+******** QCtab ********
+
+1 Improvements
+    - Readable csv export columns (make an option in the export csv method for readable csv)
+    - Detect of dates (library DateParser, detect if different format of dates exist in a column)
+    - Detect if a variable have different type of values..(ie numerical and has also string values)
+    - Guessing the variable types if there is no metadata file
+    - 3 options of input files (csv metadata, csv only, merged csv)
+    - integrate the goodtables.io table schema json and datapackage json (for automated quality check pipeline)
+
+2 Testing
     - load various format of csvs (diff sep, quoted values)
     - additional test for fields of numerical variables
     - fields for categorical variables
     - dataset statistics
 
-QCmri
+
+******* QCmri *******

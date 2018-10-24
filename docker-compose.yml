@@ -1,9 +1,0 @@
-version: "2.1"
-services:
-  qctool:
-    image: "hbpmip/qctool"
-    container_name: "qctool"
-    volumes:
-      - "./input:/input:rw"
-      
-

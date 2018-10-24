@@ -1,3 +1,5 @@
+# qctab.py
+
 """
 Created on 31/7/2018
 
@@ -55,7 +57,7 @@ class DatasetCsv(object):
     """This class is for producing a statistical report about
     a given csv dataset
     """
-    def __init__(self, csvfile, metafile, id_column):
+    def __init__(self, csvfile, metafile=None):
         """csvfile is the path for the hospitals dataset csvfile and the
         metafile is the path of the csv file with the metadata of the
         hospital dataset csv file
@@ -78,6 +80,7 @@ class DatasetCsv(object):
             # variables will be represented as 'object' dtype
             LOGGER.debug("# Read the dataset csv file")
             self.data = pd.read_csv(csvfile, index_col=None)
+            # TODO: Case where there is no metadata
             # Read the metadata csv file
             LOGGER.debug("# Read the metdata csv file")
             self.metadata = pd.read_csv(metafile, index_col=None)
@@ -88,11 +91,13 @@ class DatasetCsv(object):
             # Get the path of the csv file
             self.path = os.path.dirname(os.path.abspath(csvfile))
 
+            # get the column id name from the first column of the dataset
+            self.id_column= self.data.columns[0]
             # check if id_column exist in the dataset csv
-            if id_column not in self.data.columns:
-                raise Exception \
-                    ("'{0}' column not found  in the {1} dataset file".format(id_column,
-                                                                              self.filename))
+#            if id_column not in self.data.columns:
+#                raise Exception \
+#                    ("'{0}' column not found  in the {1} dataset file".format(id_column,
+#                                                                              self.filename))
             # check if the required columns are in the metadata csv
             if not all(column in self.metadata.columns for column in self.required_metadata):
                 raise Exception \
@@ -119,7 +124,7 @@ class DatasetCsv(object):
             # self._check_metadata()
 
             # Calc dataset statistics
-            self.calcdataset(id_column)
+            self.calcdataset(self.id_column)
 
     def _create_dstats_df(self):
         """ Create a pandas dataframe attribute for dataset statistics,
@@ -127,7 +132,7 @@ class DatasetCsv(object):
         """
         text_columns = ['name_of_file', 'qctool_version']
         date_columns = ['date_qc_ran']
-        numeric_columns = ['total_variables', 'total_rows', 'rows_no_data',
+        numeric_columns = ['total_variables', 'total_rows', 'rows_only_id',
                            'rows_no_id', 'rows_complete']
         column_names = text_columns + date_columns + numeric_columns
         self.datasetstats = pd.DataFrame(columns=column_names)
@@ -141,6 +146,7 @@ class DatasetCsv(object):
         """ Create a pandas dataframe attribute for variable
         statistics, variablestats
         """
+
 
         # Create an empty dataframe with the column 'variable_name'
         basic_columns = ['variable_name']
@@ -158,6 +164,7 @@ class DatasetCsv(object):
         df1 = df1.merge(df_desc, on='variable_name', how='left')
         df_desc = None
 
+        # TODO: Check if exist the metadata dataframe!!!
         # Merge the metadata dataframe with the main dataframe
         df1 = df1.merge(self.metadata, on='variable_name',
                         suffixes=('_qctool', '_metadata'), how='left')
@@ -171,7 +178,7 @@ class DatasetCsv(object):
         df_outliers['variable_name'] = df_outliers.index
         df1 = df1.merge(df_outliers, on='variable_name', how='left')
 
-        # Place the numerical variables to buckets according to its
+        # Place the variables to buckets according to its
         # not null percentage
         # NOTE: the 100% bin is filled with values 99.99-100
         var_labels = ['#_0-19.99%', '#_20-39.99%', '#_40-59.99%',
@@ -184,6 +191,8 @@ class DatasetCsv(object):
         # the metadata csv
         df1 = df1.merge(self._rough_estimate_types(), on='variable_name',
                         how='left')
+
+        # TODO: check if metadata file exist else use the 'type_estimated'
         # Get the variable names that are declared categorical
         # in the metadata
         cat_criterion = df1['type'].map(lambda x: x == 'nominal')
@@ -199,6 +208,17 @@ class DatasetCsv(object):
                                       'variable_name'])
         df1 = df1.merge(self._calc_string_values(text_variables, 5),
                         on='variable_name', how='left')
+
+        # TODO: reorder the columns
+        ordered_columns = ['variable_name', 'type', 'type_estimated',
+                           'category_levels', 'total_levels',
+                           'unique', 'top', 'freq',
+                           'count', 'not_null_%',
+                           'mean', 'std', 'min', 'max',
+                           '25%', '50%', '75%', '#_of_outliers',
+                           'bottom_5_text_values', 'top_5_text_values',
+                           'comments']
+
         LOGGER.debug(df1.dtypes)
         self.variablestats = df1
 
@@ -265,6 +285,21 @@ class DatasetCsv(object):
         df_result['variable_name'] = df_result.index
         return df_result
 
+    def _make_readable_datasetstats(self):
+        """Returns a datasetstats df with more readable columns names."""
+        new_columns = {"rows_only_id": "rows with only id",
+                       "rows_no_id": "rows with no id",
+                       "rows_complete": "rows with all columns filled",
+                       "#_0-19.99%": "number of variables with 0-19.99% records filled in",
+                       "#_20-39.99%": "number of variables with 20-39.99% records filled in",
+                       "#_40-59.99%": "number of variables with 40-59.99% records filled in",
+                       "#_60-79.99%": "number of variables with 60-79.99% records filled in",
+                       "#_80-99.99%": "number of variables with 80-99.99% records filled in",
+                       "#_100%": "number of variables with 100% records filled in"}
+        return self.datasetstats.rename(columns=new_columns)
+
+
+
     def calcdataset(self, id_column):
         """Method that calculates the dataset stats and update the datasetstats property.
         """
@@ -285,13 +320,13 @@ class DatasetCsv(object):
         LOGGER.debug(" # Find the number of rows with no patient id")
         self.datasetstats.at[0, "rows_no_id"] = self.data[criterion].shape[0]
 
-        # rows_no_data
+        # rows_only_id
         # Find the number of rows with only patient id and no data at all
         LOGGER.debug(" # Find the number of rows with only patient id")
         dataset_columns = list(self.data.columns) # get the columns names of the dataset
         dataset_columns.remove(id_column)  # remove the patient id column
         df_temp1 = self.data[dataset_columns].isnull()
-        self.datasetstats.at[0, 'rows_no_data'] = sum(df_temp1.all(axis=1))
+        self.datasetstats.at[0, 'rows_only_id'] = sum(df_temp1.all(axis=1))
         df_temp1 = None
 
         # rows_complete
@@ -315,20 +350,43 @@ class DatasetCsv(object):
                                                     left_index=True,
                                                     right_index=True,
                                                     how='left')
-        self.datasetsats = self.datasetstats.combine_first(df2)
+        self.datasetstats = self.datasetstats.combine_first(df2)
 
+        # Convert those columns to int64
+        columns_integer = ['total_variables', 'total_rows', 'rows_only_id', 'rows_no_id',
+                           'rows_complete']
+        for column in columns_integer:
+            self.datasetstats[column] = self.datasetstats[column].astype('int64')
+
+        # Rearrange the column order of the dataset
+        ordered_columns = ['name_of_file', "qctool_version", "total_variables",
+                           "total_rows", "rows_only_id", "rows_no_id",
+                           "rows_complete", "#_100%", "#_80-99.99%",
+                           "#_60-79.99%", "#_40-59.99%", "#_20-39.99%",
+                           "#_0-19.99%"]
+        self.datasetstats = self.datasetstats[ordered_columns]
+        LOGGER.debug(self.datasetstats.columns)
 
         LOGGER.debug(self.datasetstats.dtypes)
 
-    def export_csv(self):
+    def export_csv(self, readable_columns=False):
         """Exports the datasetstats and variablestats dataframes to a csv.
         """
         exportfile = os.path.join(self.path, self.dataset_name + '_report.csv')
         exportfile_ds = os.path.join(self.path, self.dataset_name + '_dataset_report.csv')
-        self.datasetstats.to_csv(exportfile_ds, index=False)
-        self.variablestats.drop(labels=['not_null_bins'],
-                                axis=1).to_csv(exportfile,
-                                                index=False)
+
+        # Export to csv with readable column names?
+        if readable_columns:
+            readable_df_datasetstats = self._make_readable_datasetstats()
+            readable_df_datasetstats.to_csv(exportfile_ds, index=False)
+        else:
+            self.datasetstats.to_csv(exportfile_ds, index=False)
+
+#        self.variablestats.drop(labels=['not_null_bins'],
+#                                axis=1).to_csv(exportfile,
+#                                                index=False)
+        # TODO: remove 'not_null_bins' from the export csv
+        self.variablestats.to_csv(exportfile,index=False)
 
     def export_html(self):
         """Exports the datasetstats and variablestats dataframe to html.
@@ -346,7 +404,6 @@ if __name__ == '__main__':
                                      input csv file.")
     PARSER.add_argument("--input_csv", type=str, help="input csv")
     PARSER.add_argument("--meta_csv", type=str, help="metadata csv")
-    PARSER.add_argument("id_column", type=str, help="the column name with with patient id")
     ARGS = PARSER.parse_args()
-    testcsv = DatasetCsv(ARGS.input_csv, ARGS.meta_csv, ARGS.id_column)
-    testcsv.export_csv()
+    testcsv = DatasetCsv(ARGS.input_csv, ARGS.meta_csv)
+    testcsv.export_csv(readable_columns=True)
