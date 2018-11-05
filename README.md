@@ -1,4 +1,4 @@
-# HBP SP8 MIP Data Profiler Tool
+# MIP Local Data Quality Control Tool
 
 ## Install
 ## Use
