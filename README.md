@@ -1,8 +1,15 @@
-# HBP SP8 MIP Quality Control Tool
+# HBP SP8 MIP Data Profiler Tool
 
-## Tabular data 
-The tool for processing tabular data (csv) is the qctab.py
+## Install
+## Use
+### Tabular data 
+The tool for profiling tabular data (csv) is the qctab.py
 
-## MRIs metadata 
+### MRIs metadata 
 TBD
 
+## NOTES
+
+# Acknowledgements
+
+This work is part of SP8 of the Human Brain Project (SGA2).

@@ -16,6 +16,7 @@ import os
 import logging
 import datetime
 import pandas as pd
+from pathlib import Path
 
 __version__ = '0.0.2'
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -44,7 +45,7 @@ class Metadata(object):
                     ("{0} or {1} is not found in the metadata".format(col_val,col_type))
         new_columns = dict(zip([col_val, col_type],
                                self.defined_columns))
-        self.meta = dataframe.rename_axis(new_columns, axis=1)
+        self.meta = dataframe.rename(columns=new_columns)
         self.meta.set_index('variable_name', drop=False, inplace=True)
 
     @classmethod
@@ -336,7 +337,8 @@ class DatasetCsv(VariableStats):
         """Converts the dstat dictionary to pandas df"""
         dstats_df = pd.DataFrame(dict_4_pandas(self.dstats))
         # Rearrange the column order of the dataset
-        ordered_columns = ['name_of_file', "qctool_version", "total_variables",
+        ordered_columns = ['name_of_file', 'date_qc_ran', "qctool_version",
+                           "total_variables",
                            "total_rows", "rows_only_id", "rows_no_id",
                            "rows_complete", "#_100%", "#_80-99.99%",
                            "#_60-79.99%", "#_40-59.99%", "#_20-39.99%",
@@ -422,24 +424,34 @@ if __name__ == '__main__':
                         help="dataset input csv")
     PARSER.add_argument("--meta_csv", type=str,
                         help="variables metadata csv")
+    PARSER.add_argument("--col_val", type=str,
+                        help="the column with variable name \
+                        in metadata file")
+    PARSER.add_argument("--col_type", type=str,
+                        help="the column with variable type \
+                        in metadata file")
     ARGS = PARSER.parse_args()
     METADATA = None
     # Get the filename and dataset name
-    FILENAME = ARGS.input_csv
+    FILENAME = os.path.basename(ARGS.input_csv)
+#    INPUT_PATH = Path(ARGS.input_csv)
+#    FILENAME = INPUT_PATH.name
+
+#    DATASET_NAME = INPUT_PATH.stem
     DATASET_NAME = os.path.splitext(FILENAME)[0]
     # Get the path of the csv file
-#    path = os.path.dirname(os.path.abspath(ARGS.input_csv))
+    path = os.path.dirname(os.path.abspath(ARGS.input_csv))
 
     if ARGS.meta_csv:
-        METADATA = Metadata.from_csv(ARGS.meta_csv, 'variable', 'type_d')
+        METADATA = Metadata.from_csv(ARGS.meta_csv, ARGS.col_val , ARGS.col_type)
     else:
         METADATA = None
     DATA = pd.read_csv(ARGS.input_csv, index_col=None)
     testcsv = DatasetCsv(DATA, FILENAME, METADATA)
 #    exportfile_ds = os.path.join(path, dataset_name
 #                                 + '_dataset_report.csv')
-    exportfile =  DATASET_NAME + '_report.csv'
-    exportfile_ds = DATASET_NAME + '_dataset_report.csv'
+    exportfile = os.path.join(path, DATASET_NAME + '_report.csv')
+    exportfile_ds = os.path.join(path, DATASET_NAME + '_dataset_report.csv')
 
 
     testcsv.export_dstat_csv(exportfile_ds, need_readable=True)
