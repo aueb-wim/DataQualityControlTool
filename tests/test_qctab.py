@@ -1,4 +1,4 @@
-# test_basic.py
+# test_qctab.py
 
 import os
 import logging
@@ -15,6 +15,15 @@ logging.basicConfig(filename=os.path.join(DIR_PATH, 'test_qctab.log'),
                                           format=LOG_FORMAT,
                                           filemode='w')
 test_logger = logging.getLogger()
+
+####### dataset report columns ######
+dstats_columns_int = ['#_100%','#_80-99.99%', '#_60-79.99%',
+                      '#_20-39.99%', '#_0-19.99%']
+dstats_columns_float = []
+dstats_columns_string = []
+
+
+
 
 def correct_dtypes(dataframe, cfloat=None, cobject=None, cintegers=None):
     """Corrects the column dtypes of the given dtypes
@@ -33,7 +42,6 @@ def correct_dtypes(dataframe, cfloat=None, cobject=None, cintegers=None):
             dataframe[column] = dataframe[column].astype('int64')
 
     return dataframe
-
 
 
 
@@ -62,11 +70,11 @@ class Test_dataset_random(object):
 
     # Load the precalculate report for the dataset itself as a dataframe
     report_dataset_df = pd.read_csv(dataset_reportfile)
-    integers_columns = ['#_80-99.99%', '#_60-79.99%',
-                          '#_100%', '#_0-19.99%', '#_20-39.99%']
+#    integers_columns = ['#_80-99.99%', '#_60-79.99%',
+#                          '#_100%', '#_0-19.99%', '#_20-39.99%']
 
-    for column in integers_columns:
-        report_dataset_df[column] = report_dataset_df[column].astype('int64')
+#    for column in integers_columns:
+#        report_dataset_df[column] = report_dataset_df[column].astype('int64')
 
 
     def test_var_report(self):
@@ -91,7 +99,7 @@ class Test_dataset_random(object):
         assert_frame_equal(dirived, correct)
 
 
-class Test_dataset_dates(object):
+#class Test_dataset_dates(object):
     """test class for testing dates
     dataset file -> test_dates.csv
     metadata file -> test_dates_metadata.csv
@@ -100,17 +108,17 @@ class Test_dataset_dates(object):
 
     All files are produced from test_dates.xlsx file
     """
-    datafile = os.path.join('test_datasets','test_dates.csv')
-    metafile = os.path.join('test_datasets','test_dates_metadata.csv')
-    reportfile = os.path.join('test_datasets', 'test_dates_report.csv')
-    dataset_reportfile =  os.path.join('test_datasets', 'test_dates_dataset_report.csv')
+#    datafile = os.path.join('test_datasets','test_dates.csv')
+#    metafile = os.path.join('test_datasets','test_dates_metadata.csv')
+#    reportfile = os.path.join('test_datasets', 'test_dates_report.csv')
+#    dataset_reportfile =  os.path.join('test_datasets', 'test_dates_dataset_report.csv')
 
     # create a DatasetCsv class instance for the test
-    ds = DatasetCsv(datafile,metafile)
+#    ds = DatasetCsv(datafile,metafile)
 
-    def test_read_dates(self):
+#    def test_read_dates(self):
 
-        var1 = self.ds.data['Variable_3']
-        result = pd.to_datetime(var1)
-        result.to_csv('dates_1.log')
+#        var1 = self.ds.data['Variable_3']
+#        result = pd.to_datetime(var1)
+#        result.to_csv('dates_1.log')
 
