@@ -148,7 +148,7 @@ class VariableStats(object):
         # in the metadata
         if isinstance(self.metadata, pd.core.frame.DataFrame):
             df1.update(self.metadata)
-            cat_criterion = df1['type'].map(lambda x: x == 'nominal')
+            cat_criterion = df1['type'].map(lambda x: str(x).lower() == 'nominal')
             meta_categories = list(df1.loc[cat_criterion, 'variable_name'])
             df1.update(self._calc_categories(meta_categories))
 
@@ -159,7 +159,7 @@ class VariableStats(object):
         # Get the top and bottom values of the text variables
         # (dates are considered as text too)
         text_criterion1 = df1['type_estimated'].map(lambda x: x == 'text')
-        text_criterion2 = df1['type'].map(lambda x: x != 'nominal')
+        text_criterion2 = df1['type'].map(lambda x: str(x).lower() != 'nominal')
         text_variables = list(df1.loc[text_criterion1 & text_criterion2,
                                       'variable_name'])
         df1.update(self._calc_topstrings(text_variables, 5))
