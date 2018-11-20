@@ -16,9 +16,9 @@ import os
 import logging
 import datetime
 import pandas as pd
-from pathlib import Path
-
-__version__ = '0.0.2'
+import qcexport
+from qcutils import outliers, dict4pandas, pandas2dict
+from qconstants import __version__
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Create and configure logger
@@ -32,16 +32,19 @@ LOGGER = logging.getLogger()
 
 class Metadata(object):
     """Class for manupulating metadata files"""
-    # TODO: implement class methods for loading  csv and json
+    # TODO: implement class methods for loading json
     def __init__(self, dataframe, col_val, col_type):
-        """col_val -> column with the variable names
-           col_type -> column with the variable types
+        """
+        Arguments:
+        :param dataframe: a pandas dataframe with metadata
+        :param col_val: metadata column with the variable codes
+        :param col_type: metadata column with the variable types
         """
         assert isinstance(dataframe, pd.core.frame.DataFrame)
         self.defined_columns = ['variable_name', 'type']
 
         if not all(column in dataframe.columns for column in [col_val, col_type]):
-           raise Exception \
+            raise Exception \
                     ("{0} or {1} is not found in the metadata".format(col_val,col_type))
         new_columns = dict(zip([col_val, col_type],
                                self.defined_columns))
@@ -50,9 +53,15 @@ class Metadata(object):
 
     @classmethod
     def from_csv(cls, filename, col_val, col_type, **kwargs):
-        """Reads a metadata csv file"""
+        """Constructor using a metadata csv file.
+        Arguments:
+        :param filename: filepath of the metadata csv
+        :param col_val: metadata column with the variable codes
+        :param col_type: metadata column with the variable types
+        """
         data = pd.read_csv(filename, **kwargs)
         return cls(data, col_val, col_type)
+
 
 class VariableStats(object):
     """Class for calculating statistics of a hospital tabular dataset.
@@ -71,11 +80,12 @@ class VariableStats(object):
                      'bottom_5_text_values', 'top_5_text_values',
                      'not_null_bins', 'comments']
 
-
     def __init__(self, dataset, metadata=None):
-        """dataset -> pandas DataFrame with hospital data
-           metadata -> pandas DataFrame with metadata about the variables
-                       has to have a column 'type'
+        """
+        Arguments:
+        :param dataset: pandas DataFrame with hospital data
+        :param metadata: pandas DataFrame with metadata about the variables
+                         has to have a column 'type'
         """
         assert isinstance(dataset, pd.core.frame.DataFrame)
         self.data = dataset
@@ -104,8 +114,12 @@ class VariableStats(object):
 
     def create_emtpy_vstat_df(self, columns):
         """Returns a Dataframe with empty rows and given columns.
-        nrows = # of dataset variables
-        ncolumns = # of given columns
+        Arguments:
+        :param nrows: # of dataset variables
+        :param ncolumns: # of given columns
+        :return : pandas dataframe with the column variable_name filled with
+        the dataset variable codes and all the other columns filled with
+        NaNs
         """
         new_df = pd.DataFrame(index=self.data.columns, columns=columns)
         # Fill the df with the variables names aka columns of the dataset csv
@@ -167,8 +181,14 @@ class VariableStats(object):
         self.vstats.update(df1)
 
     def _calc_categories(self, cat_variables):
-        """ Returns the categories and the number of categories of the given
+        """Find the categories and the number of categories of the given
         nominal varables.
+
+        Arguments:
+        :param cat_variables: list with variable codes which are nominal
+        :return: pandas dataframe with 3 columns 'variable_name',
+        'category_levels', 'total_levels'. The variables codes are
+        used as index.
         """
         category_values = []
         total_categories = []
@@ -179,14 +199,20 @@ class VariableStats(object):
             # count and store them
             total_categories.append(len(values_list))
         result = pd.DataFrame({'variable_name': cat_variables,
-                             'category_levels': category_values,
-                             'total_levels': total_categories})
+                               'category_levels': category_values,
+                               'total_levels': total_categories})
         result.set_index('variable_name', drop=False, inplace=True)
         return result
 
     def _calc_topstrings(self, text_variables, total):
-        """Returns the total top and total bottom variable values
-        in respect to their frequency.
+        """Find variable values with the lowest and the
+        higest frequency.
+
+        Arguments:
+        :param text_variables: list of variables codes which
+        have text values
+        :param total: number of variables values with the lowest
+        and higer frequency
         """
         top_values = []
         bottom_values = []
@@ -198,15 +224,20 @@ class VariableStats(object):
             top_values.append(str(top).strip('[]'))
             bottom_values.append(str(bottom).strip('[]'))
         result = pd.DataFrame({'variable_name': text_variables,
-                             'top_{0}_text_values'.format(total): top_values,
-                             'bottom_{0}_text_values'.format(total): bottom_values})
+                               'top_{0}_text_values'.format(total): top_values,
+                               'bottom_{0}_text_values'.format(total): bottom_values})
         result.set_index('variable_name', drop=False, inplace=True)
         return result
 
     def _calc_outliers(self, times):
-        """Calculates the # of outliers per numerical variable
-        returns a df with a column '#_of_outliers' and as index
-        is used the numerical variables names """
+        """Calculates the number of outliers per numerical variable.
+        As outliers are considered the values that outside the
+        space (mean - times * std, mean + times * std)
+
+        Arguments:
+        :param times: number
+        :returns: pandas df with  column '#_of_outliers' and as index
+        is used the variables codes which are numerical """
         numeric_variables = self.data.select_dtypes(include=['float64', 'int64']).columns
         df1 = pd.DataFrame(index=numeric_variables, columns=["#_of_outliers"])
         for variable in numeric_variables:
@@ -229,7 +260,7 @@ class VariableStats(object):
         df_result = pd.concat([df_numeric, df_other])
         return df_result
 
-    def _make_readable_vstats(self):
+    def get_readable_vstats(self):
         """Returns a variablestats df with more readable columns names."""
         new_columns = {"type": "type declared",
                        "category_levels": "list of category values",
@@ -241,8 +272,8 @@ class VariableStats(object):
                        "count": "count of records filled in",
                        "not_null_%": "% of not null rows",
                        "25%": ("25% of records are below this value"
-                               + "(limit value of the first quartile"),
-                       "50%": "50% of records re below this value",
+                               + "(limit value of the first quartile)"),
+                       "50%": "50% of records are below this value (median)",
                        "75%": ("75% of records are below this value"
                                + "(limit value of the third quartile)"),
                        "#_of_outliers": "#_of_outliers(outside 3 std.dev)",
@@ -330,12 +361,12 @@ class DatasetCsv(VariableStats):
         # convert the Series item to df, transpose so categories become columns
         # and drop index
         notnullcat = notnullcat.to_frame().transpose().reset_index(drop=True)
-        dict_notnull = pandas_2_dict(notnullcat)
+        dict_notnull = pandas2dict(notnullcat)
         self.dstats.update(dict_notnull)
 
     def _dstat_2_df(self, readable=False):
         """Converts the dstat dictionary to pandas df"""
-        dstats_df = pd.DataFrame(dict_4_pandas(self.dstats))
+        dstats_df = pd.DataFrame(dict4pandas(self.dstats))
         # Rearrange the column order of the dataset
         ordered_columns = ['name_of_file', 'date_qc_ran', "qctool_version",
                            "total_variables",
@@ -367,7 +398,7 @@ class DatasetCsv(VariableStats):
     def export_vstat_csv(self, filepath, need_readable=False):
         """Exports the variable statistics to a csv"""
         if need_readable:
-            readable_df_vstats = self._make_readable_vstats()
+            readable_df_vstats = self.get_readable_vstats()
             readable_df_vstats.drop(labels=['not_null_bins'],
                                     axis=1).to_csv(filepath,
                                                    index=False)
@@ -375,45 +406,16 @@ class DatasetCsv(VariableStats):
             self.vstats.drop(labels=['not_null_bins'],
                                     axis=1).to_csv(filepath,
                                                    index=False)
-
-    def export_html(self):
-        """Exports the datasetstats and variablestats dataframe to html.
+    def export_pdf(self, filepath):
+        """Produces a dataset statistical report in pdf format.
         """
-        pass
+        # dstat process
+        dstat = self._dstat_2_df(readable=True).transpose()
+        vstat = self.get_readable_vstats().drop(labels=['not_null_bins'],
+                                                axis=1)
+#        qcexport.all2pdf(filepath, dstat, vstat)
+        qcexport.latexpdf(filepath, self.dataset_name, dstat, vstat)
 
-
-def outliers(numbers, times):
-    """Returns the number of outliers of a given list of numbers.
-    Outlier is consider the value which is outside (times * std deviations)
-    w/r of the avarage value.
-    numbers -> array or pandas Series
-    times   -> how many times bigger from the std deviation will
-               be the space which outside values would be
-               considered as outliers.
-    Returns -> an intenger """
-    assert isinstance(numbers, pd.core.series.Series), 'numbers must be panda Series'
-    assert isinstance(times, (int, float)), 'times must be a number'
-    mean, std = numbers.mean(), numbers.std()
-    # Define upper bound of the space of non-outliers
-    upper = mean + times * std
-    # Define the lower bound of the space of non-outliers
-    lower = mean - times * std
-    # Return how many values are not inside this space
-    return len(numbers[(numbers < lower) | (numbers > upper)])
-
-
-def dict_4_pandas(d):
-    """Takes a dict {key : value} and returns dict {key : [value]}"""
-    new_dict = {}
-    for key in d.keys():
-        new_dict[key] = [d[key]]
-    return new_dict
-
-def pandas_2_dict(df):
-    """Takes a pd Dataframe and returns
-    a dict {column : value} of the first row only"""
-    new_dict = df.to_dict(orient='records')
-    return new_dict[0]
 
 if __name__ == '__main__':
     # Create a parser
@@ -452,7 +454,9 @@ if __name__ == '__main__':
 #                                 + '_dataset_report.csv')
     exportfile = os.path.join(path, DATASET_NAME + '_report.csv')
     exportfile_ds = os.path.join(path, DATASET_NAME + '_dataset_report.csv')
-
+    exportfile_pdf = os.path.join(path, DATASET_NAME + '_report')
 
     testcsv.export_dstat_csv(exportfile_ds, need_readable=True)
     testcsv.export_vstat_csv(exportfile, need_readable=True)
+    testcsv.export_pdf(exportfile_pdf)
+
