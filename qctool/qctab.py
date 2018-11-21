@@ -406,15 +406,14 @@ class DatasetCsv(VariableStats):
             self.vstats.drop(labels=['not_null_bins'],
                                     axis=1).to_csv(filepath,
                                                    index=False)
-    def export_pdf(self, filepath):
-        """Produces a dataset statistical report in pdf format.
+    def export_latex(self, filepath, pdf=False):
+        """Produces a dataset statistical report in LaTex format.
         """
         # dstat process
         dstat = self._dstat_2_df(readable=True).transpose()
         vstat = self.get_readable_vstats().drop(labels=['not_null_bins'],
                                                 axis=1)
-#        qcexport.all2pdf(filepath, dstat, vstat)
-        qcexport.latexpdf(filepath, self.dataset_name, dstat, vstat)
+        qcexport.latex2pdf(filepath, dstat, vstat, exportpdf=pdf)
 
 
 if __name__ == '__main__':
@@ -445,7 +444,7 @@ if __name__ == '__main__':
     path = os.path.dirname(os.path.abspath(ARGS.input_csv))
 
     if ARGS.meta_csv:
-        METADATA = Metadata.from_csv(ARGS.meta_csv, ARGS.col_val , ARGS.col_type)
+        METADATA = Metadata.from_csv(ARGS.meta_csv, ARGS.col_val, ARGS.col_type)
     else:
         METADATA = None
     DATA = pd.read_csv(ARGS.input_csv, index_col=None)
@@ -454,9 +453,9 @@ if __name__ == '__main__':
 #                                 + '_dataset_report.csv')
     exportfile = os.path.join(path, DATASET_NAME + '_report.csv')
     exportfile_ds = os.path.join(path, DATASET_NAME + '_dataset_report.csv')
-    exportfile_pdf = os.path.join(path, DATASET_NAME + '_report')
+    exportfile_pdf = os.path.join(path, DATASET_NAME + '_report.pdf')
+    exportfile_tex = os.path.join(path, DATASET_NAME +  '_report')
 
     testcsv.export_dstat_csv(exportfile_ds, need_readable=True)
     testcsv.export_vstat_csv(exportfile, need_readable=True)
-    testcsv.export_pdf(exportfile_pdf)
-
+    testcsv.export_latex(exportfile_tex)

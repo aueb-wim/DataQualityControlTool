@@ -1,14 +1,24 @@
 # qcexport.py
-
+""" Module with helper functions for exporting the statistical reports
+of the MIP local Quality Control Tool
+"""
 from pylatex import Document, PageStyle, Section, Foot, MiniPage, \
     LongTabu, LineBreak, NewPage, Tabularx, TextColor, simple_page_number
 from pylatex.utils import bold, NoEscape
 
-def fill_stat(doc, stat):
+######### Functions for exporting in pdf using LaTex #########
+
+def fill_stat(doc, df):
+    """Helper fucntion returns a LaTex Table from pandas df.
+
+    Arguments:
+    :param doc: pylatex document class
+    :parma df: pandas dataframe
+    """
     with doc.create(LongTabu('X[2l] X[r]',
                              row_height=1.5)) as data_table:
         data_table.add_hline()
-        data = stat.reset_index(level=0)
+        data = df.reset_index(level=0)
         data = data.values.tolist()
         totalrows = len(data)
         for i in range(totalrows):
@@ -17,7 +27,15 @@ def fill_stat(doc, stat):
             else:
                 data_table.add_row(data[i])
 
-def latexpdf(filepath, dname, dstats, vstats):
+def latex2pdf(filepath, dstats, vstats, exportpdf=None):
+    """Exports dataset statistical report in tex and pdf.
+
+    Arguments:
+    :param filename: filepath of the pdf file to export
+    :param dstats: pandas dataframe with dataset statistics
+    :param vstats: pandas dataframe from qctab.VariableStats.vstats.
+    """
+    namefile = dstats.at['name_of_file', 0]
     geometry_options = {
         'head': '40pt',
         'margin': '0.5in',
@@ -26,7 +44,7 @@ def latexpdf(filepath, dname, dstats, vstats):
         'includefoot': True
     }
     doc = Document(page_numbers=True, geometry_options=geometry_options)
-    title = 'Statistical Report of {0} file'.format(dname)
+    title = 'Statistical Report of {0} file'.format(namefile)
     doc.preamble.append(NoEscape(r'\usepackage{bookmark}'))
     with doc.create(Section(title)) as main_section:
         fill_stat(main_section, dstats)
@@ -38,4 +56,7 @@ def latexpdf(filepath, dname, dstats, vstats):
             fill_stat(var_section, vstat)
         doc.append(NewPage())
 
-    doc.generate_pdf(filepath)
+    if exportpdf:
+        doc.generate_pdf(filepath)
+    else:
+        doc.generate_tex(filepath)
