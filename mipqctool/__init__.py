@@ -1,1 +1,1 @@
-name = "qctool"
+name = "mipqctool"

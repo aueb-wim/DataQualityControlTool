@@ -1,7 +1,6 @@
 # setup.py
 from setuptools import setup, find_packages
 from os import path
-from qctool.qconstant import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -11,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='mipqctool',
-    version=__version__,
+    version='0.0.3',
     author='Iosif Spartalis',
     author_email='iosifspart@gmail.com',
     description='A tool for profiling tabular data',
@@ -24,7 +23,7 @@ setup(
     install_requires=['pandas','pylatex'],
     entry_points = {
         'console_scripts': [
-            'qctool = qctool.__main__:main'
+            'qctool = mipqctool.__main__:main'
             ]
     },
     classifiers=(
