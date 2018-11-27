@@ -97,28 +97,3 @@ class Test_dataset_random(object):
         test_logger.debug(dirived.dtypes)
         test_logger.debug(correct.dtypes)
         assert_frame_equal(dirived, correct)
-
-
-#class Test_dataset_dates(object):
-    """test class for testing dates
-    dataset file -> test_dates.csv
-    metadata file -> test_dates_metadata.csv
-    datset report -> test_dates_dataset_report.csv
-    variable report -> test_dates_report.csv
-
-    All files are produced from test_dates.xlsx file
-    """
-#    datafile = os.path.join('test_datasets','test_dates.csv')
-#    metafile = os.path.join('test_datasets','test_dates_metadata.csv')
-#    reportfile = os.path.join('test_datasets', 'test_dates_report.csv')
-#    dataset_reportfile =  os.path.join('test_datasets', 'test_dates_dataset_report.csv')
-
-    # create a DatasetCsv class instance for the test
-#    ds = DatasetCsv(datafile,metafile)
-
-#    def test_read_dates(self):
-
-#        var1 = self.ds.data['Variable_3']
-#        result = pd.to_datetime(var1)
-#        result.to_csv('dates_1.log')
-

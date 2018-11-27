@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # qctablib.py
 """
 Created on 31/7/2018
@@ -16,9 +17,8 @@ import os
 import logging
 import datetime
 import pandas as pd
-from . import qcexport
+from . import qcexport, __version__
 from .qcutils import outliers, dict4pandas, pandas2dict
-from .qconstants import __version__
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Create and configure logger
@@ -40,12 +40,15 @@ class Metadata(object):
         :param col_val: metadata column with the variable codes
         :param col_type: metadata column with the variable types
         """
-        assert isinstance(dataframe, pd.core.frame.DataFrame)
-        self.defined_columns = ['variable_name', 'type']
+        if isinstance(dataframe, pd.core.frame.DataFrame):
+            self.defined_columns = ['variable_name', 'type']
+        else:
+            raise Exception("Give as input a pandas dataframe!")
+
 
         if not all(column in dataframe.columns for column in [col_val, col_type]):
-            raise Exception \
-                    ("{0} or {1} is not found in the metadata".format(col_val,col_type))
+            raise Exception\
+                    ("{0} or {1} is not found in the metadata".format(col_val, col_type))
         new_columns = dict(zip([col_val, col_type],
                                self.defined_columns))
         self.meta = dataframe.rename(columns=new_columns)
@@ -87,11 +90,14 @@ class VariableStats(object):
         :param metadata: pandas DataFrame with metadata about the variables
                          has to have a column 'type'
         """
-        assert isinstance(dataset, pd.core.frame.DataFrame)
-        self.data = dataset
+        if isinstance(dataset, pd.core.frame.DataFrame):
+            self.data = dataset
+        else:
+            raise Exception("Give as input a Pandas Dataframe!")
         self.metadata = metadata
         self.vstats = self.create_emtpy_vstat_df(self.basic_columns)
         self._fill_vstats()
+
 
     @property
     def metadata(self):
@@ -248,7 +254,7 @@ class VariableStats(object):
         """Estimates the data type of the dataset variables"""
         # TODO: make it more sofisticated
         # Find the numerical variables in the dataset and store them in a dataframe
-        numeric_variables = self.data.select_dtypes(include=['float64','int64']).columns
+        numeric_variables = self.data.select_dtypes(include=['float64', 'int64']).columns
         df_numeric = pd.DataFrame(index=numeric_variables, columns=['type_estimated'])
         df_numeric['type_estimated'] = 'numerical'
         # The rest variables in the dataset are object type
@@ -376,9 +382,10 @@ class DatasetCsv(VariableStats):
                            "#_0-19.99%"]
         dstats_df = dstats_df[ordered_columns]
         if readable:
-            new_columns = {"rows_only_id": "rows with only id",
-                       "rows_no_id": "rows with no id",
-                       "rows_complete": "rows with all columns filled",
+            new_columns =\
+                {"rows_only_id": "rows with only id",
+                 "rows_no_id": "rows with no id",
+                 "rows_complete": "rows with all columns filled",
                  "#_0-19.99%": "number of variables with 0-19.99% records filled in",
                  "#_20-39.99%": "number of variables with 20-39.99% records filled in",
                  "#_40-59.99%": "number of variables with 40-59.99% records filled in",
@@ -405,8 +412,8 @@ class DatasetCsv(VariableStats):
                                                    index=False)
         else:
             self.vstats.drop(labels=['not_null_bins'],
-                                    axis=1).to_csv(filepath,
-                                                   index=False)
+                             axis=1).to_csv(filepath,
+                                            index=False)
     def export_latex(self, filepath, pdf=False):
         """Produces a dataset statistical report in LaTex format.
         """

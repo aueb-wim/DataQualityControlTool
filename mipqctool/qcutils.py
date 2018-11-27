@@ -7,14 +7,13 @@ def outliers(numbers, times):
     """Returns the number of outliers of a given list of numbers.
     As outliers are considered the values that outside the    
     space (mean - times * std, mean + times * std).
-    
     Arguments:
     :param numbers: array or pandas Series
     :param times: number
     :return: an integer
     """
-    assert isinstance(numbers, pd.core.series.Series), 'numbers must be panda Series'
-    assert isinstance(times, (int, float)), 'times must be a number'
+    #assert isinstance(numbers, pd.core.series.Series), 'numbers must be panda Series'
+    #assert isinstance(times, (int, float)), 'times must be a number'
     mean, std = numbers.mean(), numbers.std()
     # Define upper bound of the space of non-outliers
     upper = mean + times * std

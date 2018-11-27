@@ -41,7 +41,6 @@ def main():
 #                                 + '_dataset_report.csv')
     exportfile = os.path.join(path, DATASET_NAME + '_report.csv')
     exportfile_ds = os.path.join(path, DATASET_NAME + '_dataset_report.csv')
-    exportfile_pdf = os.path.join(path, DATASET_NAME + '_report.pdf')
     exportfile_tex = os.path.join(path, DATASET_NAME +  '_report')
 
     testcsv.export_dstat_csv(exportfile_ds, need_readable=True)

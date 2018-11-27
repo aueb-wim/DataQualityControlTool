@@ -1,4 +1,4 @@
-#! /usr/bin/env python3 
+#!/usr/bin/env python3 
 # qctab.py
 
 """
@@ -13,7 +13,7 @@ Quality Control tool for tabular data
 import argparse
 import os
 import pandas as pd
-from qctablib import DatasetCsv, Metadata
+from .qctablib import DatasetCsv, Metadata
 
 if __name__ == '__main__':
     # Create a parser

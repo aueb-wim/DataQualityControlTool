@@ -2,9 +2,9 @@
 """ Module with helper functions for exporting the statistical reports
 of the MIP local Quality Control Tool
 """
-from pylatex import Document, PageStyle, Section, Foot, MiniPage, \
+from pylatex import Document, Section, Foot, MiniPage, \
     LongTabu, LineBreak, NewPage, Tabularx, TextColor, simple_page_number
-from pylatex.utils import bold, NoEscape
+from pylatex.utils import NoEscape
 
 ######### Functions for exporting in pdf using LaTex #########
 
