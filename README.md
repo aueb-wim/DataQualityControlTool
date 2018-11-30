@@ -6,9 +6,9 @@ This tool is a component developed for the [Human Brain Project Medical Informat
 ## Installing / Getting started
 ### Prerequisites
 Required installed packages for Debian based distros
-- python3, python3-pip
-- latexmk 
-- texlive-latex-extra
+-   python3, python3-pip
+-   latexmk 
+-   texlive-latex-extra
 
 ```shell
 $ sudo apt-get update
@@ -17,12 +17,11 @@ $ sudo apt-get install python3 python3-pip latexmk texlive-latex-extra
 The above code installs the python3 and the minimum packages for a LaTex compiler. Alternative the `texlive-full` package can be installed instead of `latexmk` and `latexlive-latex-extra`.  
 
 Requiered installed software for Windows
-- [python version 3](https://www.python.org/downloads/)
-- LaTex compiler installed
-  - [MiKTeX](https://miktex.org/download)
-  - [TeXstudio](https://www.texstudio.org/)
-- [Perl](https://www.perl.org/get.html)
-
+-   [python version 3](https://www.python.org/downloads/)
+-   LaTex compiler installed
+  -   [MiKTeX](https://miktex.org/download)
+  -   [TeXstudio](https://www.texstudio.org/)
+-   [Perl](https://www.perl.org/get.html)
 
 ### Installation
 In a terminal we run
@@ -46,29 +45,28 @@ At  the moment the tool needs the metadata file to detect the nominal variables.
 We run `qctoolgui`  
 
 After the execution, three files will be produced:
-- a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
-- a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
-- a pdf file <dataset_file>+’_report.pdf’ containg the above two reports in a readable pdf format. 
-## Features
+-   a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
+-   a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
+-   a pdf file <dataset_file>+’_report.pdf’ containg the above two reports in a readable pdf format. 
 
-* Creates a statistical report for the dataset and its variables 
-* Creates a report with the meta-data headers of a set of MRIs 
-* Command Line Interface and GUI 
+## Features
+-   Creates a statistical report for the dataset and its variables 
+-   Creates a report with the meta-data headers of a set of MRIs 
+-   Command Line Interface and GUI 
 
 ## Versioning
 We use [SemVer](http://semver.org/) for versioning.
 
-
 ## Links
 
-- Project homepage: https://github.com/aueb-wim/DataQualityControlTool
-- Repository: https://github.com/aueb-wim/DataQualityControlTool
-- Issue tracker: https://github.com/aueb-wim/DataQualityControlTool/issues
-- Related projects:
-  -  https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/
+-   Project homepage: [https://github.com/aueb-wim/DataQualityControlTool]
+-   Repository: [https://github.com/aueb-wim/DataQualityControlTool]
+-   Issue tracker: [https://github.com/aueb-wim/DataQualityControlTool/issues]
+-   Related projects:
+  -   [https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/]
   
 ## Authors
-- Iosif Spartalis - AUEB/RC Data Science Team
+-   Iosif Spartalis - AUEB/RC Data Science Team
 
 ## License
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details
