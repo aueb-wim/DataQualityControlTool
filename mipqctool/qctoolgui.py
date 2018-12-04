@@ -175,12 +175,13 @@ class Application(tk.Frame):
             vreportfile = os.path.join(filedir, basename + "_report.csv")
             pdfreportfile = os.path.join(filedir, basename + "_report")
             self.reportcsv = DatasetCsv(self.dataset, self.dname, metadata)
-            self.reportcsv.export_latex(pdfreportfile, pdf=True)
             self.reportcsv.export_dstat_csv(dreportfile, self.readable.get())
             self.reportcsv.export_vstat_csv(vreportfile, self.readable.get())
+            self.reportcsv.export_latex(pdfreportfile, pdf=True)
             self.label_export2.config(text=filedir)
             tkmessagebox.showinfo(title="Status info",
                 message="Reports have been created successully")
+
 
 def main():
     """Main application window"""

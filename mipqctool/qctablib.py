@@ -14,7 +14,7 @@ library for profiling tabular data
 
 
 import os
-import logging
+# import logging
 import datetime
 import pandas as pd
 from . import qcexport, __version__
@@ -22,12 +22,12 @@ from .qcutils import outliers, dict4pandas, pandas2dict
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Create and configure logger
-LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-logging.basicConfig(filename=os.path.join(DIR_PATH, 'lumperjack.log'),
-                    level=logging.DEBUG,
-                    format=LOG_FORMAT,
-                    filemode='w')
-LOGGER = logging.getLogger()
+# LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+# logging.basicConfig(filename=os.path.join(DIR_PATH, 'lumperjack.log'),
+#                    level=logging.DEBUG,
+#                    format=LOG_FORMAT,
+#                    filemode='w')
+# LOGGER = logging.getLogger()
 
 
 class Metadata(object):
@@ -44,7 +44,6 @@ class Metadata(object):
             self.defined_columns = ['variable_name', 'type']
         else:
             raise Exception("Give as input a pandas dataframe!")
-
 
         if not all(column in dataframe.columns for column in [col_val, col_type]):
             raise Exception\
@@ -98,7 +97,6 @@ class VariableStats(object):
         self.vstats = self.create_emtpy_vstat_df(self.basic_columns)
         self._fill_vstats()
 
-
     @property
     def metadata(self):
         """Returns the metadata dataframe"""
@@ -108,14 +106,11 @@ class VariableStats(object):
     def metadata(self, mdata):
         """Sets the metadata dataframe from a Metadata object"""
         if isinstance(mdata, Metadata):
-            LOGGER.debug("Found metadata object")
             if isinstance(self._metadata, pd.core.frame.DataFrame):
                 self._metadata.update(mdata.meta[self.meta_columns])
             else:
                 self._metadata = mdata.meta[self.meta_columns]
-                LOGGER.debug(self._metadata.columns)
         else:
-            LOGGER.debug("not found metadata object")
             self._metadata = None
 
     def create_emtpy_vstat_df(self, columns):
