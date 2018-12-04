@@ -59,11 +59,11 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## Links
 
--   Project homepage: [https://github.com/aueb-wim/DataQualityControlTool](https://github.com/aueb-wim/DataQualityControlTool)
--   Repository: [[https://github.com/aueb-wim/DataQualityControlTool](https://github.com/aueb-wim/DataQualityControlTool)
--   Issue tracker: [https://github.com/aueb-wim/DataQualityControlTool/issues](https://github.com/aueb-wim/DataQualityControlTool/issues)
+-   Project homepage: https://github.com/aueb-wim/DataQualityControlTool
+-   Repository: https://github.com/aueb-wim/DataQualityControlTool
+-   Issue tracker: https://github.com/aueb-wim/DataQualityControlTool/issues
 -   Related projects:
-  -   [https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/)
+  -   https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/
   
 ## Authors
 -   Iosif Spartalis - AUEB/RC Data Science Team
