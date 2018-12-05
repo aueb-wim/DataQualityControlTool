@@ -57,14 +57,6 @@ After the execution, three files will be produced:
 ## Versioning
 We use [SemVer](http://semver.org/) for versioning.
 
-## Links
-
--   Project homepage: <https://github.com/aueb-wim/DataQualityControlTool>
--   Repository: <https://github.com/aueb-wim/DataQualityControlTool>
--   Issue tracker: <https://github.com/aueb-wim/DataQualityControlTool/issues>
--   Related projects:
-  -   <https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/>
-  
 ## Authors
 -   Iosif Spartalis - AUEB/RC Data Science Team
 
