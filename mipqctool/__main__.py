@@ -1,51 +1,92 @@
+#__main__.py
+""" Command Line Interface for MIP Quality Control Tool
+"""
 import sys
 import argparse
 import os
+import getpass
 import pandas as pd
 from .qctablib import DatasetCsv, Metadata
+from .qcdicom import DicomReport
+
 
 def main():
+    """Main app for quality control tool with CLI"""
     # Create a parser
-    PARSER = argparse.ArgumentParser(description="A tool that provides a \
+    parser = argparse.ArgumentParser(description="A tool that provides a \
                                      statistical report about the \
                                      input csv file.")
-    PARSER.add_argument("--input_csv", type=str,
+    parser.add_argument("-m", "--mode", type=str,
+                        help="csv or dicom report?")
+    parser.add_argument("--root_folder", type=str,
+                        help="the root folder with dicom files")
+    parser.add_argument("--report_xls", type=str,
+                        help="the output excel file for \
+                        the DICOMs report")
+    parser.add_argument("--input_csv", type=str,
                         help="dataset input csv")
-    PARSER.add_argument("--meta_csv", type=str,
+    parser.add_argument("--meta_csv", type=str,
                         help="variables metadata csv")
-    PARSER.add_argument("--col_val", type=str,
+    parser.add_argument("--col_val", type=str,
                         help="the column with variable name \
                         in metadata file")
-    PARSER.add_argument("--col_type", type=str,
+    parser.add_argument("--col_type", type=str,
                         help="the column with variable type \
                         in metadata file")
-    ARGS = PARSER.parse_args(sys.argv[1:])
-    METADATA = None
-    # Get the filename and dataset name
-    FILENAME = os.path.basename(ARGS.input_csv)
-#    INPUT_PATH = Path(ARGS.input_csv)
-#    FILENAME = INPUT_PATH.name
+    parser.add_argument("--pdf", action="store_true",
+                        help="export report in pdf? else \
+                        export in Latex")
+    parser.add_argument("-r", "--readable", action="store_true",
+                        help="export csv with readable column \
+                        names?")
+    args = parser.parse_args(sys.argv[1:])
+    metadata = None
+    # if CSV dataset
+    if args.mode == 'csv':
+        # Get the filename and dataset name
+        if os.path.exists(args.input_csv):
+            filename = os.path.basename(args.input_csv)
+            dataset_name = os.path.splitext(filename)[0]
+            # Get the path of the csv file
+            path = os.path.dirname(os.path.abspath(args.input_csv))
+            # Load the data from csv
+            data = pd.read_csv(args.input_csv, index_col=None)
+        else:
+            raise OSError('Filepath not found')
 
-#    DATASET_NAME = INPUT_PATH.stem
-    DATASET_NAME = os.path.splitext(FILENAME)[0]
-    # Get the path of the csv file
-    path = os.path.dirname(os.path.abspath(ARGS.input_csv))
+        if args.meta_csv:
+            if os.path.exists(args.meta_csv):
+                metadata = Metadata.from_csv(args.meta_csv,
+                                             args.col_val,
+                                             args.col_type)
+            else:
+                raise OSError('No metadata file found')
+        else:
+            # continue with no metadata file
+            metadata = None
+        # Create the dataset report
+        testcsv = DatasetCsv(data, filename, metadata)
+        # Export Report files paths and names, csv, pdf or tex
+        exportfile = os.path.join(path, dataset_name
+                                  + '_report.csv')
+        exportfile_ds = os.path.join(path, dataset_name
+                                     + '_dataset_report.csv')
+        exportfile_tex = os.path.join(path, dataset_name
+                                      + '_report')
 
-    if ARGS.meta_csv:
-        METADATA = Metadata.from_csv(ARGS.meta_csv, ARGS.col_val, ARGS.col_type)
-    else:
-        METADATA = None
-    DATA = pd.read_csv(ARGS.input_csv, index_col=None)
-    testcsv = DatasetCsv(DATA, FILENAME, METADATA)
-#    exportfile_ds = os.path.join(path, dataset_name
-#                                 + '_dataset_report.csv')
-    exportfile = os.path.join(path, DATASET_NAME + '_report.csv')
-    exportfile_ds = os.path.join(path, DATASET_NAME + '_dataset_report.csv')
-    exportfile_tex = os.path.join(path, DATASET_NAME +  '_report')
+        testcsv.export_dstat_csv(exportfile_ds, need_readable=args.readable)
+        testcsv.export_vstat_csv(exportfile, need_readable=args.readable)
+        testcsv.export_latex(exportfile_tex, pdf=args.pdf)
+    # if DICOM dataset
+    elif args.mode == 'dicom':
+        # Check if the DICOM root folder exists
+        if os.path.exists(args.root_folder):
+            dicomreport = DicomReport(args.root_folder, getpass.getuser())
+            dicomreport.export2xls(args.report_xls)
+        else:
+            raise OSError('Root Folder not found')
 
-    testcsv.export_dstat_csv(exportfile_ds, need_readable=True)
-    testcsv.export_vstat_csv(exportfile, need_readable=True)
-    testcsv.export_latex(exportfile_tex, pdf=True)
+
 
 if __name__ == '__main__':
     main()

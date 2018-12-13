@@ -33,21 +33,31 @@ $ sh install.sh
 
 ## Use
 **Command Line Interface**
+For profiling a csv dataset:
 ``` shell 
-$ qctool --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types]
+$ qctool -m csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
 ```
-
+`-m` or `--mode` can take two flags `csv` or `dicom`. Here we use `csv` because the dataset is in csv format. 
+`--readable` is a flag if we want the reports csv files to have more descriptive column names. 
+`--pdf` is a flag if we want to produce a report in pdf format
 `col_val` and `col_type` are obligatory. They are referred to columns names of the metadata csv. The `col_val` is the name of the column that contains the variables codes used as columns in the datatset csv and the `col_type` is the name of the column in metadata csv that contains the variables types. 
 
 At  the moment the tool needs the metadata file to detect the nominal variables. So, the `col_type` column must be filled with the value `nominal` (is not case sensitive)  for the categorical variables in order to work properly. Other types like `int`, `float`, `text`, `numerical`, `date` are not taken into account at the moment. 
 
-**GUI**
-We run `qctoolgui`  
-
 After the execution, three files will be produced:
 -   a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
 -   a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
--   a pdf file <dataset_file>+’_report.pdf’ containg the above two reports in a readable pdf format. 
+-   a pdf or LaTex file <dataset_file>+’_report’ containg the above two reports in a readable format.
+
+For profiling a dicom dataset:
+``` shell
+$ qctool -m dicom --root_folder [folder with dicoms] --report_xls [path/to/report.xls]
+```
+The report is in excel format and contains the header information from all DICOM (dcm) files.
+
+**GUI**
+We run `qctoolgui`
+See docs/quickguide.docx for furthe instructions. 
 
 ## Features
 -   Creates a statistical report for the dataset and its variables 

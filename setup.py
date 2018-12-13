@@ -20,7 +20,8 @@ setup(
     lisence='Apache 2.0',
     keywords='qualitycontrol dataprofiler miplocal',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    install_requires=['pandas','pylatex'],
+    install_requires=['pandas','pylatex','pydicom',
+                      'xlwt'],
     entry_points = {
         'console_scripts': [
             'qctool = mipqctool.__main__:main',

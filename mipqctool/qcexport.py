@@ -27,7 +27,7 @@ def fill_stat(doc, df):
             else:
                 data_table.add_row(data[i])
 
-def latex2pdf(filepath, dstats, vstats, exportpdf=None):
+def latex2pdf(filepath, dstats, vstats, exportpdf=False):
     """Exports dataset statistical report in tex and pdf.
 
     Arguments:

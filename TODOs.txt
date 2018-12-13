@@ -1,19 +1,18 @@
 General
 
 1 Testing
-2 GUI
-3 Create beautiful reports in pdfs
-4 Manual!
+2 Make a windows installer
+3 Manual!
 
 
 ******** QCtab ********
 
 1 Improvements
-    - Readable csv export columns (make an option in the export csv method for readable csv)
     - Detect of dates (library DateParser, detect if different format of dates exist in a column)
     - Detect if a variable have different type of values..(ie numerical and has also string values)
     - Guessing the variable types if there is no metadata file
     - 3 options of input files (csv metadata, csv only, merged csv)
+    - option for exporting only tex file and not pdf (for reducing the docker image size)
     - integrate the goodtables.io table schema json and datapackage json (for automated quality check pipeline)
 
 2 Testing
@@ -24,3 +23,5 @@ General
 
 
 ******* QCmri *******
+
+    - GUI
