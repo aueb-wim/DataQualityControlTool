@@ -1,7 +1,6 @@
 # qcdicom.py
 import datetime
 import os
-import re
 import pydicom
 import pandas as pd
 from . import __version__
@@ -21,10 +20,12 @@ def getsubfolders(rootfolder):
     dirtree = os.walk(rootfolder)
     result = {}
     for root, dirs, files in dirtree:
+        del dirs  # Not used
         # Get all the visible subfolders
         for name in files:
             if name.endswith('.dcm'):
-                subfolder, filename = removeroot(os.path.join(root, name), rootfolder)
+                subfolder, filename = removeroot(os.path.join(root, name),
+                                                 rootfolder)
                 if subfolder in result.keys():
                     result[subfolder].append(filename)
                 else:
@@ -66,6 +67,7 @@ class DicomReport(object):
         oneof = df[~df['mandatory'].isin(['Yes', 'No'])]
         oneof_dict = {}
         for index, row in oneof.iterrows():
+            del index  # not used
             if row['mandatory'] not in oneof_dict.keys():
                 oneof_dict[row['mandatory']] = []
             oneof_dict[row['mandatory']].append(row['tag'])
@@ -81,7 +83,10 @@ class DicomReport(object):
         data['file'] = filename
         for tag in columns:
             if tag != 'PixelData':
-                data[tag] = [ds.data_element(tag).value]
+                try:
+                    data[tag] = [ds.data_element(tag).value]
+                except AttributeError:
+                    data[tag] = 'Error! Value not found!'
         return pd.DataFrame.from_dict(data)
 
     def readicoms(self):
@@ -93,7 +98,8 @@ class DicomReport(object):
         for folder in self.subfolders:
             for dicom in self.subfolders[folder]:
                 dicomdf = self._read_dicom(dicom, folder)
-                self.dicoms = pd.concat([self.dicoms, dicomdf], ignore_index=True)
+                self.dicoms = pd.concat([self.dicoms, dicomdf],
+                                        ignore_index=True)
         self.dicoms.set_index(['folder', 'file'], inplace=True)
 
     def export2xls(self, filepath):
