@@ -98,6 +98,8 @@ class DicomReport(object):
         for folder in self.subfolders:
             for dicom in self.subfolders[folder]:
                 dicomdf = self._read_dicom(dicom, folder)
+                with open('dicom_qctool.log', 'a') as f:
+                    dicomdf.to_csv(f, header=False)
                 self.dicoms = pd.concat([self.dicoms, dicomdf],
                                         ignore_index=True)
         self.dicoms.set_index(['folder', 'file'], inplace=True)
