@@ -82,12 +82,12 @@ class DicomReport(object):
         data['folder'] = subfolder
         data['file'] = filename
         for tag in columns:
-            if tag != 'PixelData':
+            if tag != 'PixelData' or not tag.endswith('Sequence'):
                 try:
                     data[tag] = [ds.data_element(tag).value]
                 except AttributeError:
                     data[tag] = 'Error! Value not found!'
-        return pd.DataFrame.from_dict(data)
+        return pd.DataFrame.from_dict(data).set_index(['folder', 'file'], inplace=True)
 
     def readicoms(self):
         dataset = {'version': [__version__],
