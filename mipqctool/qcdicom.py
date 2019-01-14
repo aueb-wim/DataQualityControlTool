@@ -82,12 +82,12 @@ class DicomReport(object):
         data['folder'] = subfolder
         data['file'] = filename
         for tag in columns:
-            if tag != 'PixelData' or not tag.endswith('Sequence'):
-                try:
-                    data[tag] = [ds.data_element(tag).value]
-                except AttributeError:
-                    data[tag] = 'Error! Value not found!'
-        return pd.DataFrame.from_dict(data).set_index(['folder', 'file'], inplace=True)
+            if tag != 'PixelData' and not tag.endswith('Sequence'):
+                data[tag] = [ds.data_element(tag).value]
+#                except AttributeError:
+#                    data[tag] = 'Error! Value not found!'
+        dicomdf = pd.DataFrame.from_dict(data)
+        return dicomdf
 
     def readicoms(self):
         dataset = {'version': [__version__],
@@ -99,7 +99,7 @@ class DicomReport(object):
             for dicom in self.subfolders[folder]:
                 dicomdf = self._read_dicom(dicom, folder)
                 with open('dicom_qctool.log', 'a') as f:
-                    dicomdf.to_csv(f, header=False)
+                    dicomdf[['folder', 'file']].to_csv(f, header=False, index=False)
                 self.dicoms = pd.concat([self.dicoms, dicomdf],
                                         ignore_index=True)
         self.dicoms.set_index(['folder', 'file'], inplace=True)
