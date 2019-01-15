@@ -76,13 +76,17 @@ class DicomReport(object):
     def _read_dicom(self, filename, subfolder):
         """Read dicom headers except PixelData, returns a dataframe"""
         filepath = os.path.join(self.rootfolder, subfolder, filename)
-        ds = pydicom.dcmread(filepath)
+        # Read the dcm file but not the PixelData
+        ds = pydicom.dcmread(filepath, stop_before_pixels=True)
         columns = ds.dir()
         data = {}
         data['folder'] = subfolder
         data['file'] = filename
         for tag in columns:
-            if tag != 'PixelData' and not tag.endswith('Sequence'):
+            # Don't tags that represent sequence
+            # Sequence tags are big strings and contain commas that corrupt the exported
+            # csv file
+            if not tag.endswith('Sequence'):
                 data[tag] = [ds.data_element(tag).value]
 #                except AttributeError:
 #                    data[tag] = 'Error! Value not found!'
