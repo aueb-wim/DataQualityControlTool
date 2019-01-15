@@ -87,9 +87,10 @@ class DicomReport(object):
             # Sequence tags are big strings and contain commas that corrupt the exported
             # csv file
             if not tag.endswith('Sequence'):
-                data[tag] = [ds.data_element(tag).value]
-#                except AttributeError:
-#                    data[tag] = 'Error! Value not found!'
+                try:
+                    data[tag] = [ds.data_element(tag).value]
+                except AttributeError:
+                    data[tag] = 'Error! Value not found!'
         dicomdf = pd.DataFrame.from_dict(data)
         return dicomdf
 
