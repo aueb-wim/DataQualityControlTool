@@ -23,13 +23,12 @@ def getsubfolders(rootfolder):
         del dirs  # Not used
         # Get all the visible subfolders
         for name in files:
-            if name.endswith('.dcm'):
-                subfolder, filename = removeroot(os.path.join(root, name),
-                                                 rootfolder)
-                if subfolder in result.keys():
-                    result[subfolder].append(filename)
-                else:
-                    result[subfolder] = [filename]
+            subfolder, filename = removeroot(os.path.join(root, name),
+                                             rootfolder)
+            if subfolder in result.keys():
+                result[subfolder].append(filename)
+            else:
+                result[subfolder] = [filename]
     return result
 
 
@@ -77,22 +76,25 @@ class DicomReport(object):
         """Read dicom headers except PixelData, returns a dataframe"""
         filepath = os.path.join(self.rootfolder, subfolder, filename)
         # Read the dcm file but not the PixelData
-        ds = pydicom.dcmread(filepath, stop_before_pixels=True)
-        columns = ds.dir()
-        data = {}
-        data['folder'] = subfolder
-        data['file'] = filename
-        for tag in columns:
-            # Don't tags that represent sequence
-            # Sequence tags are big strings and contain commas that corrupt the exported
-            # csv file
-            if not tag.endswith('Sequence'):
-                try:
-                    data[tag] = [ds.data_element(tag).value]
-                except AttributeError:
-                    data[tag] = 'Error! Value not found!'
-        dicomdf = pd.DataFrame.from_dict(data)
-        return dicomdf
+        try:
+            ds = pydicom.dcmread(filepath, stop_before_pixels=True)
+            columns = ds.dir()
+            data = {}
+            data['folder'] = subfolder
+            data['file'] = filename
+            for tag in columns:
+                # Don't tags that represent sequence
+                # Sequence tags are big strings and contain commas that corrupt the exported
+                # csv file
+                if not tag.endswith('Sequence'):
+                    try:
+                        data[tag] = [ds.data_element(tag).value]
+                    except AttributeError:
+                        data[tag] = 'Error! Value not found!'
+            dicomdf = pd.DataFrame.from_dict(data)
+            return dicomdf
+        except pydicom.errors.InvalidDicomError:
+            raise pydicom.errors.InvalidDicomError
 
     def readicoms(self):
         dataset = {'version': [__version__],
@@ -102,11 +104,14 @@ class DicomReport(object):
         self.dataset = pd.DataFrame.from_dict(dataset)
         for folder in self.subfolders:
             for dicom in self.subfolders[folder]:
-                with open('qctool_dicom_processed.log', 'a') as f:
-                    f.write(folder + ',' + dicom + '\n')
-                dicomdf = self._read_dicom(dicom, folder)
-                self.dicoms = pd.concat([self.dicoms, dicomdf],
-                                        ignore_index=True)
+                try:
+                    with open('qctool_dicom_processed.log', 'a') as f:
+                        f.write(folder + ',' + dicom + '\n')
+                    dicomdf = self._read_dicom(dicom, folder)
+                    self.dicoms = pd.concat([self.dicoms, dicomdf],
+                                            ignore_index=True)
+                except pydicom.errors.InvalidDicomError:
+                    continue
         self.dicoms.set_index(['folder', 'file'], inplace=True)
 
     def export2xls(self, filepath):
