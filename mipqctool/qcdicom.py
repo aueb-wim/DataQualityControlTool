@@ -123,7 +123,7 @@ class DicomReport(object):
                 # that corrupt the exported csv file
                 if not tag.endswith('Sequence'):
                     try:
-                        data[tag] = [ds.data_element(tag).value]
+                        data[tag] = [str(ds.data_element(tag).value)]
                     except AttributeError:
                         data[tag] = ['Error! Value not found!']
             dicomdf = pd.DataFrame.from_dict(data)
@@ -144,17 +144,14 @@ class DicomReport(object):
             print('Single core processing...')
             self.readicoms()
 
-
     def readicoms(self):
         self.dicoms = self.readicoms_chunks(self.subfolders)
         self.dicoms.set_index(['folder', 'file'], inplace=True)
-
 
     def readicoms_chunks(self, filesdict):
         """Read the given dicoms and return a df."""
         dcms = []
         for folder in filesdict:
-#            dcms = []  # dicoms df from the same folder
             for dicom in filesdict[folder]:
                 try:
                     with open('qctool_dicom_files_read.log', 'a') as f:
