@@ -1,6 +1,7 @@
 # qcdicom.py
 import datetime
 import os
+import json
 import multiprocessing as mp
 from multiprocessing import Pool
 import pydicom
@@ -13,7 +14,9 @@ from . import __version__
 
 def get_requirements(filename):
     """Return a pandas df with the dicom metatata requierements"""
-    return pd.read_csv(filename)
+    with open(filename, "r") as read_file:
+        dicom_schema = json.load(read_file)
+
 
 
 def getsubfolders(rootfolder):
@@ -68,17 +71,18 @@ def splitdict(bigdict, n):
         end = int(round((i + 1) * chunksize))
         yield dict(list(bigdict.items())[start:end])
 
+
 class DicomReport(object):
     """A class for producing a metadata report of
     a dataset of DICOM images
     """
-    def __init__(self, rootfolder, username):
+    def __init__(self, rootfolder, username, dicom_schema):
         """ Arguments:
             :param rootfolder: folder path with DICOMs subfolders
             :param dicomreq: pandas df with dicom metadata requirements
             :param username: str with the username
             """
-        self.mandatory = None
+        self.mandatory = []
         self.oneof = None
         self.optional = None
         self.dicoms = pd.DataFrame()
@@ -86,6 +90,7 @@ class DicomReport(object):
         self.rootfolder = rootfolder
         self.subfolders = getsubfolders(rootfolder)
         self.username = username
+        self.get_dicom_schema(dicom_schema)
         self.dataset = {'version': [__version__],
                         'date_qc_ran': [datetime.datetime.now()],
                         'username': [username],
@@ -93,19 +98,12 @@ class DicomReport(object):
         self.readicoms_parallel(mp.cpu_count() + 1)
 #        self.readicoms()
 
-    def _set_requirements(self, df):
-        mand = df[df['mandatory'] == 'Yes']
-        self.mandatory = mand['tag'].tolist()
-        opt = df[df['mandatory'] == 'No']
-        self.optional = opt['tag'].tolist()
-        oneof = df[~df['mandatory'].isin(['Yes', 'No'])]
-        oneof_dict = {}
-        for index, row in oneof.iterrows():
-            del index  # not used
-            if row['mandatory'] not in oneof_dict.keys():
-                oneof_dict[row['mandatory']] = []
-            oneof_dict[row['mandatory']].append(row['tag'])
-        self.oneof = oneof_dict
+    def get_dicom_schema(self, schemafile):
+        with open(schemafile, 'r') as read_file:
+            dicom_schema = json.load(read_file)
+        for field in dicom_schema['fields']:
+            self.mandatory.append(field['name'])
+
 
     def _read_dicom(self, filename, subfolder):
         """Read dicom headers except PixelData, returns a dataframe"""
@@ -113,7 +111,7 @@ class DicomReport(object):
         # Read the dcm file but not the PixelData
         try:
             ds = pydicom.dcmread(filepath, stop_before_pixels=True)
-            columns = ds.dir()
+            columns = self.mandatory
             data = {}
             data['folder'] = subfolder
             data['file'] = filename
@@ -121,11 +119,13 @@ class DicomReport(object):
                 # Don't tags that represent sequence
                 # Sequence tags are big strings and contain commas
                 # that corrupt the exported csv file
-                if not tag.endswith('Sequence'):
-                    try:
-                        data[tag] = [str(ds.data_element(tag).value)]
-                    except AttributeError:
-                        data[tag] = ['Error! Value not found!']
+                #if not tag.endswith('Sequence'):
+                try:
+                    data[tag] = [str(ds.data_element(tag).value)]
+                except AttributeError:
+                    data[tag] = ['Error! Value not found!']
+                except KeyError:
+                    data[tag] = ['Tag not found']
             dicomdf = pd.DataFrame.from_dict(data)
             return dicomdf
         except pydicom.errors.InvalidDicomError:
@@ -136,9 +136,10 @@ class DicomReport(object):
         if len(self.subfolders) > processes:
             print('dicom parallel processing with {} Processes'.format(processes))
             slices = list(splitdict(self.subfolders, processes))
+            dcms = []
             with Pool(processes) as p:
                 dcms = p.map(self.readicoms_chunks, slices)
-                self.dicoms = pd.concat(dcms, ignore_index=True)
+            self.dicoms = pd.concat(dcms, ignore_index=True)
             self.dicoms.set_index(['folder', 'file'], inplace=True)
         else:
             print('Single core processing...')

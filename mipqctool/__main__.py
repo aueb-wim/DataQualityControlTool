@@ -4,6 +4,7 @@
 import sys
 import argparse
 import os
+import time
 import getpass
 import pandas as pd
 from .qctablib import DatasetCsv, Metadata
@@ -13,32 +14,35 @@ from .qcdicom import DicomReport
 def main():
     """Main app for quality control tool with CLI"""
     # Create a parser
-    parser = argparse.ArgumentParser(description="A tool that provides a \
+    parser = argparse.ArgumentParser(description='A tool that provides a \
                                      statistical report about the \
-                                     input csv file.")
-    parser.add_argument("-m", "--mode", type=str,
-                        help="csv or dicom report?")
-    parser.add_argument("--root_folder", type=str,
-                        help="the root folder with dicom files")
-    parser.add_argument("--report_xls", type=str,
-                        help="the output excel file for \
-                        the DICOMs report")
-    parser.add_argument("--input_csv", type=str,
-                        help="dataset input csv")
-    parser.add_argument("--meta_csv", type=str,
-                        help="variables metadata csv")
-    parser.add_argument("--col_val", type=str,
-                        help="the column with variable name \
-                        in metadata file")
-    parser.add_argument("--col_type", type=str,
-                        help="the column with variable type \
-                        in metadata file")
-    parser.add_argument("--pdf", action="store_true",
-                        help="export report in pdf? else \
-                        export in Latex")
-    parser.add_argument("-r", "--readable", action="store_true",
-                        help="export csv with readable column \
-                        names?")
+                                     input csv file.')
+    parser.add_argument('mode', type=str,
+                        help='csv or dicom report, give keywords from the \
+                        list[csv, dicom]')
+    parser.add_argument('--root_folder', type=str,
+                        help='the root folder with dicom files')
+    parser.add_argument('--report_xls', type=str,
+                        help='the output excel file for \
+                        the DICOMs report')
+    parser.add_argument('--dicom_schema', type=str,
+                        help='json dicom schema')
+    parser.add_argument('--input_csv', type=str,
+                        help='dataset input csv')
+    parser.add_argument('--meta_csv', type=str,
+                        help='variables metadata csv')
+    parser.add_argument('--col_val', type=str,
+                        help='the column with variable name \
+                        in metadata file')
+    parser.add_argument('--col_type', type=str,
+                        help='the column with variable type \
+                        in metadata file')
+    parser.add_argument('--pdf', action='store_true',
+                        help='export report in pdf? else \
+                        export in Latex')
+    parser.add_argument('-r', '--readable', action='store_true',
+                        help='export csv with readable column \
+                        names?')
     args = parser.parse_args(sys.argv[1:])
     metadata = None
     # if CSV dataset
@@ -54,7 +58,7 @@ def main():
         else:
             raise OSError('Filepath not found')
 
-        if args.meta_csv:
+        if args.meta_csv is not None:
             if os.path.exists(args.meta_csv):
                 metadata = Metadata.from_csv(args.meta_csv,
                                              args.col_val,
@@ -64,6 +68,8 @@ def main():
         else:
             # continue with no metadata file
             metadata = None
+            print('Continuing with no metadata.'
+                  'Varible types will be estimated.')
         # Create the dataset report
         testcsv = DatasetCsv(data, filename, metadata)
         # Export Report files paths and names, csv, pdf or tex
@@ -81,7 +87,8 @@ def main():
     elif args.mode == 'dicom':
         # Check if the DICOM root folder exists
         if os.path.exists(args.root_folder):
-            dicomreport = DicomReport(args.root_folder, getpass.getuser())
+            dicomreport = DicomReport(args.root_folder, getpass.getuser(),
+                                      args.dicom_schema)
             dicomreport.export2xls(args.report_xls)
         else:
             raise OSError('Root Folder not found')
@@ -89,4 +96,6 @@ def main():
 
 
 if __name__ == '__main__':
+    start_time=time.time()
     main()
+    print('___ %s seconds ---' % (time.time() - start_time))

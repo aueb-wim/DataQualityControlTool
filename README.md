@@ -35,9 +35,9 @@ $ sh install.sh
 **Command Line Interface**
 For profiling a csv dataset:
 ``` shell 
-$ qctool -m csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
+$ qctool csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
 ```
-`-m` or `--mode` can take two flags `csv` or `dicom`. Here we use `csv` because the dataset is in csv format. 
+first positional argument can take two flags `csv` or `dicom`. Here we use `csv` because the dataset is in csv format. 
 `--readable` is a flag if we want the reports csv files to have more descriptive column names. 
 `--pdf` is a flag if we want to produce a report in pdf format
 `col_val` and `col_type` are obligatory. They are referred to columns names of the metadata csv. The `col_val` is the name of the column that contains the variables codes used as columns in the datatset csv and the `col_type` is the name of the column in metadata csv that contains the variables types. 
@@ -51,7 +51,7 @@ After the execution, three files will be produced:
 
 For profiling a dicom dataset:
 ``` shell
-$ qctool -m dicom --root_folder [folder with dicoms] --report_xls [path/to/report.xls]
+$ qctool dicom --root_folder [folder with dicoms] --report_xls [path/to/report.xls] --dicom_schema [path/to/dicom-schema.json]
 ```
 The report is in excel format and contains the header information from all DICOM (dcm) files.
 
