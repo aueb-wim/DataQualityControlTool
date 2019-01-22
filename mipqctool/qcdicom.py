@@ -12,13 +12,6 @@ from . import __version__
 # DEFAULT_REQ = 'data/dicom_metadata_req.csv'
 
 
-def get_requirements(filename):
-    """Return a pandas df with the dicom metatata requierements"""
-    with open(filename, "r") as read_file:
-        dicom_schema = json.load(read_file)
-
-
-
 def getsubfolders(rootfolder):
     """Returns dict with keys subfolders and values a list
     of the containing dcm files in each folder"""
@@ -104,7 +97,6 @@ class DicomReport(object):
         for field in dicom_schema['fields']:
             self.mandatory.append(field['name'])
 
-
     def _read_dicom(self, filename, subfolder):
         """Read dicom headers except PixelData, returns a dataframe"""
         filepath = os.path.join(self.rootfolder, subfolder, filename)
@@ -119,7 +111,7 @@ class DicomReport(object):
                 # Don't tags that represent sequence
                 # Sequence tags are big strings and contain commas
                 # that corrupt the exported csv file
-                #if not tag.endswith('Sequence'):
+                # if not tag.endswith('Sequence'):
                 try:
                     data[tag] = [str(ds.data_element(tag).value)]
                 except AttributeError:
@@ -168,6 +160,18 @@ class DicomReport(object):
         dataset_df = pd.DataFrame.from_dict(self.dataset)
         dataset_df.to_excel(writer, sheet_name='general_info',
                             index=False)
-        self.dicoms.to_excel(writer, sheet_name='dicom_metadata')
+        # save to csv first
         self.dicoms.to_csv(filepath[:-4] + '.csv')
+        # split the dicoms headers into chunks of 65530 rows
+        # 2007 excel files can handle max 65536 rows
+        maxsize = 65530
+        dicoms_size = len(self.dicoms)
+        if dicoms_size < maxsize:
+            self.dicoms.to_excel(writer, sheet_name='dicom_metadata')
+        else:
+            chunk = 0
+            for i in range(0, dicoms_size, maxsize):
+                chunk += 1
+                self.dicoms.iloc[i:i + maxsize, :].to_excel(writer,
+                    sheet_name='dicom_matadata_part{0}'.format(chunk))
         writer.save()
