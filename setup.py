@@ -10,19 +10,20 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='mipqctool',
-    version= __version__,
+    version=__version__,
     author='Iosif Spartalis',
     author_email='iosifspart@gmail.com',
-    description='A tool for profiling tabular data',
+    description='A tool for profiling tabular and dicom data',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/aueb-wim/DataQualityControlTool',
     lisence='Apache 2.0',
     keywords='qualitycontrol dataprofiler miplocal',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    install_requires=['pandas','pylatex','pydicom',
+    include_package_data=True,
+    install_requires=['pandas', 'pylatex', 'pydicom',
                       'xlwt'],
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'qctool = mipqctool.__main__:main',
             'qctoolgui = mipqctool.qctoolgui:main'

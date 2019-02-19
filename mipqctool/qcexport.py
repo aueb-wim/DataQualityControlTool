@@ -27,7 +27,7 @@ def fill_stat(doc, df):
             else:
                 data_table.add_row(data[i])
 
-def latex2pdf(filepath, dstats, vstats, exportpdf=False):
+def latex2pdf(filepath, dstats, listvstats, exportpdf=False):
     """Exports dataset statistical report in tex and pdf.
 
     Arguments:
@@ -49,12 +49,13 @@ def latex2pdf(filepath, dstats, vstats, exportpdf=False):
     with doc.create(Section(title)) as main_section:
         fill_stat(main_section, dstats)
     doc.append(NewPage())
-    for variable in vstats.index:
-        new_title = 'Statistical Report of variable "{0}"'.format(variable)
-        with doc.create(Section(new_title)) as var_section:
-            vstat = vstats.loc[variable].to_frame()
-            fill_stat(var_section, vstat)
-        doc.append(NewPage())
+    for vstats in listvstats:
+        for variable in vstats.index:
+            new_title = 'Statistical Report of variable "{0}"'.format(variable)
+            with doc.create(Section(new_title)) as var_section:
+                vstat = vstats.loc[variable].to_frame()
+                fill_stat(var_section, vstat)
+            doc.append(NewPage())
 
     if exportpdf:
         doc.generate_pdf(filepath)

@@ -1,4 +1,4 @@
-#__main__.py
+# __main__.py
 """ Command Line Interface for MIP Quality Control Tool
 """
 import sys
@@ -10,6 +10,7 @@ import pandas as pd
 from .qctablib import DatasetCsv, Metadata
 from .qcdicom import DicomReport
 
+DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
 def main():
     """Main app for quality control tool with CLI"""
@@ -53,8 +54,9 @@ def main():
             dataset_name = os.path.splitext(filename)[0]
             # Get the path of the csv file
             path = os.path.dirname(os.path.abspath(args.input_csv))
-            # Load the data from csv
-            data = pd.read_csv(args.input_csv, index_col=None)
+            # Load the data from csv but treat all columns as strings
+            data = pd.read_csv(args.input_csv,
+                               index_col=None)
         else:
             raise OSError('Filepath not found')
 
@@ -73,12 +75,12 @@ def main():
         # Create the dataset report
         testcsv = DatasetCsv(data, filename, metadata)
         # Export Report files paths and names, csv, pdf or tex
-        exportfile = os.path.join(path, dataset_name
-                                  + '_report.csv')
-        exportfile_ds = os.path.join(path, dataset_name
-                                     + '_dataset_report.csv')
-        exportfile_tex = os.path.join(path, dataset_name
-                                      + '_report')
+        exportfile = os.path.join(path, dataset_name +
+                                  '_report.csv')
+        exportfile_ds = os.path.join(path, dataset_name +
+                                     '_dataset_report.csv')
+        exportfile_tex = os.path.join(path, dataset_name +
+                                      '_report')
 
         testcsv.export_dstat_csv(exportfile_ds, need_readable=args.readable)
         testcsv.export_vstat_csv(exportfile, need_readable=args.readable)
@@ -87,15 +89,17 @@ def main():
     elif args.mode == 'dicom':
         # Check if the DICOM root folder exists
         if os.path.exists(args.root_folder):
+            dicom_json = os.path.join(DIR_PATH, 'data', 'dicom-schema.json')
+            if args.dicom_schema:
+                dicom_json = args.dicom_schema
             dicomreport = DicomReport(args.root_folder, getpass.getuser(),
-                                      args.dicom_schema)
+                                      dicom_json)
             dicomreport.export2xls(args.report_xls)
         else:
             raise OSError('Root Folder not found')
 
 
-
 if __name__ == '__main__':
-    start_time=time.time()
+    start_time = time.time()
     main()
     print('___ %s seconds ---' % (time.time() - start_time))

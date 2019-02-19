@@ -92,7 +92,7 @@ class DicomReport(object):
 #        self.readicoms()
 
     def get_dicom_schema(self, schemafile):
-        with open(schemafile, 'r') as read_file:
+        with open(schemafile, 'r', encoding='UTF8') as read_file:
             dicom_schema = json.load(read_file)
         for field in dicom_schema['fields']:
             self.mandatory.append(field['name'])

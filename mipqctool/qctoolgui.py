@@ -11,6 +11,8 @@ from .qctablib import DatasetCsv, Metadata
 from .qcdicom import DicomReport
 from . import __version__
 
+DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+
 class Application(tk.Frame):
 
     def __init__(self, master=None):
@@ -50,6 +52,7 @@ class CsvTab(tk.Frame):
         self.reportcsv = None
         self.readable = tk.BooleanVar()
         self.onlylatex = tk.BooleanVar()
+        self.nometadata = tk.BooleanVar()
         self.readable.set(False)
         self.onlylatex.set(False)
         self.__init()
@@ -58,6 +61,7 @@ class CsvTab(tk.Frame):
     def __init(self):
         self.tblabelframe = tk.LabelFrame(self, text="Input")
 
+        # Input interface
         # Dataset file (Labels and Button)
         self.label_dataset = tk.Label(self.tblabelframe, text="Dataset file:")
         self.label_dfilename = tk.Label(self.tblabelframe, text='Not selected',
@@ -81,7 +85,13 @@ class CsvTab(tk.Frame):
                                          text="Select variable type column:")
         self.coltypelist = ttk.Combobox(self.tblabelframe, width=50)
         self.coltypelist.config()
+        # No metadata file checkbox
+        self.checkmetadata = tk.Checkbutton(self.tblabelframe,
+                                            text="No metadata file",
+                                            variable=self.nometadata,
+                                            command=self._metadata_check)
 
+    
         # Output interface
         # Create a label frame where to put the output files interface
         self.tblabelframe_output = tk.LabelFrame(self, text="Ouput")
@@ -118,6 +128,7 @@ class CsvTab(tk.Frame):
         self.label_metadata.grid(row=1, column=0)
         self.label_dfilename.grid(row=0, column=1, pady=2)
         self.button_load_md.grid(row=1, column=2)
+        self.checkmetadata.grid(row=5, column=2)
         self.label_mfilename.grid(row=1, column=1, pady=2)
         self.button_load_md.grid(row=1, column=2)
         self.colvallist.grid(row=2, column=1, pady=4)
@@ -178,24 +189,28 @@ class CsvTab(tk.Frame):
         self.label_export2.config(text=filedir)
 
     def createreport(self):
+        metadata = None
         colval = self.colvallist.get()
         coltype = self.coltypelist.get()
         warningtitle = "Can not create report"
         if not self.dname:
             tkmessagebox.showwarning(warningtitle,
                                      "Please, select dataset file")
-        elif not self.metafilepath:
-            tkmessagebox.showwarning(warningtitle,
-                                     "Please, select metadata file")
-        elif colval == '' or coltype == '':
-            tkmessagebox.showwarning(warningtitle,
-                                     "Please, select metadata columns")
+        # Case with metadata file available                             
+        elif not self.nometadata.get():
+            if not self.metafilepath:
+                tkmessagebox.showwarning(warningtitle,
+                                         "Please, select metadata file")
+            elif colval == '' or coltype == '':
+                tkmessagebox.showwarning(warningtitle,
+                                        "Please, select metadata columns")
+            metadata = Metadata.from_csv(self.metafilepath, colval, coltype)
+
         elif not self.exportfiledir:
             tkmessagebox.showwarning(warningtitle,
                                      "Please, select export folder first")
         else:
             filedir = self.exportfiledir
-            metadata = Metadata.from_csv(self.metafilepath, colval, coltype)
             basename = os.path.splitext(self.dname)[0]
             dreportfile = os.path.join(filedir,
                                        basename + "_dataset_report.csv")
@@ -208,6 +223,16 @@ class CsvTab(tk.Frame):
             self.label_export2.config(text=filedir)
             tkmessagebox.showinfo(title="Status info",
                 message="Reports have been created successully")
+
+    def _metadata_check(self):
+        if self.nometadata.get():
+            status = 'disabled'
+        else:
+            status = 'normal'
+        self.button_load_md.config(state=status)
+        self.coltypelist.config(state=status)
+        self.colvallist.config(state=status)
+        self.label_mfilename.config(state=status)
 
 class DicomTab(tk.Frame):
     def __init__(self, parent=None):
@@ -268,7 +293,8 @@ class DicomTab(tk.Frame):
                                                        filetypes=[('Excel files', '*.xls')],
                                                        defaultextension='.xls')
             if excelfile:
-                report = DicomReport(self.rootfolder, getpass.getuser())
+                dicom_json = os.path.join(DIR_PATH, 'data', 'dicom-schema.json')
+                report = DicomReport(self.rootfolder, getpass.getuser(),dicom_json)
                 report.export2xls(excelfile)
                 self.lbl_report_f.config(text=excelfile)
                 tkmessagebox.showinfo(title="Status info",

@@ -10,9 +10,9 @@ General
 1 Improvements
     - Detect of dates (library DateParser, detect if different format of dates exist in a column)
     - Detect if a variable have different type of values..(ie numerical and has also string values)
-    - Guessing the variable types if there is no metadata file
-    - 3 options of input files (csv metadata, csv only, merged csv)
-    - option for exporting only tex file and not pdf (for reducing the docker image size)
+    - Guessing the variable types if there is no metadata file - ok
+    - 3 options of input files (csv metadata, csv only) - ok
+    - option for exporting only tex file and not pdf (for reducing the docker image size) - ok
     - integrate the goodtables.io table schema json and datapackage json (for automated quality check pipeline)
 
 2 Testing
@@ -24,4 +24,4 @@ General
 
 ******* QCmri *******
 
-    - GUI
+    - GUI -ok
