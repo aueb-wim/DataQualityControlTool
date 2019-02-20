@@ -212,7 +212,7 @@ class VariableStats(object):
         self.numerical = list(df1.loc[num_criterion, 'variable_name'])
         self.dates = list(df1.loc[date_criterion, 'variable_name'])
         self.text = list(df1.loc[text_criterion, 'variable_name'])
-    
+
         df1.update(qcpdutils.calc_categories(self.data, self.categorical))
 
         # Calculate descriptive statistics for all types of the
@@ -407,8 +407,8 @@ class DatasetCsv(VariableStats):
         numerical = list(self.data.select_dtypes(include=['float64', 'int64']).columns)
         not_text = numerical.copy()
         not_text.extend(self.categorical)
-        LOGGER.debug('numerical columns are: {}'.format(' '.join(numerical)))
-        LOGGER.debug('not text columns are: {}'.format(' '.join(not_text)))
+        # LOGGER.debug('numerical columns are: {}'.format(' '.join(numerical)))
+        # LOGGER.debug('not text columns are: {}'.format(' '.join(not_text)))
         # find the rest of the columns
         all_others = [column for column in self.data.columns if column not in not_text]
         num = nom = self.vstats.loc[numerical, COLUMNS_NUM].rename(columns=READABLE_VCOLUMMS)
