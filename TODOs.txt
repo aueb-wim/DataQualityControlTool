@@ -8,12 +8,25 @@ General
 ******** QCtab ********
 
 1 Improvements
-    - Detect of dates (library DateParser, detect if different format of dates exist in a column)
+    - Detect of dates (library DateParser, detect if different format of dates exist in a column) -οκ
+    - Calculate statistics for date type variables
     - Detect if a variable have different type of values..(ie numerical and has also string values)
+    - Calculate statistics for cases with mixed type variables by choosing one type and ignoring the other type values - ie agegroup variable in ppmi dataset
+    - Detect numerical variables with sufix (units, % etc)
+    - Add new column with a list of row ids with outliers, (add similar column about rows with mixed type values)
     - Guessing the variable types if there is no metadata file - ok
+    - Do more sophisticated the variable type guessing using a given percentage threshold  
     - 3 options of input files (csv metadata, csv only) - ok
-    - option for exporting only tex file and not pdf (for reducing the docker image size) - ok
+    - CLI option for exporting only tex file and not pdf (for reducing the docker image size) - ok
+    - CLI add error-warnings in cli mode for giving [csv\dicom] keyword
+    - CLI make the -col_var and col_type optional, give default values
+    - CLI make --input_csv and --root_folder positional argument
+    - CLI use click library for parsing arguments   
     - integrate the goodtables.io table schema json and datapackage json (for automated quality check pipeline)
+    - add histogram plottings in pdf for numerical variables
+    - add values mean(+-)std, mean(+-)2*std, mean(+-)3*std
+    - replace "nan" with "not avavailable" in pdf report
+    - GUI replace "no pdf" check box with "pdf"
 
 2 Testing
     - load various format of csvs (diff sep, quoted values)
@@ -24,4 +37,7 @@ General
 
 ******* QCmri *******
 
-    - GUI -ok
+    - GUI add select export file button
+    - add high resolution check
+    - add minimum number of slices check
+    - add type images check

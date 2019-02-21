@@ -361,7 +361,7 @@
       ]
     },
     {
-      "name": "EchoNumber",
+      "name": "EchoNumbers",
       "VR": "IS",
       "description": "The echo number used in generating this image. In the case of segmented k-space, it is the effective Echo Number.",
       "constrains": [
