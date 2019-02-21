@@ -119,7 +119,7 @@ class DicomReport(object):
         # Read the dcm file but not the PixelData
         try:
             columns = self.mandatory
-            ds = pydicom.dcmread(filepath, 
+            ds = pydicom.dcmread(filepath,
                                  stop_before_pixels=True,
                                  specific_tags=columns)
             data = {}

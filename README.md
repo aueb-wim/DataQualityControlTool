@@ -10,41 +10,45 @@ This tool is a component developed for the [Human Brain Project Medical Informat
 
 Required installed packages for Debian based distros
 
--   python3, python3-pip, python3-tk
-
--   latexmk
-
--   texlive-latex-extra
+- python3, python3-pip, python3-tk
+- latexmk
+- texlive-latex-extra
 
 ```shell
-$ sudo apt-get update
-$ sudo apt-get install python3 python3-pip latexmk texlive-latex-extra
+sudo apt-get update
+sudo apt-get install python3 python3-pip latexmk texlive-latex-extra
 ```
+
 The above code installs the python3 and the minimum packages for a LaTex compiler. Alternative the `texlive-full` package can be installed instead of `latexmk` and `latexlive-latex-extra`.  
 
 Required installed software for Windows
 
--   [python version 3](https://www.python.org/downloads/)
+- [python version 3](https://www.python.org/downloads/)
 
--   LaTex compiler installed
-  -   [MiKTeX](https://miktex.org/download)
-  -   [TeXstudio](https://www.texstudio.org/)
--   [Perl](https://www.perl.org/get.html)
+- LaTex compiler installed
+  - [MiKTeX](https://miktex.org/download)
+  - [TeXstudio](https://www.texstudio.org/)
+- [Perl](https://www.perl.org/get.html)
 
 ### Installation
+
 In a terminal we run
+
 ```shell
-$ git clone https://github.com/aueb-wim/DataQualityControlTool.git
-$ cd DataQualityControlTool
-$ sh install.sh
+git clone https://github.com/aueb-wim/DataQualityControlTool.git
+cd DataQualityControlTool
+sh install.sh
 ```
 
 ## Use
+
 **Command Line Interface**
 For profiling a csv dataset:
-``` shell 
-$ qctool csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
+
+``` shell
+qctool csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
 ```
+
 first positional argument can take two flags `csv` or `dicom`. Here we use `csv` because the dataset is in csv format. 
 `--readable` is an option if we want the reports csv files to have more descriptive column names.
 `--pdf` is an option if we want to produce a report in pdf format. 
@@ -53,14 +57,17 @@ first positional argument can take two flags `csv` or `dicom`. Here we use `csv`
 At  the moment the tool needs the metadata file to detect the nominal variables. So, the `col_type` column must be filled with the value `nominal` (is not case sensitive)  for the categorical variables in order to work properly. Other types like `int`, `float`, `text`, `numerical`, `date` are not taken into account at the moment. 
 
 After the execution, three files will be produced:
--   a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
--   a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
--   a pdf or LaTex file <dataset_file>+’_report’ containg the above two reports in a readable format.
+
+- a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
+- a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
+- a pdf or LaTex file <dataset_file>+’_report’ containg the above two reports in a readable format.
 
 For profiling a dicom dataset:
+
 ``` shell
-$ qctool dicom --root_folder [folder with dicoms] --report_xls [path/to/report.xls] --dicom_schema [path/to/dicom-schema.json]
+qctool dicom --root_folder [folder with dicoms] --report_xls [path/to/report.xls] --dicom_schema [path/to/dicom-schema.json]
 ```
+
 The report is in excel format and contains the header information from all DICOM (dcm) files.
 
 **GUI**
@@ -68,17 +75,21 @@ We run `qctoolgui`
 See docs/quickguide.docx for further instructions. 
 
 ## Features
--   Creates a statistical report for the dataset and its variables 
--   Creates a report with the meta-data headers of a set of MRIs 
--   Command Line Interface and GUI 
+
+- Creates a statistical report for the dataset and its variables 
+- Creates a report with the meta-data headers of a set of MRIs 
+- Command Line Interface and GUI 
 
 ## Versioning
+
 We use [SemVer](http://semver.org/) for versioning.
 
 ## Authors
--   Iosif Spartalis - AUEB/RC Data Science Team
+
+- Iosif Spartalis - AUEB/RC Data Science Team
 
 ## License
+
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgements
