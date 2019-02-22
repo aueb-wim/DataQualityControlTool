@@ -8,6 +8,7 @@ from mipqctool import __version__
 import tkinter as tk
 from multiprocessing import freeze_support
 
+
 def main():
     """Main application window"""
     root = tk.Tk()
@@ -21,4 +22,3 @@ def main():
 if __name__ == '__main__':
     freeze_support()
     main()
-
