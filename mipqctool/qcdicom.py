@@ -2,8 +2,6 @@
 import datetime
 import os
 import json
-import sys
-import logging
 import multiprocessing as mp
 from multiprocessing import Pool
 import pydicom
@@ -11,22 +9,6 @@ import pandas as pd
 from . import __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
-
-# Create logger
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-
-# Create hadlers to the logger
-C_HANDLER = logging.StreamHandler(sys.stdout)
-C_HANDLER.setLevel(logging.DEBUG)
-
-# Create formatters and add it to the hadler
-C_FORMAT = logging.Formatter('%(name)s: %(levelname)s: %(message)s')
-C_HANDLER.setFormatter(C_FORMAT)
-
-# Add haldlers to the logger
-LOGGER.addHandler(C_HANDLER)
-
 
 def getsubfolders(rootfolder):
     """Returns dict with keys subfolders and values a list
@@ -120,8 +102,7 @@ class DicomReport(object):
         try:
             columns = self.mandatory
             ds = pydicom.dcmread(filepath,
-                                 stop_before_pixels=True,
-                                 specific_tags=columns)
+                                 stop_before_pixels=True)
             data = {}
             data['folder'] = subfolder
             data['file'] = filename
@@ -133,7 +114,6 @@ class DicomReport(object):
                 try:
                     data[tag] = [str(ds.data_element(tag).value)]
                 except AttributeError:
-                    LOGGER.info('For %s the type is %s', tag, type(ds.data_element(tag)))
                     data[tag] = ['Error! Value not found!']
                 except KeyError:
                     data[tag] = ['Tag not found']

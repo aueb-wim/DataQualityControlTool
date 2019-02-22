@@ -10,9 +10,9 @@ This tool is a component developed for the [Human Brain Project Medical Informat
 
 Required installed packages for Debian based distros
 
-- python3, python3-pip, python3-tk
-- latexmk
-- texlive-latex-extra
+-   python3, python3-pip, python3-tk
+-   latexmk
+-   texlive-latex-extra
 
 ```shell
 sudo apt-get update
@@ -23,12 +23,12 @@ The above code installs the python3 and the minimum packages for a LaTex compile
 
 Required installed software for Windows
 
-- [python version 3](https://www.python.org/downloads/)
+-   [python version 3](https://www.python.org/downloads/)
 
-- LaTex compiler installed
-  - [MiKTeX](https://miktex.org/download)
-  - [TeXstudio](https://www.texstudio.org/)
-- [Perl](https://www.perl.org/get.html)
+-   LaTex compiler installed
+  -   [MiKTeX](https://miktex.org/download)
+  -   [TeXstudio](https://www.texstudio.org/)
+-   [Perl](https://www.perl.org/get.html)
 
 ### Installation
 
@@ -58,9 +58,9 @@ At  the moment the tool needs the metadata file to detect the nominal variables.
 
 After the execution, three files will be produced:
 
-- a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
-- a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
-- a pdf or LaTex file <dataset_file>+’_report’ containg the above two reports in a readable format.
+-   a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
+-   a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
+-   a pdf or LaTex file <dataset_file>+’_report’ containg the above two reports in a readable format.
 
 For profiling a dicom dataset:
 
@@ -76,9 +76,9 @@ See docs/quickguide.docx for further instructions.
 
 ## Features
 
-- Creates a statistical report for the dataset and its variables 
-- Creates a report with the meta-data headers of a set of MRIs 
-- Command Line Interface and GUI 
+-   Creates a statistical report for the dataset and its variables 
+-   Creates a report with the meta-data headers of a set of MRIs 
+-   Command Line Interface and GUI 
 
 ## Versioning
 
@@ -86,7 +86,7 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## Authors
 
-- Iosif Spartalis - AUEB/RC Data Science Team
+-   Iosif Spartalis - AUEB/RC Data Science Team
 
 ## License
 
