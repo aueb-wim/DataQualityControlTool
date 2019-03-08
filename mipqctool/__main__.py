@@ -8,7 +8,7 @@ import time
 import getpass
 import pandas as pd
 from .qctablib import DatasetCsv, Metadata
-from .qcdicom import DicomReport
+from .dicomreport import DicomReport
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -23,11 +23,9 @@ def main():
                         list[csv, dicom]')
     parser.add_argument('--root_folder', type=str,
                         help='the root folder with dicom files')
-    parser.add_argument('--report_xls', type=str,
+    parser.add_argument('--report_folder', type=str,
                         help='the output excel file for \
                         the DICOMs report')
-    parser.add_argument('--dicom_schema', type=str,
-                        help='json dicom schema')
     parser.add_argument('--input_csv', type=str,
                         help='dataset input csv')
     parser.add_argument('--meta_csv', type=str,
@@ -89,12 +87,10 @@ def main():
     elif args.mode == 'dicom':
         # Check if the DICOM root folder exists
         if os.path.exists(args.root_folder):
-            dicom_json = os.path.join(DIR_PATH, 'data', 'dicom-schema.json')
-            if args.dicom_schema:
-                dicom_json = args.dicom_schema
-            dicomreport = DicomReport(args.root_folder, getpass.getuser(),
-                                      dicom_json)
-            dicomreport.export2xls(args.report_xls)
+            dicomreport = DicomReport(args.root_folder, getpass.getuser())
+            if not os.path.exists(args.report_folder):
+                os.mkdir(args.report_folder)
+            dicomreport.writereport(args.report_folder)
         else:
             raise OSError('Root Folder not found')
 
