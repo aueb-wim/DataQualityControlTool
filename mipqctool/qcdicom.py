@@ -291,7 +291,7 @@ class Qcdicom(object):
         errordata['Folder'] = self.__folder
         errordata['File'] = self.__file
         errordata['PatientID'] = self.__data['PatientID']
-        errordata['StudyID'] = self.__data['StydyID']
+        errordata['StudyID'] = self.__data['StudyID']
         errordata['SeriesNumber'] = self.__data['SeriesNumber']
         errordata['InstanceNumber'] = self.__data['InstanceNumber']
         errordata['MissingTags'] = ','.join(self.missingtags)
