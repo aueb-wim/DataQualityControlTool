@@ -295,4 +295,5 @@ class Qcdicom(object):
         errordata['SeriesNumber'] = self.__data['SeriesNumber']
         errordata['InstanceNumber'] = self.__data['InstanceNumber']
         errordata['MissingTags'] = ','.join(self.missingtags)
+        return errordata
 

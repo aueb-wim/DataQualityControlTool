@@ -1,25 +1,12 @@
 # qcutils.py
 
 import re
-import logging
 import sys
 import pandas as pd
+from . import config
+from .config import LOGGER
 
-# Create logger
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-
-# Create hadlers to the logger
-C_HANDLER = logging.StreamHandler(sys.stdout)
-C_HANDLER.setLevel(logging.DEBUG)
-
-# Create formatters and add it to the hadler
-C_FORMAT = logging.Formatter('%(name)s: %(levelname)s: %(message)s')
-C_HANDLER.setFormatter(C_FORMAT)
-
-# Add haldlers to the logger
-LOGGER.addHandler(C_HANDLER)
-
+config.debug(True)
 
 COMMIX1 = 'Warning! Mixed type variable.'
 COMDATE1 = 'Warning! Dates with multiple formats.'
@@ -113,7 +100,7 @@ def check_date(datestr):
                 result['fullyear'] = True
             else:
                 result['fullyear'] = False
-            # LOGGER.debug('Found a date: %s of type %s', datestr, result['datetype'])
+            LOGGER.debug('Found a date: %s of type %s', datestr, result['datetype'])
             break
     return result
 

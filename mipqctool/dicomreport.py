@@ -165,7 +165,7 @@ class DicomReport(object):
                  'validseq': [],
                  'invalidseq': [],
                  'invaliddicoms': [],
-                 'notprocessed': []           
+                 'notprocessed': []
                  }
         for folder in filesdict:
             output = self.__getsequences(folder, filesdict[folder])
