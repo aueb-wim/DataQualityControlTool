@@ -60,28 +60,29 @@ class Sequence(object):
         if len(self.__invaliddicoms) > 0:
             self.__errors.append('contains invalid dicom files')
         # resolution validation
-        try:
-            pixelspacing = self.data['PixelSpacing']
+        pixelspacing = self.data['PixelSpacing']
+        zspacing = self.data['SliceThickness']
+        if pixelspacing != 'Tag not found' and zspacing != 'Tag not found':
             pixelspacing = ast.literal_eval(pixelspacing)
             self.__px_X = float(pixelspacing[0])
             self.__px_Y = float(pixelspacing[1])
-            self.__px_Z = float(self.data['SliceThickness'])
+            self.__px_Z = float(zspacing)
             if self.__px_X >= 1.5 or self.__px_Y >= 1.5:
                 self.__errors.append('maximum resolution failure')
             if self.__px_X == self.__px_Y:
                 self.__isisometric = True
                 if self.__px_X == self.__px_Z:
                     self.__isisotropic = True
-        except KeyError:
+        else:
             self.__errors.append('resolution tags are missing')
         # protocol validation
-        try:
-            protocol = self.data['SeriesDescription']
+        protocol = self.data['SeriesDescription']
+        if protocol != 'Tag not found':
             if 'T1' in protocol:
                 self.__protocol = 'T1'
             else:
                 self.__errors.append('not a T1 image')
-        except KeyError:
+        else:
             self.__errors.append('SeriesDescription tag is missing')
         # number of slices validation
         if self.slices < 40:

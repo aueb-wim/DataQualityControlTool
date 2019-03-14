@@ -189,7 +189,7 @@ class DicomReport(object):
         result = {
                  'validseq': [],
                  'invalidseq': [],
-                 'notprocessed': []      
+                 'notprocessed': []
                  }
         for filename in dicomfiles:
             try:
