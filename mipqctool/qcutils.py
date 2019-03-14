@@ -19,45 +19,45 @@ COMNUM_SUFIXES = 'Warning! Numerical values with multiple sufixes!'
 # Date regex expressions
 
 # %d %m %Y, dd-mm-yyyy, dd/mm/yyyy,dd.mm.yyyy
-DATE1 = (r'\b(0?[1-9]|[12][0-9]|3[01])'
+DATE1 = (r'^\b(0?[1-9]|[12][0-9]|3[01])'
          r'(?P<sep>[- /.])(0?[1-9]|1[012])'
-         r'(?P=sep)(?P<year>(19|20)?\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)?\d\d)\b$')
 # %m %d %Y, mm-dd-yyyy
-DATE2 = (r'\b(0?[1-9]|1[012])'
+DATE2 = (r'^\b(0?[1-9]|1[012])'
          r'(?P<sep>[- /.])(0?[1-9]|[12][0-9]|3[01])'
-         r'(?P=sep)(?P<year>(19|20)?\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)?\d\d)\b$')
 # %Y %m %d, yyyy-mm-dd
-DATE3 = (r'\b(?P<year>(19|20)?\d\d)'
+DATE3 = (r'^\b(?P<year>(19|20)?\d\d)'
          r'(?P<sep>[- /.])(0?[1-9]|1[012])'
-         r'(?P=sep)(0?[1-9]|[12][0-9]|3[01])\b')
+         r'(?P=sep)(0?[1-9]|[12][0-9]|3[01])\b$')
 # %d %b %Y, dd-mon-yyyy
-DATE4 = (r'\b(0?[1-9]|[12][0-9]|3[01])'
+DATE4 = (r'^\b(0?[1-9]|[12][0-9]|3[01])'
          r'(?P<sep>[ -]?)[a-zA-Z]{3}'
-         r'(?P=sep)(?P<year>(19|20)?\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)?\d\d)\b$')
 # %d %B %Y, dd-month-yyyy
-DATE5 = (r'\b(0?[1-9]|[12][0-9]|3[01])'
+DATE5 = (r'^\b(0?[1-9]|[12][0-9]|3[01])'
          r'(?P<sep>[ -]?)[a-zA-Z]{4,}'
-         r'(?P=sep)(?P<year>(19|20)?\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)?\d\d)\b$')
 # %b %d %Y, mon-dd-yyyy
-DATE6 = (r'\b[a-zA-Z]{3}'
+DATE6 = (r'^\b[a-zA-Z]{3}'
          r'(?P<sep>[ -]?)(0?[1-9]|[12][0-9]|3[01])'
-         r'(?P=sep)(?P<year>(19|20)?\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)?\d\d)\b$')
 # %B %d %Y
-DATE7 = (r'\b[a-zA-Z]{4,}'
+DATE7 = (r'^\b[a-zA-Z]{4,}'
          r'(?P<sep>[ -]?)(0?[1-9]|[12][0-9]|3[01])'
-         r'(?P=sep)(?P<year>(19|20)?\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)?\d\d)\b$')
 # ddmmyyyy
-DATE8 = (r'\b(0?[1-9]|[12][0-9]|3[01])'
+DATE8 = (r'^\b(0?[1-9]|[12][0-9]|3[01])'
          r'(?P<sep>)(0?[1-9]|1[012])'
-         r'(?P=sep)(?P<year>(19|20)\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)\d\d)\b$')
 # mmddyyyy
-DATE9 = (r'\b(0?[1-9]|1[012])'
+DATE9 = (r'^\b(0?[1-9]|1[012])'
          r'(?P<sep>)(0?[1-9]|[12][0-9]|3[01])'
-         r'(?P=sep)(?P<year>(19|20)\d\d)\b')
+         r'(?P=sep)(?P<year>(19|20)\d\d)\b$')
 # yyyymmdd
-DATE10 = (r'\b(?P<year>(19|20)\d\d)'
+DATE10 = (r'^\b(?P<year>(19|20)\d\d)'
           r'(?P<sep>)(0?[1-9]|1[012])'
-          r'(?P=sep)(0?[1-9]|[12][0-9]|3[01])\b')
+          r'(?P=sep)(0?[1-9]|[12][0-9]|3[01])\b$')
 
 
 def outliers(numbers, times):
