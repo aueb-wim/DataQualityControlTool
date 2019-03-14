@@ -11,9 +11,10 @@ class Sequence(object):
     def __init__(self, patientid, studyid, seriesnum, dicoms):
         self.__studyid = studyid
         self.__patientid = patientid
-        self.__snumber = seriesnum    
-        self.__dicoms = dicoms
+        self.__snumber = seriesnum
         self.__errortags = []
+        self.__validdicoms = []
+        self.__invaliddicoms = []
         self.__errors = []
         self.__px_X = None
         self.__px_Y = None
@@ -22,49 +23,69 @@ class Sequence(object):
         self.__isisotropic = False
         self.__protocol = None
         self.__data = None
-
+        self.__slices = len(dicoms)
+        self.__validate_dicoms(dicoms)
         self.__getseqdata()
         self.validate()
+        # free memory
+        # TODO: investigate if there is a need to keep
+        self.__validdicoms = []
 
+
+    def __validate_dicoms(self, dicoms):
+        for dicom in dicoms:
+            if dicom.isvalid:
+                self.__validdicoms.append(dicom)
+            else:
+                self.__invaliddicoms.append(dicom)
 
     def __getseqdata(self):
         data = collections.OrderedDict()
+        dicoms = self.__validdicoms
+        # case of sequence with only invalid dicom files
+        # get sequence data from them
+        if len(self.__validdicoms) == 0 and len(self.__invaliddicoms) > 0:
+            dicoms = self.__invaliddicoms
+
         for seqtag in config.SEQUENCE_TAGS:
-            values = list(d.data[seqtag] for d in self.__dicoms)
+            values = list(d.data[seqtag] for d in dicoms)
             # get the most frequent element
             data[seqtag] = max(set(values), key=values.count)
             if len(set(values)) != 1:
                 self.__errortags.append(seqtag)
         self.__data = data
 
-    def __getresolution(self):
-        pixelspacing = self.data['PixelSpacing']
-        pixelspacing = ast.literal_eval(pixelspacing)
-        self.__px_X = float(pixelspacing[0])
-        self.__px_Y = float(pixelspacing[1])
-        self.__px_Z = float(self.data['SliceThickness'])
-        if self.__px_X == self.__px_Y:
-            self.__isisometric = True
-            if self.__px_X == self.__px_Z:
-                self.__isisotropic = True
-        self.__data['Slices'] = self.slices
-        self.__data['isisotropic'] = self.isotropic
-        self.__data['isisometric'] = self.ismetric
-
-    def __getprotocol(self):
-        protocol = self.data['SeriesDescription']
-        if 'T1' in protocol:
-            self.__protocol = 'T1'
-
     def validate(self):
-        self.__getresolution()
-        self.__getprotocol()
-        if self.__px_X >= 1.5 or self.__px_Y >= 1.5:
-            self.__errors.append('maximum resolution failure')
+        # invalid dicom validation
+        if len(self.__invaliddicoms) > 0:
+            self.__errors.append('contains invalid dicom files')
+        # resolution validation
+        try:
+            pixelspacing = self.data['PixelSpacing']
+            pixelspacing = ast.literal_eval(pixelspacing)
+            self.__px_X = float(pixelspacing[0])
+            self.__px_Y = float(pixelspacing[1])
+            self.__px_Z = float(self.data['SliceThickness'])
+            if self.__px_X >= 1.5 or self.__px_Y >= 1.5:
+                self.__errors.append('maximum resolution failure')
+            if self.__px_X == self.__px_Y:
+                self.__isisometric = True
+                if self.__px_X == self.__px_Z:
+                    self.__isisotropic = True
+        except KeyError:
+            self.__errors.append('resolution tags are missing')
+        # protocol validation
+        try:
+            protocol = self.data['SeriesDescription']
+            if 'T1' in protocol:
+                self.__protocol = 'T1'
+            else:
+                self.__errors.append('not a T1 image')
+        except KeyError:
+            self.__errors.append('SeriesDescription tag is missing')
+        # number of slices validation
         if self.slices < 40:
             self.__errors.append('minimum number of slices failure')
-        if self.__protocol != 'T1':
-            self.__errors.append('not a T1 image')
 
     @property
     def studyid(self):
@@ -92,7 +113,7 @@ class Sequence(object):
 
     @property
     def slices(self):
-        return len(self.__dicoms)
+        return self.__slices
 
     @property
     def isotropic(self):
@@ -108,6 +129,10 @@ class Sequence(object):
             return True
         else:
             return False
+    
+    @property
+    def invaliddicoms(self):
+        return self.__invaliddicoms
 
     @property
     def errordata(self):
@@ -116,7 +141,9 @@ class Sequence(object):
         errordata['StudyID'] = self.__studyid
         errordata['SeriesNumber'] = self.__snumber
         errordata['Slices'] = self.slices
-        errordata['SeriesDescription'] = self.__data['SeriesDescription']
+        errordata['Invalid_dicoms'] = len(self.__invaliddicoms)
+        errordata['SeriesDescription'] = self.__data.get('SeriesDescription',
+                                                         'No SeriesDescription')
 
         for i in range(6):
             keyerror = 'Error_%i' % (i+1)
