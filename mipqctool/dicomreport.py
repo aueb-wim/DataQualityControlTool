@@ -159,8 +159,8 @@ class DicomReport(object):
             for nodcmfile in self.__notprocessed:
                 writer.writerow(nodcmfile)
 
-    def writereport(self, filepath):
-        directory = os.path.dirname(filepath)
+    def writereport(self, folderpath):
+        directory = folderpath
         vseqfilepath = os.path.join(directory, 'validsequences.csv')
         invseqfilepath = os.path.join(directory, 'invalidsequences.csv')
         invdicomfilepath = os.path.join(directory, 'invaliddicoms.csv')
