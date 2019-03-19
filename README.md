@@ -69,7 +69,7 @@ $ qctool dicom --root_folder [folder with dicoms] --report_folder [dicom report 
 ```
 
 `--root_folder` is the root folder where the DICOM dataset is stored. It is assumed that each subfolder corresponds to one patient.
-`--report_folder` is the folder where the report files will be placed. Note that the user must have 
+`--report_folder` is the folder where the report files will be placed. If the folder does not exist, the tool will create it.
 
 The tool, depending of the results, creates the csv files:
 
