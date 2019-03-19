@@ -303,7 +303,7 @@ class DicomTab(tk.Frame):
                                      'Please select DICOM folder first')
         elif not self.exportfolder:
             tkmessagebox.showwarning('Can not create Report',
-                                     'Please select Report folder first')
+                                     'Please select Report Folder first')
         else:
             report = DicomReport(self.rootfolder, getpass.getuser())
             report.writereport(self.exportfolder)
