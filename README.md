@@ -40,13 +40,13 @@ cd DataQualityControlTool
 sh install.sh
 ```
 
-## Use
+## Usage
 
 **Command Line Interface**
 For profiling a csv dataset:
 
-``` shell
-qctool csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
+``` shell 
+$ qctool csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
 ```
 
 first positional argument can take two flags `csv` or `dicom`. Here we use `csv` because the dataset is in csv format. 
@@ -65,20 +65,66 @@ After the execution, three files will be produced:
 For profiling a dicom dataset:
 
 ``` shell
-qctool dicom --root_folder [folder with dicoms] --report_xls [path/to/report.xls] --dicom_schema [path/to/dicom-schema.json]
+$ qctool dicom --root_folder [folder with dicoms] --report_folder [dicom report folderpath]
 ```
 
-The report is in excel format and contains the header information from all DICOM (dcm) files.
+`--root_folder` is the root folder where the DICOM dataset is stored. It is assumed that each subfolder corresponds to one patient.
+`--report_folder` is the folder where the report files will be placed. If the folder does not exist, the tool will create it.
 
-**GUI**
+The tool, depending of the results, creates the csv files:
+
+-   validsequences.csv
+-   invalidsequences.csv
+-   invaliddicoms.csv
+-   notprocessed.csv
+
+### validsequences.csv
+
+If there are valid sequences then the tool will create this csv file. A sequence is 'valid' if it meets the minimum requirements found [here](https://hbpmedical.github.io/deployment/data/). This file contains all the valid MRI sequences that found in given DICOM folder with the following headers discribing each sequence:
+
+`PatientID`, `StudyID`, `SeriesDescription`, `SeriesNumber`, `ImageOrientation`, `SamplesPerPixel`, `Rows`, `Columns`,
+`PixelSpacing`, `BitsAllocated`, `BitsStored`, `HighBit`, `AcquisitionDate`, `SeriesDate`, `PatientAge`, `PatientBirthDate`,
+`MagneticFieldStrength`, `PatientSex`, `Manufacturer`, `ManufacturerModelName`, `InstitutionName`, `StudyDescription`,
+`SliceThickness`, `RepetitionTime`, `EchoTime`, `SpacingBetweenSlices`, `NumberOfPhaseEncodingSteps`, `EchoTrainLength`,
+`PercentPhaseFieldOfView`, `PixelBandwidth`, `FlipAngle`, `PercentSampling`, `EchoNumbers`
+
+The values of those sequence tags are dirived from the headers in the  dicom files - more specifically, the value of a sequence tag is the most frequent value of this particular tag found in the sequence's dicom files.
+
+### invalidsequences.csv
+
+If there are invalid sequences the tool will create this csv file with the following headers:
+
+`PatientID`, `StudyID`, `SeriesNumber`, `Slices`, `Invalid_dicoms`, `SeriesDescription`, `Error1`, `Error2`, `Error3`, `Error4`, `Error5`, `Error6`
+
+-   `Slices` is the number of dicom files that the current sequence is consist of (sum of valid and invalid dicoms).
+-   `Invilid_dicoms` is the number of invalid dicom files the current sequence.  
+-   `Error1` - `Error6` is an error description that explains the reason why the sequence is characterized as 'invalid'
+
+### invaliddicoms.csv
+
+If a dicom file does not have at least one of the mandatory tags as described in the MIP specification found [here](https://hbpmedical.github.io/deployment/data/), then it will be characterized as 'invald'.
+If there are invalid dicoms in the DICOM dataset, the tool will create this csv file with the following headers:
+
+`Folder`, `File`, `PatientID`, `StudyID`, `SeriesNumber`, `InstanceNumber`, `MissingTags`
+
+-   `MissingTags` is a list of the missing mandatory DICOM tags.
+
+### notprocessed.csv
+
+If in the given root folder are some files that the QC tool can not process (not dicom files, corrupted dicom files etc), the tool will create this csv file with the following headers describing the location of those files:
+
+`Folder`, `File`
+
+### GUI
+
 We run `qctoolgui`
-See docs/quickguide.docx for further instructions. 
+See docs/quickguide.docx for further instructions.
 
 ## Features
 
 -   Creates a statistical report for the dataset and its variables 
--   Creates a report with the meta-data headers of a set of MRIs 
--   Command Line Interface and GUI 
+-   Creates a report with meta-data tags (headers) of each sequence (3D MRI Image) in a DICOM dataset
+-   Command Line Interface and GUI
 
 ## Versioning
 
@@ -95,3 +141,9 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 ## Acknowledgements
 
 This work is part of SP8 of the Human Brain Project (SGA2).
+
+Special thanks to:
+
+-   **Prof. Vasilis Vassalos** - Athens University of Economics and Business
+-   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candiate
+-   **Jacek Manthey** - CHUV

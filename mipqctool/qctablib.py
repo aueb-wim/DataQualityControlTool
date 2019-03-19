@@ -221,7 +221,10 @@ class VariableStats(object):
         df_desc = self.data.describe(include='all').transpose()
         clmround = ['mean', 'std', 'min', 'max',
                     '25%', '50%', '75%']
-        df_desc[clmround] = df_desc[clmround].applymap(lambda x: round(x, 4))
+        try:
+            df_desc[clmround] = df_desc[clmround].applymap(lambda x: round(x, 4))
+        except KeyError:
+            pass
         df1.update(df_desc)
         df_desc = None
 

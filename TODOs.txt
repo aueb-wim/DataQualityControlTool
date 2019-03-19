@@ -8,7 +8,7 @@ General
 ******** QCtab ********
 
 1 Improvements
-    - Detect of dates (library DateParser, detect if different format of dates exist in a column) -οκ
+    - Detect of dates (library DateParser, detect if different format of dates exist in a column) - need improvment
     - Calculate statistics for date type variables
     - Detect if a variable have different type of values..(ie numerical and has also string values)
     - Calculate statistics for cases with mixed type variables by choosing one type and ignoring the other type values - ie agegroup variable in ppmi dataset
@@ -27,6 +27,9 @@ General
     - add values mean(+-)std, mean(+-)2*std, mean(+-)3*std
     - replace "nan" with "not avavailable" in pdf report
     - GUI replace "no pdf" check box with "pdf"
+    - replace Latex2pdf with html2pdf for smaller docker container
+    - list the packages in requirements.txt
+    - use twine and TestPyPI 
 
 2 Testing
     - load various format of csvs (diff sep, quoted values)
@@ -38,6 +41,6 @@ General
 ******* QCmri *******
 
     - GUI add select export file button
-    - add high resolution check
-    - add minimum number of slices check
-    - add type images check
+    - add high resolution check - οκ
+    - add minimum number of slices check - οκ
+    - add type images check - οκ
