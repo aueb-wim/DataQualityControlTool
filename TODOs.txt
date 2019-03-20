@@ -5,16 +5,18 @@ General
 3 Manual!
 
 
-******** QCtab ********
+******** QCtool ********
 
 1 Improvements
-    - Detect of dates (library DateParser, detect if different format of dates exist in a column) - need improvment
+    Dates
+    - Detect of dates (library DateParser, detect if different format of dates exist in a column) - need improvement
     - Calculate statistics for date type variables
+    Mixed types
     - Detect if a variable have different type of values..(ie numerical and has also string values)
     - Calculate statistics for cases with mixed type variables by choosing one type and ignoring the other type values - ie agegroup variable in ppmi dataset
     - Detect numerical variables with sufix (units, % etc)
     - Add new column with a list of row ids with outliers, (add similar column about rows with mixed type values)
-    - Guessing the variable types if there is no metadata file - ok
+    - Guessing the variable types if there is no metadata file - need improvement
     - Do more sophisticated the variable type guessing using a given percentage threshold  
     - 3 options of input files (csv metadata, csv only) - ok
     - CLI option for exporting only tex file and not pdf (for reducing the docker image size) - ok
@@ -23,24 +25,33 @@ General
     - CLI make --input_csv and --root_folder positional argument
     - CLI use click library for parsing arguments   
     - integrate the goodtables.io table schema json and datapackage json (for automated quality check pipeline)
+    Report
     - add histogram plottings in pdf for numerical variables
     - add values mean(+-)std, mean(+-)2*std, mean(+-)3*std
     - replace "nan" with "not avavailable" in pdf report
-    - GUI replace "no pdf" check box with "pdf"
     - replace Latex2pdf with html2pdf for smaller docker container
+
+    Various
     - list the packages in requirements.txt
-    - use twine and TestPyPI 
+
+    GUI
+    - GUI replace "no pdf" check box with "pdf"
+    - GUI add select export file button - ok
+    - add high resolution check - οκ
+    - add minimum number of slices check - οκ
+    - add type images check - οκ
+
+    Extra Features
+    - Connection with Data Catalogue for obtaining the hospital's variable version (using REST API?)
 
 2 Testing
     - load various format of csvs (diff sep, quoted values)
     - additional test for fields of numerical variables
     - fields for categorical variables
     - dataset statistics
+    - use twine and TestPyPI for uploading the packaget to PyPI (pip)
+    - use Mock class 
 
 
-******* QCmri *******
 
-    - GUI add select export file button
-    - add high resolution check - οκ
-    - add minimum number of slices check - οκ
-    - add type images check - οκ
+

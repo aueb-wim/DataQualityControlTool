@@ -15,4 +15,3 @@ class QcTable(Table):
     @property
     def data(self):
         return self.__data
-    
