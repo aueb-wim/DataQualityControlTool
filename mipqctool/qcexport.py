@@ -1,7 +1,14 @@
+# -*- coding: utf-8 -*-
 # qcexport.py
 """ Module with helper functions for exporting the statistical reports
 of the MIP local Quality Control Tool
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from pylatex import Document, Section, Foot, MiniPage, \
     LongTabu, LineBreak, NewPage, Tabularx, TextColor, simple_page_number
 from pylatex.utils import NoEscape

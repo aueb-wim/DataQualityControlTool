@@ -13,12 +13,12 @@ from . import __version__
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
+
 class Application(tk.Frame):
 
     def __init__(self, master=None):
         super().__init__(master)
         self.__init()
-
 
     def __init(self):
         """Draw the widgets"""
@@ -37,7 +37,6 @@ class Application(tk.Frame):
         """arrange the widgets"""
         self.pack(expand=0)
         self.tabcontrol.pack(side='left', fill='both', expand=1)
-
 
 
 class CsvTab(tk.Frame):
@@ -91,7 +90,6 @@ class CsvTab(tk.Frame):
                                             variable=self.nometadata,
                                             command=self._metadata_check)
 
-    
         # Output interface
         # Create a label frame where to put the output files interface
         self.tblabelframe_output = tk.LabelFrame(self, text='Ouput')
@@ -196,14 +194,14 @@ class CsvTab(tk.Frame):
         if not self.dname:
             tkmessagebox.showwarning(warningtitle,
                                      'Please, select dataset file')
-        # Case with metadata file available                             
+        # Case with metadata file available
         elif not self.nometadata.get():
             if not self.metafilepath:
                 tkmessagebox.showwarning(warningtitle,
                                          'Please, select metadata file')
             elif colval == '' or coltype == '':
                 tkmessagebox.showwarning(warningtitle,
-                                        'Please, select metadata columns')
+                                         'Please, select metadata columns')
             metadata = Metadata.from_csv(self.metafilepath, colval, coltype)
 
         elif not self.exportfiledir:
@@ -234,6 +232,7 @@ class CsvTab(tk.Frame):
         self.colvallist.config(state=status)
         self.label_mfilename.config(state=status)
 
+
 class DicomTab(tk.Frame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -249,8 +248,8 @@ class DicomTab(tk.Frame):
         self.lbl_tag1 = tk.Label(self.tblabelframe, text='Dicom Root Folder:')
         self.lbl_root_f = tk.Label(self.tblabelframe, text='Not selected',
                                    bg='white')
-        self.btn_root_f= tk.Button(self.tblabelframe, text='Select Folder',
-                                   command = self.getrootfolder)
+        self.btn_root_f = tk.Button(self.tblabelframe, text='Select Folder',
+                                    command=self.getrootfolder)
         # Output interface
         # Create a label frame where to put the output files interface
         self.tblabelframe_output = tk.LabelFrame(self, text='Output')
@@ -264,9 +263,8 @@ class DicomTab(tk.Frame):
                                       text='Select Folder',
                                       command=self.getexportfolder)
         # Button for creating the report
-        self.btn_exec = tk.Button(self,
-                                      text='Create Report',
-                                      command=self.createreport)
+        self.btn_exec = tk.Button(self, text='Create Report',
+                                  command=self.createreport)
 
     def __packing(self):
         self.tblabelframe.pack(fill='x', expand='yes', ipadx=4, ipady=4,

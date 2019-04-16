@@ -1,10 +1,17 @@
+# -*- coding: utf-8 -*-
 # helpers.py
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 
+
 def getsubfolders(rootfolder):
     """Returns dict with keys subfolders and values a list
-    of the containing dcm files in each folder"""
+    of the containing dcm files in each folder."""
     dirtree = os.walk(rootfolder)
     result = {}
     for root, dirs, files in dirtree:
@@ -19,9 +26,10 @@ def getsubfolders(rootfolder):
                 result[subfolder] = [filename]
     return result
 
+
 def getsubfolders2list(rootfolder):
     """Returns dict with keys subfolders and values a list
-    of the containing dcm files in each folder"""
+    of the containing dcm files in each folder."""
     dirtree = os.walk(rootfolder)
     subfolders = set()
     result = []

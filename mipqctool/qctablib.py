@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # qctablib.py
 """
 Created on 31/7/2018
@@ -10,8 +10,10 @@ library for profiling tabular data
 
 """
 
-# TODO: Build unit tests
-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import datetime

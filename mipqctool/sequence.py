@@ -1,4 +1,11 @@
+# -*- coding: utf-8 -*-
 # sequence.py
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import ast
 import collections
 from . import config
@@ -30,7 +37,6 @@ class Sequence(object):
         # free memory
         # TODO: investigate if there is a need to keep
         self.__validdicoms = []
-
 
     def __validate_dicoms(self, dicoms):
         for dicom in dicoms:
@@ -130,7 +136,7 @@ class Sequence(object):
             return True
         else:
             return False
-    
+
     @property
     def invaliddicoms(self):
         return self.__invaliddicoms

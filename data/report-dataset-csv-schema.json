@@ -1,0 +1,121 @@
+{
+  "fields":[
+    {
+      "name": "name_of_file",
+      "title": "name of file",
+      "type": "string",
+      "format": "default",
+      "description": "The file name of the csv",
+      "contraints":{
+        "unique": true,
+        "required": true
+      }
+    },
+    {
+      "name": "date_qc_ran",
+      "title": "Datetime QC tool ran",
+      "type": "datetime",
+      "format": "%Y-%m-%d %H:%M:%S",
+      "description": "The datetime when the QC tool has run on the current dataset"
+    },
+    {
+      "name": "qctool_version",
+      "title": "QC tool CSV (JM-IS) version",
+      "type": "string",
+      "format": "default",
+      "description": "The version of the HBP MIP QC tool that is used to produce this dataset report"
+    },
+    {
+      "name": "total_variables",
+      "title": "total variables",
+      "type": "integer",
+      "format": "default",
+      "description": "The number of columns in the given dataset csv file"
+    },
+    {
+      "name": "total_rows",
+      "title": "total rows",
+      "type": "integer",
+      "format": "default",
+      "description": "The number of rows in the given dataset csv file"
+    },
+    {
+      "name": "rows_only_id",
+      "title": "rows with only id",
+      "type": "integer",
+      "format": "default",
+      "description": "The number of rows that contain only value in the primary key column"
+    },
+    {
+      "name": "rows_no_id",
+      "title": "rows with no id",
+      "type": "integer",
+      "format": "default",
+      "description": "The number of rows that don't contain value in the primary key column"
+    },
+    {
+      "name": "rows_complete",
+      "title": "rows with all columns filled",
+      "type": "integer",
+      "format": "default",
+      "description": "The number of rows that have values in all columns of the dataset csv"
+    },
+    {
+      "name": "#_100%%",
+      "title": "number of variables with 100% records filled in",
+      "type": "integer",
+      "format": "default",
+      "description": "The number of the dataset's columns that have 100% filled rows"
+    },
+    {
+      "name": "#_80-99.99%",
+      "title": "number of variables with 80-99.99% records filled in",
+      "type": "integer",
+      "format": "default",
+      "description": [
+        "The number of the dataset's columns that have filled rows",
+        " between 80% and 99.99%"
+      ]
+    },
+    {
+      "name": "#_60-79.99%",
+      "title": "number of variables with 60-79.99% records filled in",
+      "type": "integer",
+      "format": "default",
+      "description": [
+        "The number of the dataset's columns that have filled rows",
+        " between 60% and 79.99%"
+      ]
+    },
+    {
+      "name": "#_40-59.99%",
+      "title": "number of variables with 60-79.99% records filled in",
+      "type": "integer",
+      "format": "default",
+      "description": [
+        "The number of the dataset's columns that have filled rows",
+        " between 40% and 59.99%"
+      ]
+    },
+    {
+      "name": "#_20-39.99%",
+      "title": "number of variables with 60-79.99% records filled in",
+      "type": "integer",
+      "format": "default",
+      "description": [
+        "The number of the dataset's columns that have filled rows",
+        " between 20% and 39.99%"
+      ]
+    },
+    {
+      "name": "#_0-19.99%",
+      "title": "number of variables with 60-79.99% records filled in",
+      "type": "integer",
+      "format": "default",
+      "description": [
+        "The number of the dataset's columns that have filled rows",
+        " between 0% and 19.99%"
+      ]
+    }    
+  ]
+}

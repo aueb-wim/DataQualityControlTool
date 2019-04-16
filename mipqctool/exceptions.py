@@ -1,5 +1,6 @@
 # exceptions.py
 
+
 class DicomSchemaException(Exception):
 
     # Public

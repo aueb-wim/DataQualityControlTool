@@ -1,0 +1,205 @@
+{
+  "fields": [
+      {
+        "name": "name_of_file",
+        "title": "name of the dataset file",
+        "type": "string",
+        "format": "default",
+        "description": "The name of the dataset csv file",
+        "contraints":{
+          "unique": true,
+          "required": true
+        }
+      },
+      {
+        "name": "type",
+        "title": "type declared",
+        "type": "string",
+        "format": "default",
+        "description": [
+          "The data type of the variable in the initial dataset",
+          "as declared in the metadata file"
+        ],
+        "contraints":{
+          "enum": [
+            "numerical",
+            "text",
+            "nominal",
+            "date"
+          ]
+        }
+      },
+      {
+        "name": "type_estimated",
+        "title": "type estimated",
+        "type": "string",
+        "format": "default",
+        "description": [
+          "The data type of the variable in the initial dataset",
+          "as estimated by the HBP mipqctool"
+        ],
+        "contraints":{
+          "enum": [
+            "numerical",
+            "text",
+            "nominal",
+            "date"
+          ]
+        }
+      },
+      {
+        "name": "category_levels",
+        "title": "list of category values",
+        "type": "string",
+        "format": "default",
+        "description": [
+          "A string with the category levels of the given dataset column",
+          " confined in single quotes and seperated by commas"
+        ]
+      },
+      {
+        "name": "total_levels",
+        "title": "number of category values",
+        "type": "integer",
+        "format": "default",
+        "description": "The total number of the category levels of the given dataset column"
+      },
+      {
+        "name": "unique",
+        "title": "count of unique values (for text variables)",
+        "type": "integer",
+        "format": "default",
+        "description": [
+          "The count of unique string values of the given dataset column",
+          "which contains string values"
+        ]
+      },
+      {
+        "name": "top",
+        "title": "most frequent value (for text variables)",
+        "type": "string",
+        "format": "default",
+        "description": "The most frequent value in the given dataset column"
+      },
+      {
+        "name": "freq",
+        "title": "number of occurrences for most frequent value (for text variables)",
+        "type": "integer",
+        "format": "default",
+        "description": [
+          "The number of occurrences for most frequent value in the given dataset column",
+          "which contains string values"
+        ]
+      },
+      {
+        "name": "count",
+        "title": "count of records filled in",
+        "type": "integer",
+        "format": "default",
+        "description": "The number of rows that are filled in the given dataset column"
+      },
+      {
+        "name": "not_null_%",
+        "title": "% of not null rows",
+        "type": "number",
+        "format": "default",
+        "description": "The percentage of filled rows in the given dataset column"
+      },
+      {
+        "name": "mean",
+        "title": "mean value",
+        "type": "number",
+        "format": "default",
+        "description": "The average value of the numerical values in the given dataset column"
+      },
+      {
+        "name": "std",
+        "title": "standard deviation",
+        "type": "number",
+        "format": "default",
+        "description": "The standard deviation of the numerical values in the given dataset column"
+      },
+      {
+        "name": "min",
+        "title": "minimum value",
+        "type": "number",
+        "format": "default",
+        "description": "The minimum value of the numerical values in the given dataset column"
+      },
+      {
+        "name": "max",
+        "title": "maximum value",
+        "type": "number",
+        "format": "default",
+        "description": "The maximum value of the numerical values in the given dataset column"
+      },
+      {
+        "name": "25%",
+        "title": "first quantile",
+        "type": "number",
+        "format": "default",
+        "description": [
+          "The 1st quantile of the numerical values in the given dataset column",
+          "(25% of records are below this value)"
+        ]
+      },
+      {
+        "name": "50%",
+        "title": "median",
+        "type": "number",
+        "format": "default",
+        "description": [
+          "The 2nd quantile (median value) of the numerical values in the given dataset column",
+          "(50% of records are below this value)"
+        ]
+      },
+      {
+        "name": "75%",
+        "title": "third quantile",
+        "type": "number",
+        "format": "default",
+        "description": [
+          "The 3rd quantile of the numerical values in the given dataset column",
+          "(75% of records are below this value)"
+        ]
+      },
+      {
+        "name": "#_of_outliers",
+        "title": "number of outliers",
+        "type": "number",
+        "format": "default",
+        "description": [
+          "The number of outliers of the numerical values in the given dataset column",
+          "(values outside 3std.dev from mean value)"
+        ]
+      },
+      {
+        "name": "bottom_5_text_values",
+        "title": "5 least frequent values",
+        "type": "string",
+        "format": "default",
+        "description": [
+          "A string with the 5 least frequent values of the given dataset column",
+          " confined in single quotes and seperated by commas"
+        ]
+      },
+      {
+        "name": "top_5_text_values",
+        "title": "5 most frequent values",
+        "type": "string",
+        "format": "default",
+        "description": [
+          "A string with the 5 most frequent values of the given dataset column",
+          " confined in single quotes and seperated by commas"
+        ]
+      },
+      {
+        "name": "comments",
+        "title": "comments",
+        "type": "string",
+        "format": "default",
+        "description": "A string with various messages about the the values of the given dataset column"
+      }
+  ],
+  "missingValues": [""]
+}

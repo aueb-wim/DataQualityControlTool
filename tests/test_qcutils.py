@@ -1,4 +1,10 @@
 # test_qcutils.py
+
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import pandas as pd
 from mipqctool import qcutils
 from mipqctool.qcutils import COMDATE1, COMDATE2, COMDATE3

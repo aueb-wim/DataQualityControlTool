@@ -45,6 +45,7 @@ General
     - Connection with Data Catalogue for obtaining the hospital's variable version (using REST API?)
 
 2 Testing
+    - set up CIRCLECI
     - load various format of csvs (diff sep, quoted values)
     - additional test for fields of numerical variables
     - fields for categorical variables

@@ -1,0 +1,10 @@
+"id","name","diagnosis","gender_num","age","months","height","birthdate"
+1,"Judy","NL",2,"12y",11,1.41,01/12/05
+2,"Lory","MCI",1,"13y",12,1.55,06/25/99
+3,"Tommy","NL",1,"14y",1,1.47,12/12/01
+4,"John","NL",1,"12y",3,1.65,11/09/01
+5,"Lara","AD",2,"12y",2,,08/31/77
+6,"Timmy","AD",2,"11y",4,1.6,"NA"
+7,"Kyle",,2,"13y",5,1.31,"NA"
+8,"Kenny","NL",2,"11y",1,,"not available"
+9,"Eric","NL",2,"11y",7,1.3,"not available"
