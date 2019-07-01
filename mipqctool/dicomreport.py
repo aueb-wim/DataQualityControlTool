@@ -102,13 +102,16 @@ class DicomReport(object):
             slices = list(splitdict(self.subfolders, processes))
             with Pool(processes) as p:
                 output = p.map(self.readicoms_chunks, slices)
+            for chunk in output:
+                self.__validseq += chunk['validseq']
+                self.__invalidseq += chunk['invalidseq']
+                self.__notprocessed += chunk['notprocessed']
         else:
             LOGGER.info('Single core processing...')
             output = self.readicoms_chunks(self.subfolders)
-        for chunk in output:
-            self.__validseq += chunk['validseq']
-            self.__invalidseq += chunk['invalidseq']
-            self.__notprocessed += chunk['notprocessed']
+            self.__validseq += output['validseq']
+            self.__invalidseq += output['invalidseq']
+            self.__notprocessed += output['notprocessed']
 
     def __validseq2csv(self, filepath):
         with open(filepath, 'w') as csvfile:
