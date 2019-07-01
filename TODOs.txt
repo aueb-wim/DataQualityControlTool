@@ -33,6 +33,7 @@ General
 
     Various
     - list the packages in requirements.txt
+    - CHANGE LICENCE from Apache 2 GNU v3
 
     GUI
     - GUI replace "no pdf" check box with "pdf"
