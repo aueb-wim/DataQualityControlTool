@@ -18,7 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description='A tool that provides a \
                                      statistical report about the \
                                      input csv file.')
-    parser.add_argument('mode', type=str,
+    parser.add_argument('mode', choices=['csv', 'dicom'],
                         help='csv or dicom report, give keywords from the \
                         list[csv, dicom]')
     parser.add_argument('--root_folder', type=str,
