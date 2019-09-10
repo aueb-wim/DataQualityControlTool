@@ -31,7 +31,6 @@ class Sequence(object):
         # TODO: investigate if there is a need to keep
         self.__validdicoms = []
 
-
     def __validate_dicoms(self, dicoms):
         for dicom in dicoms:
             if dicom.isvalid:

@@ -22,11 +22,11 @@ class Qcdicom(object):
         # Set attributes
         # ordered dict for storing header values
         self.__data = collections.OrderedDict()
-        self.__instnumber = None # instance number
-        self.__studyid = None #  mri studyid from header
-        self.__patientid = None # patient ID from header
-        self.__snumber = None # Series number from header
-        self.__pydicom = None # a pydicom.dataset object
+        self.__instnumber = None  # instance number
+        self.__studyid = None  # mri studyid from header
+        self.__patientid = None  # patient ID from header
+        self.__snumber = None  # Series number from header
+        self.__pydicom = None  # a pydicom.dataset object
         self.__folder = folder
         self.__file = filename
         self.__missingtags = set()
@@ -79,9 +79,10 @@ class Qcdicom(object):
     def validate(self):
         self.__findmissingtags()
 
-    def modify_patient_name(self, new_name):
-        self.__pydicom.PatientsName = new_name
-        self.__pydicom.save_as(self.filepath)
+    def modify_patient_name(self, new_name, filepath):
+        # modifies the PatientName tag and save the dicom file
+        self.__pydicom.PatientName = new_name
+        self.__pydicom.save_as(filepath)
 
     @property
     def studyid(self):
