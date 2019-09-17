@@ -41,9 +41,10 @@ def CandidateExist( patientID ):
     #True if externalid is in candidates
     return len(myresult) == 1
 
-def GetMaximumCandID():
+def GetMaximumCandID(centername='DCC'):
     #COALESCE treats null as 0
-    mycursor.execute("SELECT COALESCE( max(candid), 0 ) FROM candidate")
+    #mycursor.execute("SELECT COALESCE( max(candid), 0 ) FROM candidate")
+    mycursor.execute("SELECT COALESCE( max(PSCID), 0 ) FROM candidate WHERE PSCID REGEXP '" + centername + "[0-9]+'" );
     myresult = mycursor.fetchall()
     return myresult[0][0]
 
@@ -53,27 +54,60 @@ def GetNextPSCID():
     myresult = mycursor.fetchall()
     return myresult[0][0]
 
+def split_cand( name ):
+    for i in range( len(name) ):
+        if name[i] >= '0' and name[i] <= '9':
+            return ( int( name[i:] ) )
+    return ( -1 )
+
 def GetNextCandID( num ):
     num = str(num+1)
     while len(num) < 6:
         num = "0" + num
     return num
 
+def InsertCandidate( CandID, PSCID, PatientID, DoB, Sex, CenterID=1, ProjectID=1 ):
+
+    mycursor.execute("SELECT CURRENT_TIMESTAMP" );
+    current_datetime = mycursor.fetchall()
+    current_datetime = current_datetime[0][0]
+    print( current_datetime )
+    sql = "INSERT INTO candidate (CandID, PSCID, ExternalID, DoB, Sex, RegistrationCenterID, ProjectID, Active, Date_active, UserID, Date_registered, flagged_caveatemptor, Testdate, Entity_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = ( CandID, PSCID, PatientID, DoB, Sex, CenterID, ProjectID, "Y", current_datetime, "NeuroDB::MRI",  current_datetime, "false", current_datetime, "Human" )
+
+    print( sql % val )
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    ret=mycursor.rowcount
+    print( ret, type(ret) )
+    return (ret==1)#, "record inserted.")
+
 def CreateCandidate( patientID, patientName, patientSex, patientBod ):
     #inserts candidate
     print( "Creating candidate")
     maximum_candid = GetMaximumCandID()
+
+    centername = 'DCC'
+
     if maximum_candid == 0:
         CandID = "0" * 6
     else:
-        CandID = GetNextCandID( maximum_candid )
-    print( 'CandID for new candidate:', CandID )
-    PSCID = GetNextPSCID()
+
+        CandID = split_cand( maximum_candid )
+        next_CandID = GetNextCandID( CandID )
+        PSCID = centername + next_CandID
+        #CandID = GetNextCandID( maximum_candid )
+
+    print( 'CandID for new candidate:', next_CandID )
+    #PSCID = GetNextPSCID()
     print( 'PSCID for new candidate:', PSCID )
 
-
-
-    pass
+    if patientSex == "M":
+        patientSex = "Male"
+    elif patientSex == "F":
+        patientSex = "Female"
+    return InsertCandidate( next_CandID, PSCID, patientID, patientBod, patientSex )
 
 for folder in os.listdir():
     #files = subprocess.call(  )
@@ -93,7 +127,14 @@ for folder in os.listdir():
 
     #check if Patient exist
     if CandidateExist( patientID ) == False:
-        CreateCandidate( patientID, patientName, patientSex, patientBod )
+        if CreateCandidate( patientID, patientName, patientSex, patientBod ):
+            print( "Create candidate" )
+            exit(0)
+        else:
+            print( "Could not create candidate" )
+            exit(0)
+    else:
+        print( "Candiadate already in database" )
 
     #starting-values are equal to the values of first file
     if minuTR == None:
@@ -122,7 +163,6 @@ for folder in os.listdir():
     #print( files )
 
     print( patientTR )
-    break
 
 print( maxuTR )
 exit(0)
