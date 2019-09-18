@@ -1,6 +1,7 @@
 # dicomreport.py
 import datetime
 import os
+import shutil
 import json
 import csv
 import multiprocessing as mp
@@ -10,10 +11,13 @@ import pandas as pd
 from .config import LOGGER
 from .qcdicom import Qcdicom
 from .sequence import Sequence
+from .mristudy import MRIStudy
+from .mripatient import MRIPatient
 from . import config, __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 config.debug(True)
+
 
 def getsubfolders(rootfolder):
     """Returns dict with keys subfolders and values a list
@@ -75,7 +79,6 @@ class DicomReport(object):
     def __init__(self, rootfolder, username):
         """ Arguments:
             :param rootfolder: folder path with DICOMs subfolders
-            :param dicomreq: pandas df with dicom metadata requirements
             :param username: str with the username
             """
         self.reportdata = None
@@ -88,13 +91,25 @@ class DicomReport(object):
                         'dicom_folder': [os.path.abspath(rootfolder)]}
         self.__notprocessed = []
         self.__invalidseq = []
-        self.__validseq = []
-        self.readicoms_parallel(mp.cpu_count() + 1)
-        LOGGER.info('Good seq: %i' % len(self.__validseq))
-        LOGGER.info('Bad seq: %i' % len(self.__invalidseq))
-        LOGGER.info('Files not processed %i' % len(self.__notprocessed))
+        self.__patients = []
+        self.__totalvalidseq = 0
+        self.__totalstudies = 0
 
-    def readicoms_parallel(self, processes):
+        # Read all the dcm files and calc QC stats
+        self.__readicoms_parallel(mp.cpu_count() + 1)
+
+        for patient in self.__patients:
+            self.__totalstudies += len(patient.studies)
+            for study in patient.studies:
+                self.__totalvalidseq += len(study.sequences)
+
+        LOGGER.info('Patients with good seq: %i' % self.totalpatients)
+        LOGGER.info('Total visits: %i' % self.totalvisits)
+        LOGGER.info('Good seq: %i' % self.totalvalidsequences)
+        LOGGER.info('Bad seq: %i' % self.totalinvalidsequences)
+        LOGGER.info('Files not processed %i' % self.totalbadfiles)
+
+    def __readicoms_parallel(self, processes):
         """Read all the dicoms using multiprocessing."""
         output = []
         if len(self.subfolders) > processes:
@@ -103,23 +118,27 @@ class DicomReport(object):
             with Pool(processes) as p:
                 output = p.map(self.readicoms_chunks, slices)
             for chunk in output:
-                self.__validseq += chunk['validseq']
+                self.__patients += chunk['patients']
                 self.__invalidseq += chunk['invalidseq']
                 self.__notprocessed += chunk['notprocessed']
         else:
             LOGGER.info('Single core processing...')
             output = self.readicoms_chunks(self.subfolders)
-            self.__validseq += output['validseq']
+            self.__patients += output['patients']
             self.__invalidseq += output['invalidseq']
             self.__notprocessed += output['notprocessed']
 
     def __validseq2csv(self, filepath):
         with open(filepath, 'w') as csvfile:
-            fieldnames = list(self.__validseq[0].data.keys())
+            # a sequence object just to take the correct header names
+            asequence = self.__patients[0].studies[0].sequences[0]
+            fieldnames = list(asequence.info.keys())
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for seq in self.__validseq:
-                writer.writerow(seq.errordata)
+            for patient in self.__patients:
+                for study in patient.studies:
+                    for seq in study.sequences:
+                        writer.writerow(seq.info)
 
     def __invalidseq2csv(self, filepath1, filepath2):
         with open(filepath1, 'w') as csvfile:
@@ -136,7 +155,6 @@ class DicomReport(object):
                                                       append=append,
                                                       fields=fields)
                     append = True
-
 
     def __invaliddicoms2csv(self, filepath, dicoms, append=False, fields=None):
         fieldnames = fields
@@ -168,16 +186,39 @@ class DicomReport(object):
         invseqfilepath = os.path.join(directory, 'invalidsequences.csv')
         invdicomfilepath = os.path.join(directory, 'invaliddicoms.csv')
         notprocfilepath = os.path.join(directory, 'notprocessed.csv')
-        if len(self.__validseq) > 0:
+        if len(self.__patients) > 0:
             self.__validseq2csv(vseqfilepath)
         if len(self.__invalidseq) > 0:
             self.__invalidseq2csv(invseqfilepath, invdicomfilepath)
         if len(self.__notprocessed) > 0:
             self.__notproc2csv(notprocfilepath)
 
+    def reorganizefiles(self, output):
+        """reorganize the dcm files in a folder structure for
+        LORIS import pipeline.
+        Arguments:
+        :param output: output folder
+        """
+        LOGGER.info('Reorganizing files for LORIS pipeline into folder: %s' % output)
+        for patient in self.patients:
+            patientid = patient.patientid
+            patdir = os.path.join(output, patientid)
+            os.mkdir(patdir)
+            study_count = 0
+            for study in patient.studies:
+                study_count += 1
+                d = [patientid, str(study_count)]
+                studydir = os.path.join(patdir, '_'.join(d))
+                os.mkdir(studydir)
+                for seq in study.sequences:
+                    for dicom in seq.dicoms:
+                        sourcepath = dicom.filepath
+                        destpath = os.path.join(studydir, dicom.filename)
+                        shutil.copy(sourcepath, destpath)
+
     def readicoms_chunks(self, filesdict):
         result = {
-                 'validseq': [],
+                 'patients': [],
                  'invalidseq': [],
                  'notprocessed': []
                  }
@@ -188,50 +229,79 @@ class DicomReport(object):
         return result
 
     def __getsequences(self, folder, dicomfiles):
-        dicoms = {}
+        # dicts for storing list of objects grouped by the
+        #  a given key
+        sequence_ids = {}
+        study_ids = {}
+        patient_ids = {}
         result = {
-                 'validseq': [],
+                 'patients': [],
                  'invalidseq': [],
                  'notprocessed': []
                  }
+        # read each dcm file and find in which sequence belongs to
+        # by collecting the sequence keys patientid, stydyid, seqnumber
         for filename in dicomfiles:
             try:
                 qcdcm = Qcdicom(filename, folder, self.rootfolder)
+                qcdcm.validate()
                 id3 = (qcdcm.patientid, qcdcm.studyid, qcdcm.seqnumber)
-                if id3 in dicoms.keys():
-                    dicoms[id3].append(qcdcm)
+                if id3 in sequence_ids.keys():
+                    sequence_ids[id3].append(qcdcm)
                 else:
-                    dicoms[id3] = [qcdcm]
-
+                    sequence_ids[id3] = [qcdcm]
+            # the file is dcm but something is wrong with the file
             except pydicom.errors.InvalidDicomError:
                 result['notprocessed'].append((folder, filename))
 
-        for id3 in dicoms.keys():
-            newseq = Sequence(id3[0], id3[1], id3[2], dicoms[id3])
+        for id3 in sequence_ids.keys():
+            id2 = (id3[0], id3[1])
+            newseq = Sequence(id3[0], id3[1], id3[2], sequence_ids[id3])
+            # perform the MIP validation for the sequence
             if newseq.isvalid:
-                result['validseq'].append(newseq)
+                # put it in a list grouped by the study id
+                # and patient id
+                if id2 in study_ids.keys():
+                    study_ids[id2].append(newseq)
+                else:
+                    study_ids[id2] = [newseq]
             else:
                 result['invalidseq'].append(newseq)
+
+        for id2 in study_ids.keys():
+            patientid, studyid = id2
+            newstudy = MRIStudy(patientid, studyid, study_ids[id2])
+            if patientid in patient_ids.keys():
+                patient_ids[patientid].append(newstudy)
+            else:
+                patient_ids[patientid] = [newstudy]
+
+        for pid in patient_ids.keys():
+            newpatient = MRIPatient(pid, patient_ids[pid])
+            result['patients'].append(newpatient)
+
         return result
 
-    def export2xls(self, filepath):
-        """Export the report in excel file"""
-        writer = pd.ExcelWriter(filepath)
-        dataset_df = pd.DataFrame.from_dict(self.dataset)
-        dataset_df.to_excel(writer, sheet_name='general_info',
-                            index=False)
-        # save to csv first
-        self.dicoms.to_csv(filepath[:-4] + '.csv')
-        # split the dicoms headers into chunks of 65530 rows
-        # 2007 excel files can handle max 65536 rows
-        maxsize = 65530
-        dicoms_size = len(self.dicoms)
-        if dicoms_size < maxsize:
-            self.dicoms.to_excel(writer, sheet_name='dicom_metadata')
-        else:
-            chunk = 0
-            for i in range(0, dicoms_size, maxsize):
-                chunk += 1
-                self.dicoms.iloc[i:i + maxsize, :].to_excel(writer,
-                    sheet_name='dicom_matadata_part{0}'.format(chunk))
-        writer.save()
+    @property
+    def patients(self):
+        return self.__patients
+
+    @property
+    def totalpatients(self):
+        return len(self.__patients)
+
+    @property
+    def totalvisits(self):
+        return self.__totalstudies
+
+    @property
+    def totalvalidsequences(self):
+        return self.__totalvalidseq
+
+    @property
+    def totalinvalidsequences(self):
+        return len(self.__invalidseq)
+
+    @property
+    def totalbadfiles(self):
+        return len(self.__notprocessed)

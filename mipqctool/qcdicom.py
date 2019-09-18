@@ -26,6 +26,7 @@ class Qcdicom(object):
         self.__studyid = None  # mri studyid from header
         self.__patientid = None  # patient ID from header
         self.__snumber = None  # Series number from header
+        self.__seriesdate = None  # series date from header
         self.__pydicom = None  # a pydicom.dataset object
         self.__folder = folder
         self.__file = filename
@@ -37,7 +38,6 @@ class Qcdicom(object):
         try:
             self.__pydicom = pydicom.dcmread(self.filepath,
                                              stop_before_pixels=True)
-            self.__findmissingtags()
             self.__getids()
             self.__getdata()
 
@@ -51,14 +51,14 @@ class Qcdicom(object):
                 self.__missingtags.add(tag)
         # check if the one of the two tags exist in the file
         for tags in config.ONEOFTWO_TAGS:
-            oneoftwo = 0
+            numfound = 0
             for tag in tags:
                 if tag in self.__pydicom.dir():
-                    oneoftwo = 1
-                # if both are not present add them to missing tags
-                if oneoftwo == 0:
-                    for tag in tags:
-                        self.__missingtags.add(tag)
+                    numfound += 1
+            # if both are not present add them to missing tags
+            if numfound == 0:
+                for tag in tags:
+                    self.__missingtags.add(tag)
 
     def __getdata(self):
         for tag in config.ALL_TAGS:
