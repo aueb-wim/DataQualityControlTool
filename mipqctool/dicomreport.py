@@ -244,7 +244,6 @@ class DicomReport(object):
         for filename in dicomfiles:
             try:
                 qcdcm = Qcdicom(filename, folder, self.rootfolder)
-                qcdcm.validate()
                 id3 = (qcdcm.patientid, qcdcm.studyid, qcdcm.seqnumber)
                 if id3 in sequence_ids.keys():
                     sequence_ids[id3].append(qcdcm)

@@ -39,11 +39,14 @@ class Qcdicom(object):
             self.__pydicom = pydicom.dcmread(self.filepath,
                                              stop_before_pixels=True)
             self.__getids()
+            self.__findmissingtags()
             self.__getdata()
 
         except pydicom.errors.InvalidDicomError:
             message = '%s is not a dicom file' % self.__file
             raise pydicom.errors.InvalidDicomError(message)
+        # discard pydicom.dataset object for preserving memory
+        self.__pydicom = None
 
     def __findmissingtags(self):
         for tag in config.REQUIRED_TAGS:
@@ -75,14 +78,6 @@ class Qcdicom(object):
             self.__studyid = self.__pydicom.data_element('StudyID').value
             self.__snumber = self.__pydicom.data_element('SeriesNumber').value
             self.__instnumber = int(self.__pydicom.data_element('InstanceNumber').value)
-
-    def validate(self):
-        self.__findmissingtags()
-
-    def modify_patient_name(self, new_name, filepath):
-        # modifies the PatientName tag and save the dicom file
-        self.__pydicom.PatientName = new_name
-        self.__pydicom.save_as(filepath)
 
     @property
     def studyid(self):
