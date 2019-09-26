@@ -215,11 +215,12 @@ class CsvTab(tk.Frame):
             dreportfile = os.path.join(filedir,
                                        basename + '_dataset_report.csv')
             vreportfile = os.path.join(filedir, basename + '_report.csv')
-            pdfreportfile = os.path.join(filedir, basename + '_report')
+            pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
             self.reportcsv = DatasetCsv(self.dataset, self.dname, metadata)
             self.reportcsv.export_dstat_csv(dreportfile, self.readable.get())
             self.reportcsv.export_vstat_csv(vreportfile, self.readable.get())
-            self.reportcsv.export_latex(pdfreportfile, pdf=not self.onlylatex.get())
+            self.reportcsv.export_pdf(pdfreportfile)
+            # self.reportcsv.export_latex(pdfreportfile, pdf=not self.onlylatex.get())
             self.label_export2.config(text=filedir)
             tkmessagebox.showinfo(title='Status info',
                 message='Reports have been created successully')

@@ -1,1 +1,3 @@
 include mipqctool/data/dicom-schema.json
+include mipqctool/data/style.css
+include mipqctool/data/variable_report.html

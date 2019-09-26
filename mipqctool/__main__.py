@@ -77,12 +77,16 @@ def main():
                                   '_report.csv')
         exportfile_ds = os.path.join(path, dataset_name +
                                      '_dataset_report.csv')
-        exportfile_tex = os.path.join(path, dataset_name +
-                                      '_report')
+        #exportfile_tex = os.path.join(path, dataset_name +
+        #                              '_report')
+        exportfile_pdf = os.path.join(path, dataset_name +
+                                      '_report.pdf')
 
         testcsv.export_dstat_csv(exportfile_ds, need_readable=args.readable)
         testcsv.export_vstat_csv(exportfile, need_readable=args.readable)
-        testcsv.export_latex(exportfile_tex, pdf=args.pdf)
+        # testcsv.export_latex(exportfile_tex, pdf=args.pdf)
+        if args.pdf:
+            testcsv.export_pdf(exportfile_pdf)
     # if DICOM dataset
     elif args.mode == 'dicom':
         # Check if the DICOM root folder exists
