@@ -27,9 +27,6 @@ class Sequence(object):
         self.__validate_dicoms(dicoms)
         self.__getseqdata()
         self.validate()
-        # free memory
-        # TODO: investigate if there is a need to keep
-        self.__validdicoms = []
 
     def __validate_dicoms(self, dicoms):
         for dicom in dicoms:
@@ -50,6 +47,8 @@ class Sequence(object):
             values = list(d.data[seqtag] for d in dicoms)
             # get the most frequent element
             data[seqtag] = max(set(values), key=values.count)
+            # store the tag that has more than one values anyway
+            # in errortags, not used at the moment somewhere
             if len(set(values)) != 1:
                 self.__errortags.append(seqtag)
         self.__data = data
@@ -59,6 +58,7 @@ class Sequence(object):
         if len(self.__invaliddicoms) > 0:
             self.__errors.append('contains invalid dicom files')
         # resolution validation
+        max_res = config.MAX_RESOLUTION
         pixelspacing = self.data['PixelSpacing']
         zspacing = self.data['SliceThickness']
         if pixelspacing != 'Tag not found' and zspacing != 'Tag not found':
@@ -66,7 +66,7 @@ class Sequence(object):
             self.__px_X = float(pixelspacing[0])
             self.__px_Y = float(pixelspacing[1])
             self.__px_Z = float(zspacing)
-            if self.__px_X >= 1.5 or self.__px_Y >= 1.5:
+            if self.__px_X >= max_res or self.__px_Y >= max_res:
                 self.__errors.append('maximum resolution failure')
             if self.__px_X == self.__px_Y:
                 self.__isisometric = True
@@ -77,14 +77,16 @@ class Sequence(object):
         # protocol validation
         protocol = self.data['SeriesDescription']
         if protocol != 'Tag not found':
-            if 'T1' in protocol:
-                self.__protocol = 'T1'
-            else:
-                self.__errors.append('not a T1 image')
+            for scan_type in config.SCAN_TYPES:
+                if scan_type in protocol:
+                    self.__protocol = scan_type
+                else:
+                    error_message = 'not a {} scan type'.format(scan_type)
+                    self.__errors.append(error_message)
         else:
             self.__errors.append('SeriesDescription tag is missing')
         # number of slices validation
-        if self.slices < 40:
+        if self.slices < config.MIN_SLICES:
             self.__errors.append('minimum number of slices failure')
 
     @property
@@ -96,8 +98,12 @@ class Sequence(object):
         return self.__patientid
 
     @property
-    def seriesnum(self):
+    def seriesnumber(self):
         return self.__snumber
+
+    @property
+    def seriesdate(self):
+        return self.__data.get('SeriesDate')
 
     @property
     def pixelspacingX(self):
@@ -129,10 +135,26 @@ class Sequence(object):
             return True
         else:
             return False
-    
+
     @property
     def invaliddicoms(self):
         return self.__invaliddicoms
+    
+    @property
+    def dicoms(self):
+        return self.__validdicoms
+
+    @property
+    def info(self):
+        info = collections.OrderedDict()
+        info['PatientID'] = self.patientid
+        info['StudyId'] = self.studyid
+        info['SeriesNumber'] = self.seriesnumber
+        info['Slices'] = self.slices
+        info['SeriesDescription'] = self.__data.get('SeriesDescription',
+                                                    'No SeriesDescription')
+        info['SeriesDate'] = self.seriesdate
+        return info
 
     @property
     def errordata(self):

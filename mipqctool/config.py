@@ -34,32 +34,50 @@ REMOTE_SCHEMES = ['http', 'https', 'ftp', 'ftps']
 # Dicom constants
 
 ID_TAGS = ['PatientID', 'StudyID', 'SeriesNumber', 'InstanceNumber']
-DATE_TAGS = ['AcquisitionDate', 'SeriesDate', 'PatientAge', 'PatientBirthDate']
+DATE_TAGS = ['AcquisitionDate', 'SeriesDate', 'StudyDate', 'PatientAge',
+             'PatientBirthDate']
 
+# START of section for MIP requirments
 REQUIRED_TAGS = ['PatientID', 'StudyID', 'SeriesDescription',
-                 'SeriesNumber', 'InstanceNumber', 'ImagePosition',
-                 'ImageOrientation', 'SliceLocation', 'SamplesPerPixel',
+                 'SeriesNumber', 'InstanceNumber',
+                 'SliceLocation', 'SamplesPerPixel',
                  'Rows', 'Columns', 'PixelSpacing', 'BitsAllocated',
                  'BitsStored', 'HighBit']
 
 ONEOFTWO_TAGS = [('AcquisitionDate', 'SeriesDate'),
-                 ('PatientAge', 'PatientBirthDate')]
+                 ('PatientAge', 'PatientBirthDate'),
+                 ('ImageOrientation', 'ImageOrientationPatient'),
+                 ('ImagePosition', 'ImagePositionPatient')]
+# ImageOrientation and ImagePosition are retired from DICOM standard
+# and replaced eith ImageOrientationPatient and ImagePositionPatient
+# we put them in the above list for backward compatibility
+
+MAX_RESOLUTION = 1.5
+MIN_SLICES = 40
+SCAN_TYPES = ['T1']
+
+# END of section for  MIP requirments
 
 OPTIONAL_TAGS = ['MagneticFieldStrength', 'PatientSex', 'Manufacturer',
-                 'ManufacturerModelName', 'InstitutionName', 'StudyDescription',
+                 'ManufacturerModelName', 'InstitutionName',
+                 'StudyDescription',
                  'SliceThickness', 'RepetitionTime', 'EchoTime',
                  'SpacingBetweenSlices', 'NumberOfPhaseEncodingSteps',
                  'EchoTrainLength', 'PercentPhaseFieldOfView',
                  'PixelBandwidth', 'FlipAngle', 'PercentSampling',
-                 'EchoNumbers']
+                 'EchoNumbers', 'StudyDate',
+                 'ImagePosition', 'ImagePositionPatient',
+                 'ImageOrientation', 'ImageOrientationPatient']
 
 SEQUENCE_TAGS = ['PatientID', 'StudyID', 'SeriesDescription',
-                 'SeriesNumber', 'ImageOrientation',  'SamplesPerPixel',
+                 'SeriesNumber', 'ImageOrientation', 'ImageOrientationPatient',
+                 'SamplesPerPixel',
                  'Rows', 'Columns', 'PixelSpacing', 'BitsAllocated',
                  'BitsStored', 'HighBit', 'AcquisitionDate', 'SeriesDate',
                  'PatientAge', 'PatientBirthDate', 'MagneticFieldStrength',
                  'PatientSex', 'Manufacturer',
-                 'ManufacturerModelName', 'InstitutionName', 'StudyDescription',
+                 'ManufacturerModelName', 'InstitutionName',
+                 'StudyDescription',
                  'SliceThickness', 'RepetitionTime', 'EchoTime',
                  'SpacingBetweenSlices', 'NumberOfPhaseEncodingSteps',
                  'EchoTrainLength', 'PercentPhaseFieldOfView',

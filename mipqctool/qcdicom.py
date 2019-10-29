@@ -26,6 +26,7 @@ class Qcdicom(object):
         self.__studyid = None  # mri studyid from header
         self.__patientid = None  # patient ID from header
         self.__snumber = None  # Series number from header
+        self.__seriesdate = None  # series date from header
         self.__pydicom = None  # a pydicom.dataset object
         self.__folder = folder
         self.__file = filename
@@ -37,13 +38,15 @@ class Qcdicom(object):
         try:
             self.__pydicom = pydicom.dcmread(self.filepath,
                                              stop_before_pixels=True)
-            self.__findmissingtags()
             self.__getids()
+            self.__findmissingtags()
             self.__getdata()
 
         except pydicom.errors.InvalidDicomError:
             message = '%s is not a dicom file' % self.__file
             raise pydicom.errors.InvalidDicomError(message)
+        # discard pydicom.dataset object for preserving memory
+        self.__pydicom = None
 
     def __findmissingtags(self):
         for tag in config.REQUIRED_TAGS:
@@ -51,14 +54,14 @@ class Qcdicom(object):
                 self.__missingtags.add(tag)
         # check if the one of the two tags exist in the file
         for tags in config.ONEOFTWO_TAGS:
-            oneoftwo = 0
+            numfound = 0
             for tag in tags:
                 if tag in self.__pydicom.dir():
-                    oneoftwo = 1
-                # if both are not present add them to missing tags
-                if oneoftwo == 0:
-                    for tag in tags:
-                        self.__missingtags.add(tag)
+                    numfound += 1
+            # if both are not present add them to missing tags
+            if numfound == 0:
+                for tag in tags:
+                    self.__missingtags.add(tag)
 
     def __getdata(self):
         for tag in config.ALL_TAGS:
@@ -75,14 +78,6 @@ class Qcdicom(object):
             self.__studyid = self.__pydicom.data_element('StudyID').value
             self.__snumber = self.__pydicom.data_element('SeriesNumber').value
             self.__instnumber = int(self.__pydicom.data_element('InstanceNumber').value)
-
-    def validate(self):
-        self.__findmissingtags()
-
-    def modify_patient_name(self, new_name, filepath):
-        # modifies the PatientName tag and save the dicom file
-        self.__pydicom.PatientName = new_name
-        self.__pydicom.save_as(filepath)
 
     @property
     def studyid(self):

@@ -240,6 +240,7 @@ class DicomTab(tk.Frame):
         super().__init__(parent)
         self.rootfolder = None
         self.exportfolder = None
+        self.isLoris = tk.BooleanVar()
         self.__init()
         self.__packing()
 
@@ -264,6 +265,12 @@ class DicomTab(tk.Frame):
         self.btn_report_f = tk.Button(self.tblabelframe_output,
                                       text='Select Folder',
                                       command=self.getexportfolder)
+
+        # Lors pipeline checkbox
+        self.chkb_loris = tk.Checkbutton(self.tblabelframe_output,
+                                            text='Reorganize files for Loris pipeline?',
+                                            variable=self.isLoris)
+
         # Button for creating the report
         self.btn_exec = tk.Button(self,
                                       text='Create Report',
@@ -282,6 +289,7 @@ class DicomTab(tk.Frame):
         self.lbl_tag2.pack(anchor='w', padx=4)
         self.lbl_report_f.pack(fill='x', padx=4, pady=2)
         self.btn_report_f.pack(anchor='e', padx=4, pady=2)
+        self.chkb_loris.pack(anchor='e', padx=4)
         self.btn_exec.pack(anchor='se', padx=4, pady=8)
 
     def getexportfolder(self):
@@ -308,6 +316,8 @@ class DicomTab(tk.Frame):
         else:
             report = DicomReport(self.rootfolder, getpass.getuser())
             report.writereport(self.exportfolder)
+            if self.chkb_loris:
+                report.reorganizefiles(self.exportfolder)
             tkmessagebox.showinfo(title='Status info',
                                   message='Reports have been created successully')
 

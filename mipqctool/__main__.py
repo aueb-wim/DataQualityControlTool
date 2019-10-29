@@ -21,6 +21,9 @@ def main():
     parser.add_argument('mode', choices=['csv', 'dicom'],
                         help='csv or dicom report, give keywords from the \
                         list[csv, dicom]')
+    parser.add_argument('--loris_folder', type=str.
+                        help='the folder path for reorganizing dcm files \
+                        for Loris pipeline')
     parser.add_argument('--root_folder', type=str,
                         help='the root folder with dicom files')
     parser.add_argument('--report_folder', type=str,
@@ -42,6 +45,9 @@ def main():
     parser.add_argument('-r', '--readable', action='store_true',
                         help='export csv with readable column \
                         names?')
+    parser.add_argument('--loris', action='store_true',
+                        help='Reorganize  dcm files for loris \
+                              pipeline?')
     args = parser.parse_args(sys.argv[1:])
     metadata = None
     # if CSV dataset
@@ -95,6 +101,10 @@ def main():
             if not os.path.exists(args.report_folder):
                 os.mkdir(args.report_folder)
             dicomreport.writereport(args.report_folder)
+            if args.loris:
+                if not os.path.exists(args.loris_folder):
+                    os.mkdir(args.loris_folder)
+                    dicomreport.reorganizefiles(args.loris_folder)
         else:
             raise OSError('Root Folder not found')
 
