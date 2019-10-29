@@ -21,7 +21,7 @@ def main():
     parser.add_argument('mode', choices=['csv', 'dicom'],
                         help='csv or dicom report, give keywords from the \
                         list[csv, dicom]')
-    parser.add_argument('--loris_folder', type=str.
+    parser.add_argument('--loris_folder', type=str,
                         help='the folder path for reorganizing dcm files \
                         for Loris pipeline')
     parser.add_argument('--root_folder', type=str,
