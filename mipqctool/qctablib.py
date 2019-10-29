@@ -418,27 +418,3 @@ class DatasetCsv(VariableStats):
         vstat = [num, nom, other]
 
         qcexport.html2pdf(filepath, dstat, vstat)
-
-    '''
-    def export_latex(self, filepath, pdf=False):
-        """Produces a dataset statistical report in LaTex format.
-        """
-        # dstat process
-        dstat = self._dstat_2_df(readable=True).transpose()
-        # Override the predicted type and use pandas estimation
-        # TODO: make the tool robust for calculating stats of mixed type variables
-        numerical = list(self.data.select_dtypes(include=['float64', 'int64']).columns)
-        not_text = numerical.copy()
-        not_text.extend(self.categorical)
-        # LOGGER.debug('numerical columns are: {}'.format(' '.join(numerical)))
-        # LOGGER.debug('not text columns are: {}'.format(' '.join(not_text)))
-        # find the rest of the columns
-        all_others = [column for column in self.data.columns if column not in not_text]
-        num = nom = self.vstats.loc[numerical, COLUMNS_NUM].rename(columns=READABLE_VCOLUMMS)
-        nom = self.vstats.loc[self.categorical, COLUMNS_NOM].rename(columns=READABLE_VCOLUMMS)
-        other = self.vstats.loc[all_others, COLUMNS_TEXT].rename(columns=READABLE_VCOLUMMS)
-
-        vstat = [num, nom, other]
-
-        qcexport.latex2pdf(filepath, dstat, vstat, exportpdf=pdf)
-'''
