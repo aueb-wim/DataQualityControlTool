@@ -78,7 +78,7 @@ def latex2pdf(filepath, dstats, listvstats, exportpdf=False):
 def html2pdf(filepath, dstats, listvstats):
     my_path = os.path.abspath(os.path.dirname(__file__))
     env_path = os.path.join(my_path, 'data')
-    css_path = os.path.join(my_path, 'data/style.css')
+    css_path = os.path.join(my_path, 'data', 'style.css')
     documents = []
     env = Environment(loader=FileSystemLoader(env_path))
     template = env.get_template('variable_report.html')
