@@ -241,6 +241,7 @@ class DicomTab(tk.Frame):
         self.rootfolder = None
         self.exportfolder = None
         self.isLoris = tk.BooleanVar()
+        self.isLoris.set(False)
         self.__init()
         self.__packing()
 
@@ -316,7 +317,7 @@ class DicomTab(tk.Frame):
         else:
             report = DicomReport(self.rootfolder, getpass.getuser())
             report.writereport(self.exportfolder)
-            if self.chkb_loris:
+            if self.isLoris.get():
                 report.reorganizefiles(self.exportfolder)
             tkmessagebox.showinfo(title='Status info',
                                   message='Reports have been created successully')
