@@ -16,11 +16,6 @@ from collections import defaultdict
 class QcTable(Table):
     def __init__(self, source, **kargs):
         super().__init__(source, **kargs)
-        self.__tableprofiler = None
-
-    @property
-    def tableprofiler(self):
-        return self.__tableprofiler
 
     def infer(self, limit=100, maxlevels=10, confidence=0.75):
         if self._Table__schema is None or self._Table__headers is None:
@@ -53,4 +48,3 @@ class QcTable(Table):
             raise Exception('Oops! Something is not right in the csv file')
         finally:
             stream.close()
-

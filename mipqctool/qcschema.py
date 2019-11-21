@@ -92,6 +92,7 @@ class QcSchema(Schema):
 
         return descriptor
 
+
 # Internal
 
 _INFER_PRIORITY = [

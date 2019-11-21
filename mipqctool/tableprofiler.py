@@ -7,12 +7,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from copy import deepcopy
+from collections import namedtuple
 from tableschema.exceptions import CastError
-from .qcschema import QcSchema
+from tableschema import Schema
 from . import config
 
 config.debug(True)
-
+ErrorType = namedtuple('ErrorType', ['type', 'desc'])
 
 class TableProfiler(object):
 
@@ -21,7 +22,7 @@ class TableProfiler(object):
         Arguments:
         :param schema: QcSchema descriptor - dictonary """
 
-        self.__schema = QcSchema(schema)
+        self.__schema = Schema(schema)
         self.__unique_fields_cache = _create_unique_fields_cache(self.schema)
         self.__reset_table_stats()
 
@@ -73,7 +74,8 @@ class TableProfiler(object):
 
         # Check table headers
         if headers != self.schema.field_names:
-            error = 'Table headers don\'t match schema field names'
+            desc = 'Table headers don\'t match schema field names'
+            error = ErrorType('headers_mismatch', desc)
             self.__table_errors.append(error)
 
             return False
@@ -100,7 +102,7 @@ class TableProfiler(object):
         # Check for missing values in primary keys and 'required'
         # type constraints
         self.__check_pk_constraints()
-        
+
         # analyze table errors
         return self.__analyze_errors()
 
@@ -197,20 +199,26 @@ class TableProfiler(object):
 
     def __analyze_errors(self):
         if self.__rows_with_invalids:
-            error = 'Table contains rows with invalid values'
+            desc = 'Table contains rows with invalid values'
+            error = ErrorType('invalid_values', desc)
             self.__table_errors.append(error)
         if self.__invalid_rows:
-            error = 'Table contains rows with different length'
+            desc = 'Table contains rows with different length'
+            error = ErrorType('invalid_row_length', desc)
             self.__table_errors.append(error)
         if self.__rows_with_dublicates:
-            error = 'Table have rows that violate the \"unique\" constraint'
+            desc = 'Table have rows that violate the \"unique\" constraint'
+            error = ErrorType('dublicate_values', desc)
             self.__table_errors.append(error)
         if self.__rows_with_missing_pk:
-            error = 'Table has rows with missing primary key'
+            desc = 'Table has rows with missing primary key'
+            error = ErrorType('missing_pk', desc)
             self.__table_errors.append(error)
         if self.__rows_with_missing_required:
-            error = ('Table has rows with missing values'
+            desc = ('Table has rows with missing values'
                      'that have a \"required\" constraint')
+            error = ErrorType('missing_values', desc)
+            self.__table_errors.append(error)
 
         if self.__table_errors:
             return False

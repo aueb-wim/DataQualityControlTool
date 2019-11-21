@@ -7,8 +7,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import re
+import datetime
 from collections import Counter
-from ..config import ERROR, LOGGER
+from ..config import ERROR, LOGGER, DEFAULT_DATE_FORMAT
 
 
 def infer_date(value, **options):
@@ -82,6 +83,30 @@ def profile_date(pairs):
 
     return result
 
+
+def suggestd_date(value, **options):
+    """Suggest a value in the given datatype.
+
+    Arguments:
+    :param value: string
+    :param format: string, for date is a python date pattern like %d/%m/%y
+    :return: date or None
+    """
+    datepattern = infer_date(value)
+    if datepattern != ERROR:
+        return datetime.datetime.strptime(value, datepattern).date()
+    else:
+        return None
+
+
+def suggestc_date(value, **options):
+    """Suggest a value for  the given value that violates the constraint.
+
+    Arguments:
+    :param value: string
+    :constraint: string, name of the violated constraint
+    """
+    return None
 
 # Internal
 

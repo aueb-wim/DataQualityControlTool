@@ -1,7 +1,7 @@
 # exceptions.py
 
 
-class DicomSchemaException(Exception):
+class QCToolException(Exception):
 
     # Public
 
@@ -18,5 +18,8 @@ class DicomSchemaException(Exception):
         return self.__errors
 
 
-class ValidationError(DicomSchemaException):
+class DataTypeError(QCToolException):
+    pass
+
+class ConstraintViolationError(QCToolException):
     pass

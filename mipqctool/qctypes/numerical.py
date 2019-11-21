@@ -99,6 +99,16 @@ def profile_numerical(pairs):
     return result
 
 
+def suggestc_numerical(value, **options):
+    """Suggest a value for  the given value that violates the constraint.
+    """
+    return None
+
+
+def suggestd_numerical(value, **options):
+    """Suggest a value in the given datatype.
+    """
+    return None
 # Internal
 
 _NUM = (r'^(?P<sign>[+-])?\d+(?P<decpart>(?P<decchar>[,\.])\d*)'

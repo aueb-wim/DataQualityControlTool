@@ -111,6 +111,18 @@ def profile_integer(pairs):
 
     return result
 
+
+def suggestc_integer(value, **options):
+    """Suggest a value for  the given value that violates the constraint.
+    """
+    return None
+
+
+def suggestd_integer(value, **options):
+    """Suggest a value in the given datatype.
+    """
+    return None
+
 # Internal
 
 _INT = (r'^(?P<sign>[+-])?\d+'

@@ -70,3 +70,15 @@ def profile_text(pairs):
     result['bottom5'] = [count[0] for count in c.most_common()[:-6:-1]]
 
     return result
+
+
+def suggestc_text(value, **options):
+    """Suggest a value for  the given value that violates the constraint.
+    """
+    return None
+
+
+def suggestd_text(value, **options):
+    """Suggest a value in the given datatype.
+    """
+    return None

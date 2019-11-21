@@ -71,3 +71,22 @@ def test_profile_date(path, variable, format, result):
     with pytest.warns(None) as recorded:
         assert qctypes.profile_date(pairs) == result
         assert recorded.list == []
+
+
+@pytest.mark.parametrize('value, result', [
+    ('23-06-2017', '23/06/2017'),
+    ('12.15.2017', '15/12/2017'),
+    ('2019-01-01', '01/01/2019'),
+    ('31-Aug-1955', '31/08/1955'),
+    ('12 June 1985', '12/06/1985'),
+    ('Aug-31-1944', '31/08/1944'),
+    ('August 31 1955', '31/08/1955'),
+    ('Aug/31/1955', None),
+    ('notadate', None)
+])
+def test_suggestd_date(value, result):
+    with pytest.warns(None) as recorded:
+        if result:
+            result = datetime.strptime(result, '%d/%m/%Y').date()
+        assert qctypes.suggestd_date(value) == result
+        assert recorded.list == []

@@ -7,7 +7,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-
+from copy import deepcopy
+from . import config
 
 def getsubfolders(rootfolder):
     """Returns dict with keys subfolders and values a list
@@ -60,3 +61,9 @@ def splitdict(bigdict, n):
         start = int(round(i * chunksize))
         end = int(round((i + 1) * chunksize))
         yield dict(list(bigdict.items())[start:end])
+
+
+def expand_qcfield_descriptor(descriptor):
+    descriptor = deepcopy(descriptor)
+    descriptor.setdefault('MIPType', config.DEFAULT_QCFIELD_MIPTYPE)
+    return descriptor

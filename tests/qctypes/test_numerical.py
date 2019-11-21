@@ -103,8 +103,9 @@ def test_profile_numerical(path, variable, result):
     pairs = []
     field = 'Variable_%s' % variable
     with open(path, mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
         row_count = 1
+        csv_reader = csv.DictReader(csv_file)
+
         for row in csv_reader:
             pairs.append((row_count, float(row[field])))
             row_count += 1
