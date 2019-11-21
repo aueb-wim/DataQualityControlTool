@@ -45,9 +45,6 @@ def main():
     parser.add_argument('-r', '--readable', action='store_true',
                         help='export csv with readable column \
                         names?')
-    parser.add_argument('--loris', action='store_true',
-                        help='Reorganize  dcm files for loris \
-                              pipeline?')
     args = parser.parse_args(sys.argv[1:])
     metadata = None
     # if CSV dataset
@@ -101,10 +98,13 @@ def main():
             if not os.path.exists(args.report_folder):
                 os.mkdir(args.report_folder)
             dicomreport.writereport(args.report_folder)
-            if args.loris:
+            if args.loris_folder:
                 if not os.path.exists(args.loris_folder):
-                    os.mkdir(args.loris_folder)
-                    dicomreport.reorganizefiles(args.loris_folder)
+                    try:
+                        os.mkdir(args.loris_folder)
+                    except OSError:
+                        raise OSError('Could not create LORIS output folder')
+                dicomreport.reorganizefiles(args.loris_folder)
         else:
             raise OSError('Root Folder not found')
 

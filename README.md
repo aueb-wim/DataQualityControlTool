@@ -71,12 +71,11 @@ After the execution, three files will be produced:
 For profiling a dicom dataset:
 
 ``` shell
-$ qctool dicom --root_folder [folder with dicoms] --report_folder [dicom report folderpath] (--loris) (--loris_folder) [export folder for reorganized dicoms]
+$ qctool dicom --root_folder [folder with dicoms] --report_folder [dicom report folderpath] (--loris_folder) [export folder for reorganized dicoms]
 ```
 
 `--root_folder` is the root folder where the DICOM dataset is stored. It is assumed that each subfolder corresponds to one patient.
 `--report_folder` is the folder where the report files will be placed. If the folder does not exist, the tool will create it.
-`--loris` is an option if we want to reorganize the dcm files for LORIS pipeline
 `--loris_folder` after this flag we provide the path of the folder where the dcm files are reorganized for LORIS pipeline
 
 For the LORIS pipeline the dcm files are reorganized in stored in a folder structure <loris_folder>/<patientid><patientid_visitcount>.
@@ -89,6 +88,7 @@ The tool, depending of the results, creates the csv files:
 -   invaliddicoms.csv
 -   notprocessed.csv
 
+The above files are created even if no valid/invalid sequences/dicoms files have been found. In such case, the files will be empty.
 ### validsequences.csv
 
 If there are valid sequences then the tool will create this csv file. A sequence is 'valid' if it meets the minimum requirements found [here](https://hbpmedical.github.io/deployment/data/). This file contains all the valid MRI sequences that found in given DICOM folder with the following headers discribing each sequence:
