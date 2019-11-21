@@ -131,12 +131,6 @@ class DicomReport(object):
     def __validseq2csv(self, filepath):
         with open(filepath, 'w') as csvfile:
             # a sequence object just to take the correct header names
-            if len(self.__patients) == 0:
-                return
-            elif len(self.__patients[0].studies) == 0:
-                return
-            elif len(self.__patients[0].studies[0].sequences) == 0:
-                return
             asequence = self.__patients[0].studies[0].sequences[0]
             fieldnames = list(asequence.info.keys())
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -148,9 +142,6 @@ class DicomReport(object):
 
     def __invalidseq2csv(self, filepath1, filepath2):
         with open(filepath1, 'w') as csvfile:
-            if len(self.__invalidseq) == 0:
-                self.__invaliddicoms2csv(filepath2, [])
-                return
             fieldnames = list(self.__invalidseq[0].errordata.keys())
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -158,11 +149,12 @@ class DicomReport(object):
             fields = None
             for seq in self.__invalidseq:
                 writer.writerow(seq.errordata)
-                fields = self.__invaliddicoms2csv(filepath2,
-                                                  seq.invaliddicoms,
-                                                  append=append,
-                                                  fields=fields)
-                append = True
+                if len(seq.invaliddicoms) > 0:
+                    fields = self.__invaliddicoms2csv(filepath2,
+                                                      seq.invaliddicoms,
+                                                      append=append,
+                                                      fields=fields)
+                    append = True
 
     def __invaliddicoms2csv(self, filepath, dicoms, append=False, fields=None):
         fieldnames = fields
@@ -173,8 +165,6 @@ class DicomReport(object):
                     writer.writerow(dicom.errordata)
         else:
             with open(filepath, 'w') as csvfile:
-                if len(dicoms) == 0:
-                    return
                 fieldnames = list(dicoms[0].errordata.keys())
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
@@ -193,12 +183,32 @@ class DicomReport(object):
     def writereport(self, folderpath):
         directory = folderpath
         vseqfilepath = os.path.join(directory, 'validsequences.csv')
+        if os.path.isfile(vseqfilepath):
+            os.remove(vseqfilepath)
         invseqfilepath = os.path.join(directory, 'invalidsequences.csv')
+        if os.path.isfile(invseqfilepath):
+            os.remove(invseqfilepath)
         invdicomfilepath = os.path.join(directory, 'invaliddicoms.csv')
+        if os.path.isfile(invdicomfilepath):
+            os.remove(invdicomfilepath)
         notprocfilepath = os.path.join(directory, 'notprocessed.csv')
-        self.__validseq2csv(vseqfilepath)
-        self.__invalidseq2csv(invseqfilepath, invdicomfilepath)
-        self.__notproc2csv(notprocfilepath)
+        if os.path.isfile(notprocfilepath):
+            os.remove(notprocfilepath)
+        if len(self.__patients) > 0:
+            self.__validseq2csv(vseqfilepath)
+        else:
+            open(vseqfilepath, 'w').close()
+        if len(self.__invalidseq) > 0:
+            self.__invalidseq2csv(invseqfilepath, invdicomfilepath)
+            if not os.path.isfile(invdicomfilepath):
+                open(invdicomfilepath, 'w').close()
+        else:
+            open(invseqfilepath, 'w').close()
+            open(invdicomfilepath, 'w').close()
+        if len(self.__notprocessed) > 0:
+            self.__notproc2csv(notprocfilepath)
+        else:
+            open(notprocfilepath, 'w').close()
 
     def reorganizefiles(self, output):
         """reorganize the dcm files in a folder structure for
