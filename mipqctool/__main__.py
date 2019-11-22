@@ -92,6 +92,11 @@ def main():
             testcsv.export_pdf(exportfile_pdf)
     # if DICOM dataset
     elif args.mode == 'dicom':
+        # Check if the loris folder is empty
+        if args.loris_folder and os.path.exists(args.loris_folder) and os.listdir(args.loris_folder) != 0:
+            raise Exception('LORIS output dir is not empty! '
+                            'Select another folder '
+                            'or delete existing dicom files')
         # Check if the DICOM root folder exists
         if os.path.exists(args.root_folder):
             dicomreport = DicomReport(args.root_folder, getpass.getuser())
