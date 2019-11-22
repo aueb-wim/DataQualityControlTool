@@ -7,7 +7,7 @@ from .config import LOGGER
 config.debug(True)
 
 
-class Sequence(object):
+class MRISequence(object):
     def __init__(self, patientid, studyid, seriesnum, dicoms):
         self.__studyid = studyid
         self.__patientid = patientid
@@ -139,7 +139,7 @@ class Sequence(object):
     @property
     def invaliddicoms(self):
         return self.__invaliddicoms
-    
+
     @property
     def dicoms(self):
         return self.__validdicoms

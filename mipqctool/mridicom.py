@@ -14,7 +14,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 config.debug(True)
 
 
-class Qcdicom(object):
+class MRIDicom(object):
     """A class for storing dicom headers
     """
     def __init__(self, filename, folder, rootfolder):

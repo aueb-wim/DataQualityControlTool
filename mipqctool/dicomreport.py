@@ -9,8 +9,8 @@ from multiprocessing import Pool
 import pydicom
 import pandas as pd
 from .config import LOGGER
-from .qcdicom import Qcdicom
-from .sequence import Sequence
+from .mridicom import MRIDicom
+from .mrisequence import MRISequence
 from .mristudy import MRIStudy
 from .mripatient import MRIPatient
 from . import config, __version__
@@ -220,13 +220,15 @@ class DicomReport(object):
         for patient in self.patients:
             patientid = patient.patientid
             patdir = os.path.join(output, patientid)
-            os.mkdir(patdir)
+            if not os.path.exists(patdir):
+                os.mkdir(patdir)
             study_count = 0
             for study in patient.studies:
                 study_count += 1
                 d = [patientid, str(study_count)]
                 studydir = os.path.join(patdir, '_'.join(d))
-                os.mkdir(studydir)
+                if not os.path.exists(studydir):
+                    os.mkdir(studydir)
                 for seq in study.sequences:
                     for dicom in seq.dicoms:
                         sourcepath = dicom.filepath
@@ -260,7 +262,7 @@ class DicomReport(object):
         # by collecting the sequence keys patientid, stydyid, seqnumber
         for filename in dicomfiles:
             try:
-                qcdcm = Qcdicom(filename, folder, self.rootfolder)
+                qcdcm = MRIDicom(filename, folder, self.rootfolder)
                 id3 = (qcdcm.patientid, qcdcm.studyid, qcdcm.seqnumber)
                 if id3 in sequence_ids.keys():
                     sequence_ids[id3].append(qcdcm)
@@ -272,7 +274,7 @@ class DicomReport(object):
 
         for id3 in sequence_ids.keys():
             id2 = (id3[0], id3[1])
-            newseq = Sequence(id3[0], id3[1], id3[2], sequence_ids[id3])
+            newseq = MRISequence(id3[0], id3[1], id3[2], sequence_ids[id3])
             # perform the MIP validation for the sequence
             if newseq.isvalid:
                 # put it in a list grouped by the study id
