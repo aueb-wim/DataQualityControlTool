@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import re
 import numpy as np
 from collections import Counter
-from ..config import ERROR, LOGGER
+from ..config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
 # Regex unicode support
 
 
@@ -115,13 +115,21 @@ def profile_integer(pairs):
 def suggestc_integer(value, **options):
     """Suggest a value for  the given value that violates the constraint.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null
 
 
 def suggestd_integer(value, **options):
     """Suggest a value in the given datatype.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    try:
+        # case value is float, try to round it
+        suggested = str(int(float(value)))
+    except ValueError:
+        suggested = null
+
+    return suggested
 
 # Internal
 

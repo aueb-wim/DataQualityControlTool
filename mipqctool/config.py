@@ -39,7 +39,7 @@ ERROR = 'qctool.error'
 REMOTE_SCHEMES = ['http', 'https', 'ftp', 'ftps']
 DEFAULT_MISSING_VALUES = ['']
 DEFAULT_QCFIELD_MIPTYPE = 'text'
-DEFAULT_DATE_FORMAT = '%d/%m/%Y'
+DEFAULT_DATE_FORMAT = '%Y-%m-%d'
 PANDAS_NANS = ['', '#N/A', '#N/A N/A', '#NA', '-1.#IND',
                    '-1.#QNAN', '-NaN', '-nan', '1.#IND', '1.#QNAN',
                    'N/A', 'NA', 'NULL', 'NaN', 'n/a', 'nan', 'null']

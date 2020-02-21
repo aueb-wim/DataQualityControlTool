@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import operator
 from collections import Counter, OrderedDict
 from nltk import edit_distance
+from ..config import DEFAULT_MISSING_VALUES
 
 
 def profile_nominal(pairs):
@@ -41,6 +42,7 @@ def suggestc_nominal(value, **options):
              In case of draw returns the element which is closer to the 
              begining of the list with the enumerations
     """
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
     enum = options.get('enum', [])
     con_upper = [item.upper() for item in enum]
     distances = {key: edit_distance(value.upper(), key) for key in con_upper}
@@ -51,10 +53,11 @@ def suggestc_nominal(value, **options):
         suggested_index = con_upper.index(suggested_upper)
         return enum[suggested_index]
     else:
-        return None
+        return null
 
 
 def suggestd_nominal(value, **options):
     """Suggest a value in the given datatype.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null

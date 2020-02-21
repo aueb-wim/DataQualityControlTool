@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import re
 from collections import Counter
-from ..config import ERROR, LOGGER, PANDAS_NANS
+from ..config import ERROR, LOGGER, PANDAS_NANS, DEFAULT_MISSING_VALUES
 
 
 def infer_text(value, **options):
@@ -75,10 +75,12 @@ def profile_text(pairs):
 def suggestc_text(value, **options):
     """Suggest a value for  the given value that violates the constraint.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null
 
 
 def suggestd_text(value, **options):
     """Suggest a value in the given datatype.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null

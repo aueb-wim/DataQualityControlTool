@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import re
 import numpy as np
-from ..config import ERROR, LOGGER
+from ..config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
 
 
 def infer_numerical(value, **options):
@@ -78,7 +78,7 @@ def profile_numerical(pairs):
     """
     result = {}
     # Get the values in an numpy array
-    values = np.asarray([r[1] for r in pairs])
+    values = np.asarray([float(r[1]) for r in pairs])
 
     result['mean'] = np.mean(values)
     # sample stadard deviation with 1 degree of freedom
@@ -102,13 +102,15 @@ def profile_numerical(pairs):
 def suggestc_numerical(value, **options):
     """Suggest a value for  the given value that violates the constraint.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null
 
 
 def suggestd_numerical(value, **options):
     """Suggest a value in the given datatype.
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null
 # Internal
 
 _NUM = (r'^(?P<sign>[+-])?\d+(?P<decpart>(?P<decchar>[,\.])\d*)'

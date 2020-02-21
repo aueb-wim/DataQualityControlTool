@@ -9,7 +9,9 @@ from __future__ import unicode_literals
 import re
 import datetime
 from collections import Counter
+from tableschema.config import DEFAULT_FIELD_FORMAT
 from ..config import ERROR, LOGGER, DEFAULT_DATE_FORMAT
+from ..config import DEFAULT_MISSING_VALUES
 
 
 def infer_date(value, **options):
@@ -85,28 +87,35 @@ def profile_date(pairs):
 
 
 def suggestd_date(value, **options):
-    """Suggest a value in the given datatype.
+    """Suggest a new value in case of datatype violation.
+    Tries to return a value in the given format date
 
     Arguments:
     :param value: string
     :param format: string, for date is a python date pattern like %d/%m/%y
     :return: date or None
     """
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    formatd = options.get('format', DEFAULT_DATE_FORMAT)
+    if formatd == DEFAULT_FIELD_FORMAT:
+        formatd = DEFAULT_DATE_FORMAT
     datepattern = infer_date(value)
     if datepattern != ERROR:
-        return datetime.datetime.strptime(value, datepattern).date()
+        newvalue = datetime.datetime.strptime(value, datepattern).date()
+        return newvalue.strftime(formatd)
     else:
-        return None
+        return null
 
 
 def suggestc_date(value, **options):
-    """Suggest a value for  the given value that violates the constraint.
+    """Suggest a new value for the given value in case of constraint violation.
 
     Arguments:
     :param value: string
     :constraint: string, name of the violated constraint
     """
-    return None
+    null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    return null
 
 # Internal
 

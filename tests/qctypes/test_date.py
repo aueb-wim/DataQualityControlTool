@@ -7,7 +7,10 @@ import pytest
 import csv
 from datetime import datetime, date
 from mipqctool import qctypes
-from mipqctool.config import ERROR
+from mipqctool.config import ERROR, DEFAULT_DATE_FORMAT
+from mipqctool.config import DEFAULT_MISSING_VALUES
+
+NULL = DEFAULT_MISSING_VALUES[0]
 
 # Tests
 
@@ -73,20 +76,18 @@ def test_profile_date(path, variable, format, result):
         assert recorded.list == []
 
 
-@pytest.mark.parametrize('value, result', [
-    ('23-06-2017', '23/06/2017'),
-    ('12.15.2017', '15/12/2017'),
-    ('2019-01-01', '01/01/2019'),
-    ('31-Aug-1955', '31/08/1955'),
-    ('12 June 1985', '12/06/1985'),
-    ('Aug-31-1944', '31/08/1944'),
-    ('August 31 1955', '31/08/1955'),
-    ('Aug/31/1955', None),
-    ('notadate', None)
+@pytest.mark.parametrize('value, formatd, result', [
+    ('23-06-2017', '%d/%m/%Y', '23/06/2017'),
+    ('12.15.2017','%d/%m/%Y', '15/12/2017'),
+    ('2019-01-01', 'default', '2019-01-01'),
+    ('31-Aug-1955', '%d/%m/%Y', '31/08/1955'),
+    ('12 June 1985', '%d/%m/%Y', '12/06/1985'),
+    ('Aug-31-1944','%d/%m/%Y', '31/08/1944'),
+    ('August 31 1955','%d/%m/%Y', '31/08/1955'),
+    ('Aug/31/1955', '%d/%m/%Y', NULL),
+    ('notadate', '%d/%m/%Y', NULL)
 ])
-def test_suggestd_date(value, result):
+def test_suggestd_date(value, formatd, result):
     with pytest.warns(None) as recorded:
-        if result:
-            result = datetime.strptime(result, '%d/%m/%Y').date()
-        assert qctypes.suggestd_date(value) == result
+        assert qctypes.suggestd_date(value, format=formatd) == result
         assert recorded.list == []
