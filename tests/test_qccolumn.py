@@ -155,6 +155,7 @@ def test_calc_stats_nocorrection(descriptor, values, result):
         assert totest == result
         assert recorded.list == []
 
+
 @pytest.mark.parametrize('descriptor, values, result', [
     (INTEGER_DESC, INTEGER_VALUES, [5, 6]),
     (NUMERICAL_DESC, NUMERICAL_VALUES, [3, 5]),
@@ -175,14 +176,45 @@ def test_calc_stats_withcorrection(descriptor, values, result):
         assert recorded.list == []
 
 
-@pytest.mark.parametrize('descriptor, values, result', [
+@pytest.mark.parametrize('descriptor, values, resnulls, rescorr', [
     (INTEGER_DESC, INTEGER_VALUES,
-     set([('2.5', ''), ('not_int', ''), ('5.6', '5')]))
+     set(['2.5', 'not_int']), set([('5.6', '5')])),
+    (NUMERICAL_DESC, NUMERICAL_VALUES,
+     set(['not_num', '21/12/2019']), set()),
+    (DATE_DESC, DATE_VALUES,
+     set(['31', 'not_date']),
+     set([('1-21-2013', '21/01/2013'),
+          ('15 Aug 2012', '15/08/2012'),
+          ('20011212', '12/12/2001')]))
 ])
-def test_dcorrections(descriptor, values, result):
+def test_dnulls(descriptor, values, resnulls, rescorr):
     testcolumn = QcColumn(values, descriptor)
     testcolumn.validate()
     testcolumn.suggest_corrections()
     with pytest.warns(None) as recorded:
-        assert testcolumn.dcorrections == result
+        assert testcolumn.dnulls == resnulls
+        assert testcolumn.dcorrections == rescorr
+        assert recorded.list == []
+
+['cAtegory1', 'not_value', 'Category1', 'Category2',
+                  'another1', '', '', 'Category2', 'CATEGORY2']
+@pytest.mark.parametrize('descriptor, values, resnulls, rescorr', [
+    (INTEGER_DESC, INTEGER_VALUES,
+     set(['1', '2', '20191212']), set()),
+    (NUMERICAL_DESC, NUMERICAL_VALUES,
+     set(['-0.12']), set()),
+    (NOMINAL_DESC, NOMINAL_VALUES,
+     set(['not_value']),
+     set([('cAtegory1', 'Category1'),
+          ('another1', 'Another3'),
+          ('CATEGORY2', 'Category2')]))
+
+])
+def test_cnulls(descriptor, values, resnulls, rescorr):
+    testcolumn = QcColumn(values, descriptor)
+    testcolumn.validate()
+    testcolumn.suggest_corrections()
+    with pytest.warns(None) as recorded:
+        assert testcolumn.cnulls == resnulls
+        assert testcolumn.ccorrections == rescorr
         assert recorded.list == []
