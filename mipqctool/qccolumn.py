@@ -60,9 +60,35 @@ class QcColumn(object):
 
     @property
     def dcorrections(self):
-        correctiontupples = [(sug[1], sug[2])
-                             for sug in self.__dsuggestions]
+        null = self.__missing_values[0]
+        correctiontupples = [(sug[1], sug[2]) 
+                             for sug in self.__dsuggestions
+                             if sug[2] != null]
         return set(correctiontupples)
+    
+    @property
+    def dnulls(self):
+        null = self.__missing_values[0]
+        values = [sug[1]
+                  for sug in self.__dsuggestions
+                  if sug[2] == null]
+        return set(values)
+
+    @property
+    def ccorrections(self):
+        null = self.__missing_values[0]
+        correctiontupples = [(sug[1], sug[2]) 
+                             for sug in self.__csuggestions
+                             if sug[2] != null]
+        return set(correctiontupples)
+
+    @property
+    def cnulls(self):
+        null = self.__missing_values[0]
+        values = [sug[1]
+                  for sug in self.__csuggestions
+                  if sug[2] == null]
+        return set(values)
 
     def validate(self):
         for raw_pair in self.__raw_pairs:
