@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import pytest
+import csv
 from mock import Mock, patch
 from mipqctool.qctable import QcTable
 
@@ -58,3 +59,21 @@ def test_schema_infer_storage(import_module, apply_defaults):
     table.infer()
     assert table.headers == ['key', 'value']
     assert table.schema.descriptor == apply_defaults(SCHEMA_MIN)
+
+@pytest.mark.parametrize('path, column_name', [
+    ('data/simple.csv', 'name'),
+    ('data/simple.csv', 'id')
+])
+def test_column_values(path, column_name):
+    with open(path) as csvfile:
+        reader = csv.reader(csvfile)
+        #read header
+        headers = next(reader)
+        index = headers.index(column_name)
+        result = [row[index] for row in reader]
+        table = QcTable(path)
+        table.infer()
+        assert table.column_values(column_name) == result
+
+
+
