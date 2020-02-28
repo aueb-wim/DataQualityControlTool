@@ -42,6 +42,10 @@ class QcField(Field):
     def miptype(self):
         return self.descriptor.get('MIPType')
 
+    @property
+    def missing_values(self):
+        return self._Field__missing_values
+
     def validate(self, value):
         type_error_msg = ('Field "{field.name}" can\'t cast value "{value}" '
                           'for type "{field.type}" with format "{field.format}"'

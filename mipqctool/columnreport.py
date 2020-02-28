@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# qccolumn.py
+# ColumnReport.py
 
 from __future__ import absolute_import
 from __future__ import division
@@ -15,32 +15,38 @@ from .exceptions import DataTypeError, ConstraintViolationError
 config.debug(True)
 
 
-class QcColumn(object):
+class ColumnReport(object):
     """This class is used to hold statistical and validation data of values
     of a dataset column.
     """
-    def __init__(self, raw_values, field_descriptor,
-                 missing_values=config.DEFAULT_MISSING_VALUES):
+    def __init__(self, raw_values, qcfield):
         """ 
         """
+        # Stores all the values of the column in a list of 
+        # tupples (row number, raw value)
         self.__raw_pairs = enumerate(raw_values)
         self.__stats = {}
+        # list of tupples that have been validated
         self.__validated_pairs = []
+        # list of tupples that have been corrected
         self.__corrected_pairs = []
         self.__datatype_violated_pairs = []
         self.__constraint_violated_pairs = []
         self.__dsuggestions = None
         self.__csuggestions = None
+        # stats about datatype, constraint violations and
+        # suggested corrections
         self.__success_total_d = 0
         self.__success_total_c = 0
         self.__failed_total_d = 0
         self.__failed_total_c = 0
-        self.__field = QcField(descriptor=field_descriptor,
-                               missing_values=missing_values)
+        # Create QcField object and other relative variables
+        # and functions
+        self.__field = qcfield
         self.__miptype = self.__field.miptype
         self.__profile = self.__get_profile_function()
         self.__cast_value = self.__field.cast_value
-        self.__missing_values = missing_values
+        self.__missing_values = self.__field.missing_values
 
     @property
     def miptype(self):
@@ -65,7 +71,7 @@ class QcColumn(object):
                              for sug in self.__dsuggestions
                              if sug[2] != null]
         return set(correctiontupples)
-    
+
     @property
     def dnulls(self):
         null = self.__missing_values[0]
@@ -77,7 +83,7 @@ class QcColumn(object):
     @property
     def ccorrections(self):
         null = self.__missing_values[0]
-        correctiontupples = [(sug[1], sug[2]) 
+        correctiontupples = [(sug[1], sug[2])
                              for sug in self.__csuggestions
                              if sug[2] != null]
         return set(correctiontupples)

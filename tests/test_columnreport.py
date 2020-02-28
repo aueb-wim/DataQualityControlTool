@@ -4,7 +4,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import pytest
-from mipqctool.qccolumn import QcColumn
+from mipqctool.columnreport import ColumnReport
+from mipqctool.qcfield import QcField
 from mipqctool.config import ERROR
 
 
@@ -64,10 +65,11 @@ NOMINAL_VALUES = ['cAtegory1', 'not_value', 'Category1', 'Category2',
       (7, 'Category2')])
 ])
 def test_validate_valid(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     with pytest.warns(None) as recorded:
-        assert testcolumn._QcColumn__validated_pairs == result
+        assert testcolumn._ColumnReport__validated_pairs == result
         assert recorded.list == []
 
 
@@ -81,10 +83,11 @@ def test_validate_valid(descriptor, values, result):
     (NOMINAL_DESC, NOMINAL_VALUES, [])
 ])
 def test_validate_datatype(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     with pytest.warns(None) as recorded:
-        assert testcolumn._QcColumn__datatype_violated_pairs == result
+        assert testcolumn._ColumnReport__datatype_violated_pairs == result
         assert recorded.list == []
 
 
@@ -96,10 +99,11 @@ def test_validate_datatype(descriptor, values, result):
                                     (4, 'another1'), (8, 'CATEGORY2')])
 ])
 def test_validate_contraint(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     with pytest.warns(None) as recorded:
-        assert testcolumn._QcColumn__constraint_violated_pairs == result
+        assert testcolumn._ColumnReport__constraint_violated_pairs == result
         assert recorded.list == []
 
 
@@ -110,11 +114,12 @@ def test_validate_contraint(descriptor, values, result):
     (NOMINAL_DESC, NOMINAL_VALUES, [])
  ])
 def test_suggestions_d(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.suggest_corrections()
     totest = [sugestion.newvalue
-              for sugestion in testcolumn._QcColumn__dsuggestions]
+              for sugestion in testcolumn._ColumnReport__dsuggestions]
     with pytest.warns(None) as recorded:
         assert totest == result
         assert recorded.list == []
@@ -128,11 +133,12 @@ def test_suggestions_d(descriptor, values, result):
                                     'Category2'])
  ])
 def test_suggestions_c(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.suggest_corrections()
     totest = [sugestion.newvalue
-              for sugestion in testcolumn._QcColumn__csuggestions]
+              for sugestion in testcolumn._ColumnReport__csuggestions]
     with pytest.warns(None) as recorded:
         assert totest == result
         assert recorded.list == []
@@ -145,7 +151,8 @@ def test_suggestions_c(descriptor, values, result):
     (NOMINAL_DESC, NOMINAL_VALUES, [3, 2])
 ])
 def test_calc_stats_nocorrection(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.calc_stats()
     totest = []
@@ -163,7 +170,8 @@ def test_calc_stats_nocorrection(descriptor, values, result):
     (NOMINAL_DESC, NOMINAL_VALUES, [6, 3])
 ])
 def test_calc_stats_withcorrection(descriptor, values, result):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.suggest_corrections()
     testcolumn.apply_corrections()
@@ -188,7 +196,8 @@ def test_calc_stats_withcorrection(descriptor, values, result):
           ('20011212', '12/12/2001')]))
 ])
 def test_dnulls(descriptor, values, resnulls, rescorr):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.suggest_corrections()
     with pytest.warns(None) as recorded:
@@ -211,7 +220,8 @@ def test_dnulls(descriptor, values, resnulls, rescorr):
 
 ])
 def test_cnulls(descriptor, values, resnulls, rescorr):
-    testcolumn = QcColumn(values, descriptor)
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.suggest_corrections()
     with pytest.warns(None) as recorded:
