@@ -51,7 +51,7 @@ INTEGER_DESC = {'name': 'testvar',
     (INTEGER_DESC, '2.5')
 ])
 def test_validate_DataTypeException(descriptor, value):
-    testfield = QcField(descriptor)
+    testfield = QcField(descriptor, missing_values=MISSING_VALUES)
     with pytest.raises(DataTypeError):
         testfield.validate(value)
 

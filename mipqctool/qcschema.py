@@ -6,7 +6,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from tableschema import Schema
+from tableschema import Schema, exceptions
+from .qcfield import QcField
 from . import config, qctypes
 from .config import LOGGER
 
@@ -88,9 +89,25 @@ class QcSchema(Schema):
 
         # Save descriptor
         self._Schema__current_descriptor = descriptor
-        self._Schema__build()
+        self.__build()
 
         return descriptor
+
+    def __build(self):
+        self._Schema__build()
+        # Repopulate fields witn QcField objects
+        self._Schema__fields = []
+        for field in self._Schema__current_descriptor.get('fields', []):
+            missing_values = self._Schema__current_descriptor['missingValues']
+            try:
+                field = QcField(field, missing_values=missing_values)
+            except exceptions.TableSchemaException as e:
+                if self._Schema__strict:
+                    raise e
+                else:
+                    field = False
+            self._Schema__fields.append(field)
+
 
 
 # Internal
