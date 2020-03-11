@@ -93,7 +93,7 @@ def main():
     # if DICOM dataset
     elif args.mode == 'dicom':
         # Check if the loris folder is empty
-        if args.loris_folder and os.path.exists(args.loris_folder) and len(os.listdir(args.loris_folder)) != 0:
+        if args.loris_folder and os.path.exists(os.path.abspath(args.loris_folder)) and len(os.listdir(args.loris_folder)) != 0:
             raise Exception('LORIS output dir is not empty! '
                             'Select another folder '
                             'or delete existing dicom files')
