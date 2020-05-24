@@ -55,6 +55,17 @@ NOMINAL_VALUES = ['cAtegory1', 'not_value', 'Category1', 'Category2',
 
 
 @pytest.mark.parametrize('descriptor, values, result', [
+    (INTEGER_DESC, INTEGER_VALUES, [0, 3, 6, 8, 9, 10]),
+])
+def test_violated_rows(descriptor, values, result):
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
+    testcolumn.validate()
+    with pytest.warns(None) as recorded:
+        assert testcolumn.violated_rows == set(result)
+        assert recorded.list == []
+
+@pytest.mark.parametrize('descriptor, values, result', [
     (INTEGER_DESC, INTEGER_VALUES,
      [(1, '3'), (2, '3'), (4, '5'), (5, '4'), (7, '')]),
     (NUMERICAL_DESC, NUMERICAL_VALUES,
@@ -150,14 +161,14 @@ def test_suggestions_c(descriptor, values, result):
     (DATE_DESC, DATE_VALUES, [1, 1]),
     (NOMINAL_DESC, NOMINAL_VALUES, [3, 2])
 ])
-def test_calc_stats_nocorrection(descriptor, values, result):
+def test_calc_nulls_nocorrection(descriptor, values, result):
     testfield = QcField(descriptor)
     testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
     testcolumn.calc_stats()
     totest = []
-    totest.append(testcolumn.stats['not_nulls'])
-    totest.append(testcolumn.stats['null_total'])
+    totest.append(testcolumn.not_nulls_total)
+    totest.append(testcolumn.nulls_total)
     with pytest.warns(None) as recorded:
         assert totest == result
         assert recorded.list == []
@@ -169,7 +180,7 @@ def test_calc_stats_nocorrection(descriptor, values, result):
     (DATE_DESC, DATE_VALUES, [4, 4]),
     (NOMINAL_DESC, NOMINAL_VALUES, [6, 3])
 ])
-def test_calc_stats_withcorrection(descriptor, values, result):
+def test_calc_nulls_withcorrection(descriptor, values, result):
     testfield = QcField(descriptor)
     testcolumn = ColumnReport(values, testfield)
     testcolumn.validate()
@@ -177,8 +188,8 @@ def test_calc_stats_withcorrection(descriptor, values, result):
     testcolumn.apply_corrections()
     testcolumn.calc_stats()
     totest = []
-    totest.append(testcolumn.stats['not_nulls'])
-    totest.append(testcolumn.stats['null_total'])
+    totest.append(testcolumn.not_nulls_total)
+    totest.append(testcolumn.nulls_total)
     with pytest.warns(None) as recorded:
         assert totest == result
         assert recorded.list == []

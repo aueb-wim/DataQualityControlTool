@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>{{ cname }}Column Report</title>
+    </head>
+    <body>
+        <h2>Report for column {{ cname }}</h2>
+        <h3>Statistic table</h3>
+        {{ stat_table }}
+        <h3>{{ status }} Correction table for datatype violations</h3>
+        {{ dcorrections_table }}
+        <h3>{{ status }} Correction table for constraint violations</h3>
+        {{ ccorrections_table }}        
+    </body>
+</html>

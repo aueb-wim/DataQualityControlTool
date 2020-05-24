@@ -7,6 +7,7 @@ import pytest
 import csv
 from mock import Mock, patch
 from mipqctool.qctable import QcTable
+from mipqctool.exceptions import QCToolException
 
 
 DATA_MIN = [('key', 'value'), ('one', '1'), ('two', '2')]
@@ -60,6 +61,7 @@ def test_schema_infer_storage(import_module, apply_defaults):
     assert table.headers == ['key', 'value']
     assert table.schema.descriptor == apply_defaults(SCHEMA_MIN)
 
+
 @pytest.mark.parametrize('path, column_name', [
     ('data/simple.csv', 'name'),
     ('data/simple.csv', 'id')
@@ -76,4 +78,12 @@ def test_column_values(path, column_name):
         assert table.column_values(column_name) == result
 
 
-
+@pytest.mark.parametrize('path, column_name', [
+    ('data/simple.csv', 'non_exist_column'),
+    ('data/simple.csv', 'on exist column with spaces')
+])
+def test_column_values_exception(path, column_name):
+    table = QcTable(path)
+    table.infer()
+    with pytest.raises(QCToolException):
+        assert table.column_values(column_name)

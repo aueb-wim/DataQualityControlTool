@@ -23,3 +23,6 @@ class DataTypeError(QCToolException):
 
 class ConstraintViolationError(QCToolException):
     pass
+
+class TableReportError(QCToolException):
+    pass

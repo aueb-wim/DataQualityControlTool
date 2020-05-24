@@ -25,6 +25,15 @@ class QcTable(Table):
         return [row for row in self.iter(cast=False)]
 
     def infer(self, limit=100, maxlevels=10, confidence=0.75):
+        """Tries to infer the table schema only for csv file.
+        Arguments:
+        :param limit: number of rows to be used for infer
+        :param maxlevels: number of levels or enumeration for nominal qctypes
+        :param confidence: float how many casting errors are allowed
+                           (as a ratio, between 0 and 1)
+
+        :returns: dict Table Schema descriptor
+        """
         if self._Table__schema is None or self._Table__headers is None:
 
             # Infer (tabulator aka csv file)
@@ -33,7 +42,7 @@ class QcTable(Table):
                     if self._Table__schema is None:
                         self._Table__schema = QcSchema()
                         self._Table__schema.infer(stream.sample[:limit],
-                                                  headers=stream.headers, 
+                                                  headers=stream.headers,
                                                   maxlevels=maxlevels,
                                                   confidence=confidence)
                     if self._Table__headers is None:
@@ -50,5 +59,6 @@ class QcTable(Table):
         try:
             column_index = self._Table__schema.field_names.index(name)
         except ValueError:
-            raise QCToolException('"{}" is not a column name among headers.')
+            raise QCToolException('"{}" is not a column name among headers.'.format(name))
+
         return [row[column_index] for row in self.raw_rows]

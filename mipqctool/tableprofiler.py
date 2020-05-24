@@ -15,6 +15,7 @@ from . import config
 config.debug(True)
 ErrorType = namedtuple('ErrorType', ['type', 'desc'])
 
+
 class TableProfiler(object):
 
     def __init__(self, schema):
@@ -216,7 +217,7 @@ class TableProfiler(object):
             self.__table_errors.append(error)
         if self.__rows_with_missing_required:
             desc = ('Table has rows with missing values'
-                     'that have a \"required\" constraint')
+                    'that have a \"required\" constraint')
             error = ErrorType('missing_values', desc)
             self.__table_errors.append(error)
 

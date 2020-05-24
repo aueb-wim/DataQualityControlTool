@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# helpers.py
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -8,7 +6,10 @@ from __future__ import unicode_literals
 
 import os
 from copy import deepcopy
-from . import config
+from .. import config
+
+
+# Module API
 
 def getsubfolders(rootfolder):
     """Returns dict with keys subfolders and values a list
