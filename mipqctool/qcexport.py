@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # qcexport.py
 """ Module with helper functions for exporting the statistical reports
 of the MIP local Quality Control Tool

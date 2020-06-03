@@ -1,0 +1,45 @@
+{
+    "missingValues": [
+        ""
+    ],
+    "fields": [
+        {
+            "format": "default",
+            "name": "Patient_id",
+            "type": "integer",
+            "bareNumber": true,
+            "MIPType": "integer"
+        },
+        {
+            "format": "default",
+            "name": "Diagnosis Categories",
+            "type": "string",
+            "constraints": {
+                "enum": [
+                    "Another3",
+                    "Category1",
+                    "Category2"
+                ]
+            },
+            "MIPType": "nominal"
+        },
+        {
+            "format": "default",
+            "name": "Gender_num",
+            "type": "integer",
+            "constraints": {
+                "enum": [
+                    "1",
+                    "2"
+                ]
+            },
+            "MIPType": "nominal"
+        },
+        {
+            "format": "%d/%m/%Y",
+            "name": "Date_visit",
+            "type": "date",
+            "MIPType": "date"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>{{ cname }} Column Report</title>
+    </head>
+    <body>
+        <h2>Report for column <b>{{ cname }}</b></h2>
+        {{ gen_stat_table }}
+        <h3>Statistics Table</h3>
+        {{ stat_table }}
+        <h3>{{ status }} corrections for datatype violations</h3>
+        {{ dcorrections_table }}
+        <h3>{{ status }} corrections for constraint violations</h3>
+        {{ ccorrections_table }}
+        <h3> Values that {{ null_replaced }} replaced with null</h3>
+        {{ removed_values }}     
+    </body>
+</html>
