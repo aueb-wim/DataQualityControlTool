@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 
 import re
 import sys
-import pandas as pd
 from . import config
 from .config import LOGGER
 

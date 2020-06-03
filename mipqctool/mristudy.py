@@ -1,4 +1,4 @@
-# study.py
+# mristudy.py
 
 from datetime import datetime
 

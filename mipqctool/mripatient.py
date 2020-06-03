@@ -1,4 +1,4 @@
-# patient.py
+# mripatient.py
 
 
 class MRIPatient(object):

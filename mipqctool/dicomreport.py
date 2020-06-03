@@ -14,7 +14,6 @@ import csv
 import multiprocessing as mp
 from multiprocessing import Pool
 import pydicom
-import pandas as pd
 from .config import LOGGER
 from .mridicom import MRIDicom
 from .mrisequence import MRISequence
