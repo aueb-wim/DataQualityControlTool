@@ -46,8 +46,8 @@ def test_profile_nominal(path, column, result):
     ('scleropssis', ['sclerosis', 'parkinson', 'demensia'], 'sclerosis'),
     ('Cat', ['Cat1', 'Cat2', 'Cat3'], 'Cat1'),
     ('CATEGORY1', ['category1', 'category2', 'category3'], 'category1'),
-    ('31', ['1', '2', '3'], '1'),
-    ('13', ['1', '2', '3'], '1'),
+    ('31', ['1', '2', '3'], NULL),
+    ('13', ['1', '2', '3'], NULL),
     ('NARWR', ['helo', 'dussan', 'lampda'], NULL)
 ])
 def test_suggestc_nominal(value, enum, result):

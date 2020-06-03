@@ -32,7 +32,7 @@ SCHEMA_SIMPLE = {'fields': [
 
 
 def test_infer_schema_empty_file():
-    s = QcTable('data/empty.csv')
+    s = QcTable('data/empty.csv', schema=None)
     d = s.infer()
     assert d == {
         'fields': [],
@@ -44,7 +44,7 @@ def test_infer_schema_empty_file():
     ('data/simple.csv', SCHEMA_SIMPLE),
     ])
 def test_schema_infer_tabulator(path, schema):
-    table = QcTable(path)
+    table = QcTable(path, schema=None)
     table.infer(maxlevels=3)
     assert table.headers == ['id', 'name', 'diagnosis']
     assert table.schema.descriptor == schema
@@ -56,7 +56,7 @@ def test_schema_infer_storage(import_module, apply_defaults):
         describe=Mock(return_value=SCHEMA_MIN),
         iter=Mock(return_value=DATA_MIN[1:]),
     )))
-    table = QcTable('table', storage='storage')
+    table = QcTable('table', schema=None, storage='storage')
     table.infer()
     assert table.headers == ['key', 'value']
     assert table.schema.descriptor == apply_defaults(SCHEMA_MIN)
@@ -73,7 +73,7 @@ def test_column_values(path, column_name):
         headers = next(reader)
         index = headers.index(column_name)
         result = [row[index] for row in reader]
-        table = QcTable(path)
+        table = QcTable(path, schema=None)
         table.infer()
         assert table.column_values(column_name) == result
 
@@ -83,7 +83,7 @@ def test_column_values(path, column_name):
     ('data/simple.csv', 'on exist column with spaces')
 ])
 def test_column_values_exception(path, column_name):
-    table = QcTable(path)
+    table = QcTable(path, schema=None)
     table.infer()
     with pytest.raises(QCToolException):
         assert table.column_values(column_name)

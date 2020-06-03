@@ -16,6 +16,13 @@ config.debug(True)
 
 class QcSchema(Schema):
 
+    def __init__(self, descriptor={}, strict=False):
+        super().__init__(descriptor, strict)
+
+        # overide __build and replace Fields objects
+        # with QcFields ones
+        self.__build()
+
     def infer(self, rows, headers=1,
               confidence=0.75, maxlevels=10):
         # Get headers
@@ -92,6 +99,14 @@ class QcSchema(Schema):
         self.__build()
 
         return descriptor
+
+    @property
+    def fields_names(self):
+        """Schema's field names
+        # Returns
+            str[]: an array of field names
+        """
+        return [field.name for field in self.fields]
 
     def __build(self):
         self._Schema__build()

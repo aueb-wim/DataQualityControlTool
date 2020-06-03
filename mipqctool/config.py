@@ -74,3 +74,27 @@ SEQUENCE_TAGS = ['PatientID', 'StudyID', 'SeriesDescription',
                  'PixelBandwidth', 'FlipAngle', 'PercentSampling',
                  'EchoNumbers']
 ALL_TAGS = REQUIRED_TAGS + DATE_TAGS + OPTIONAL_TAGS
+
+
+#lookup tables
+PRETTY_STAT_NAMES = {
+        'categories': 'List of category values',
+        'categories_num': 'Number of categories',
+        'unique': 'Count of unique values (for text variables)',
+        'top': 'Most frequent value',
+        'mode': 'Mode (most frequent value)',
+        'freq': 'Number of occurrences for most frequent value',
+        'q1': ('25% of records are below this value'
+                '(limit value of the first quartile)'),
+        'median': '50% of records are below this value (median)',
+        'q3': ('75% of records are below this value'
+               '(limit value of the third quartile)'),
+        'outliers': 'Total number of outliers (outside 3 std.dev)',
+        'upperbound': 'Outlier upper bound',
+        'lowerbound': 'Outlier lower bound',
+        'outliersrows': 'Rows with outliers',
+        'std': 'Standard deviation',
+        'max': 'Maximum value',
+        'min': 'Minimum value',
+        'bottom5': '5 least frequent values',
+        'top5': '5 most frequent values'}

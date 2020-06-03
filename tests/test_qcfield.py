@@ -19,7 +19,7 @@ NOMINAL_DESC = {'name': 'testvar',
                 'type': 'string',
                 'MIPType': 'nominal',
                 'constraints': {
-                    'enum': ['Cat1', 'Cat2', 'Cat3']
+                    'enum': ['Category1', 'Category2', 'Another3']
                 }}
 NUMERICAL_DESC = {'name': 'testvar',
                   'format': 'default',
@@ -59,7 +59,7 @@ def test_validate_DataTypeException(descriptor, value):
 @pytest.mark.parametrize('descriptor, value', [
     (INTEGER_DESC, '-1'),
     (NUMERICAL_DESC, '10.4'),
-    (NOMINAL_DESC, 'CAT1')
+    (NOMINAL_DESC, 'CATegory1')
 ])
 def test_validate_ConstraintException(descriptor, value):
     testfield = QcField(descriptor)
@@ -71,7 +71,7 @@ def test_validate_ConstraintException(descriptor, value):
     (DATE_DESC, '2019-12-12', '2019-12-12'),
     (NUMERICAL_DESC, '3.1', '3.1'),
     (INTEGER_DESC, '3', '3'),
-    (NOMINAL_DESC, 'Cat2', 'Cat2')
+    (NOMINAL_DESC, 'Category2', 'Category2')
 ])
 def test_validate(descriptor, value, result):
     testfield = QcField(descriptor)
@@ -82,7 +82,14 @@ def test_validate(descriptor, value, result):
 
 @pytest.mark.parametrize('descriptor, value, result', [
     (INTEGER_DESC, '1', 'NA'),
-    (NOMINAL_DESC, 'CAT2', 'Cat2'),
+    (NOMINAL_DESC, 'CATegory2', 'Category2'),
+    (NOMINAL_DESC, 'Anoter1', 'Another3'),
+    (NOMINAL_DESC, 'CATEGORR2', 'Category2'),
+    (NOMINAL_DESC, 'CategGory1', 'Category1'),
+    (NOMINAL_DESC, 'CATEGOR1', 'Category1'),
+    (NOMINAL_DESC, 'Catgry2', 'Category2'),
+    (NOMINAL_DESC, 'not_value', 'NA'),
+    (NOMINAL_DESC, 'vecw', 'NA'),
     (DATE_DESC, '31-5-1980', 'NA'),
     (DATE_DESC, '31 May 1980', 'NA'),
     (NUMERICAL_DESC, '-10.14', 'NA')
@@ -99,6 +106,7 @@ def test_suggestc(descriptor, value, result):
     (NOMINAL_DESC, 32, ''),
     (DATE_DESC, '31-5-1980', '1980-05-31'),
     (DATE_DESC, '31 May 1980', '1980-05-31'),
+    (DATE_DESC, '32 May 1980', ''),
     (NUMERICAL_DESC, 'nonono', ''),
     (INTEGER_DESC, '3.5', '3'),
     (INTEGER_DESC, '1.23', ''),

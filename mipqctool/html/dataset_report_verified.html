@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>{{ datasetfile }} Dataset Report</title>
+    </head>
+    <body>
+        <h1>Quality Control Report of <b>{{ datasetfile }}</b></h1>
+        <p>This QC Report is created on <b>{{ date_run }}</b> </p>
+        <p>Version of Data Quality Control Tool: <b>{{ qcversion }}</b> </p>
+        <p>File path: {{csvfilepath}}</p>
+        <p>Total number of rows: <b>{{ total_rows }}</b>,   Total number of columns: <b>{{ total_columns }}</b> </p>
+        <p>Is metadata JSON file with table schema provided? <b>{{ use_metadata }}</b></p>
+        <p>Data Cleaning performed? <b>Yes</b></p>
+        <p>Number of rows corrected or cleaned from invalid values: <b>{{ total_invalid_rows }}</b></p>
+        <h3>Rows Data Completion Overall Statistics</h3>
+        <table>
+            <tr>
+                <td>Number of rows with only the ID column filled (the others are filled with nulls)</td>
+                <td>{{ only_ids }} ({{only_ids_perc}}%)</td>
+            </tr>
+            <tr>
+                <td>Number of rows with nulls in ID column</td>
+                <td>{{ no_ids }} ({{no_ids_perc}}%)</td>
+            </tr>
+            <tr>
+                <td>Number of rows with 100% (all {{ total_columns }}) of the columns filled</td>
+                <td>{{ filled_100 }} ({{ filled_100_perc }}%)</td>
+            </tr>
+            <tr>
+                <td>Number of rows with 75-99% ({{ p75 }} - {{ p99 }}) of the columns filled</td>
+                <td>{{ filled_75_99 }} ({{ filled_75_99_perc }}%)</td>
+            </tr>
+            <tr>
+                <td>Number of rows with 50-74% ({{ p50 }} - {{ p74 }}) of the columns filled</td>
+                <td>{{ filled_50_74 }} ({{ filled_50_74_perc }}%)</td>
+            </tr>
+            <tr>
+                <td>Number of rows with 25-49% ({{ p25 }} - {{ p49 }}) of the columns filled</td>
+                <td>{{ filled_25_49 }} ({{ filled_25_49_perc }}%)</td>
+            </tr>
+            <tr>
+                <td>Number of rows with 0-24% (0 - {{ p24 }}) of the colums filled</td>
+                <td>{{ filled_0_24 }} ({{ filled_0_24_perc }}%)</td>
+            </tr>
+        </table> 
+    </body>
+</html>

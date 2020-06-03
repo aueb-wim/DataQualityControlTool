@@ -19,7 +19,7 @@ def profile_nominal(pairs):
     :param pairs: list with pairs (row, value)
     :return: dictionary with stats
     """
-    result = {}
+    result = OrderedDict()
     values = [r[1] for r in pairs]
     c = Counter(values)
     result['top'], result['freq'] = c.most_common(1)[0]
@@ -43,6 +43,9 @@ def suggestc_nominal(value, **options):
              begining of the list with the enumerations
     """
     null = options.get('missing_values', DEFAULT_MISSING_VALUES)[0]
+    # case when we have numbers, difficult to correct the spell error
+    if value.isdigit():
+        return null
     enum = options.get('enum', [])
     con_upper = [item.upper() for item in enum]
     distances = {key: edit_distance(value.upper(), key) for key in con_upper}

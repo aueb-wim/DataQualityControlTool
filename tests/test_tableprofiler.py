@@ -95,7 +95,7 @@ def test_validate_row_dublicate(row, result):
 ])
 def test_vadidate_rows_with_invalids(path, schema, valid, rows_with_invalids):
     profiler = TableProfiler(schema)
-    table = QcTable(path)
+    table = QcTable(path, schema=None)
     rows = table.read(cast=False)
     assert profiler.validate(rows, table.headers) == valid
     assert profiler.rows_with_invalids == rows_with_invalids
@@ -103,7 +103,7 @@ def test_vadidate_rows_with_invalids(path, schema, valid, rows_with_invalids):
 
 def test_invalid_rows():
     profiler = TableProfiler(SCHEMA_SIMPLE)
-    table = QcTable('data/simple_invalid_2.csv')
+    table = QcTable('data/simple_invalid_2.csv', schema=None)
     rows = table.read(cast=False)
     assert profiler.validate(rows, table.headers) == False
     assert profiler.invalid_rows == [5]
@@ -117,7 +117,7 @@ def test_invalid_rows():
 def test_dublicates(path, schema, primary_keys, dublicates):
     schema['primaryKey'] = primary_keys
     profiler = TableProfiler(schema)
-    table = QcTable(path)
+    table = QcTable(path, schema=None)
     rows = table.read(cast=False)
     profiler.validate(rows, table.headers)
     assert profiler.rows_with_dublicates == dublicates
@@ -132,7 +132,7 @@ def test_missing(path, schema, primary_keys, missing_pk, missing_rq):
     schema['missingValues'].append('NA')
     schema['fields'][2]['constraints'] = {'required': True}
     profiler = TableProfiler(schema)
-    table = QcTable(path)
+    table = QcTable(path, schema=None)
     rows = table.read(cast=False)
     profiler.validate(rows, table.headers)
     assert profiler.rows_with_missing_pk == missing_pk

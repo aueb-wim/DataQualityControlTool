@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import re
 import datetime
-from collections import Counter
+from collections import Counter, OrderedDict
 from tableschema.config import DEFAULT_FIELD_FORMAT
 from ..config import ERROR, LOGGER, DEFAULT_DATE_FORMAT
 from ..config import DEFAULT_MISSING_VALUES
@@ -75,7 +75,7 @@ def profile_date(pairs):
     :param pairs: list with pairs (row, value)
     :return: dictionary with stats
     """
-    result = {}
+    result = OrderedDict()
     # Get the values in an numpy array
     values = [r[1] for r in pairs]
     c = Counter(values)

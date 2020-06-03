@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import re
 import numpy as np
-from collections import Counter
+from collections import Counter, OrderedDict
 from ..config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
 # Regex unicode support
 
@@ -97,7 +97,7 @@ def profile_integer(pairs):
     :param pairs: list with pairs (row, value)
     :return: dictionary with stats
     """
-    result = {}
+    result = OrderedDict()
     # Get the values in an numpy array
     values = np.asarray([r[1] for r in pairs])
     c = Counter(values)

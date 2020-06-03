@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import re
 import numpy as np
+from collections import OrderedDict
 from ..config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
 
 
@@ -76,7 +77,7 @@ def profile_numerical(pairs):
     :param pairs: list with pairs (row, value)
     :return: dictionary with stats
     """
-    result = {}
+    result = OrderedDict()
     # Get the values in an numpy array
     values = np.asarray([float(r[1]) for r in pairs])
 
@@ -92,9 +93,10 @@ def profile_numerical(pairs):
     result['upperbound'] = high
     low = result['mean'] - 3 * result['std']
     result['lowerbound'] = low
-    result['outliersrows'] = list(filter(lambda x:
-                                         x[1] >= high or x[1] <= low, pairs))
-    result['outliers'] = len(result['outliersrows'])
+    outlier_rows = list(filter(lambda x:
+                               x[1] >= high or x[1] <= low, pairs))
+    result['outliers'] = len(outlier_rows)
+    result['outliersrows'] = outlier_rows
 
     return result
 

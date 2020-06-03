@@ -68,8 +68,8 @@ class QcField(Field):
             # constraints dictionary
             enum = self.constraints.get('enum', [])
             suggested = self.__suggestc_function(value,
-                                                 enum=enum,
-                                                 missing_values=missing_values)
+                                                enum=enum,
+                                                missing_values=missing_values)
         # for MIPTypes integer, numerical, text, date
         else:
             suggested = self.__suggestc_function(value,

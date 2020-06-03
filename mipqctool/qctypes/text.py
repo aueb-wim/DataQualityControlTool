@@ -7,7 +7,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import re
-from collections import Counter
+from collections import Counter, OrderedDict
 from ..config import ERROR, LOGGER, PANDAS_NANS, DEFAULT_MISSING_VALUES
 
 
@@ -61,10 +61,11 @@ def profile_text(pairs):
     :param pairs: list with pairs (row, value)
     :return: dictionary with stats
     """
-    result = {}
+    result = OrderedDict()
     # Get the values in an numpy array
     values = [r[1] for r in pairs]
     c = Counter(values)
+    result['unique'] = len(list(c))
     result['top'], result['freq'] = c.most_common(1)[0]
     result['top5'] = [count[0] for count in c.most_common(5)]
     result['bottom5'] = [count[0] for count in c.most_common()[:-6:-1]]

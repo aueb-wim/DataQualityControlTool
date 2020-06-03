@@ -47,7 +47,7 @@ def test_describe_text(pattern, uniques, result):
 
 @pytest.mark.parametrize('path, column, result', [
     ('data/text.csv', 1,
-     {'top': 'Germany', 'freq': 17,
+     {'top': 'Germany', 'freq': 17, 'unique': 13, 
       'top5': ['Germany', 'Italy', 'Netherlands', 'Denmark', 'Belgium'],
       'bottom5': ['Austria', 'Albania', 'Ireland', 'Turkey', 'Spain']}),
 ])

@@ -6,19 +6,42 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
+from collections import defaultdict
 from tableschema import Table
 from tableschema.exceptions import CastError
 from tabulator import Stream
 from .qcschema import QcSchema
 from .exceptions import QCToolException
-from collections import defaultdict
 
 
 class QcTable(Table):
     """This class is designed for csv files only.
     """
-    def __init__(self, source, **kargs):
+    def __init__(self, source, schema, **kargs):
         super().__init__(source, **kargs)
+        self.__source = source
+        self.__filename = os.path.basename(source)
+
+        # QcSchema
+        if isinstance(schema, QcSchema):
+            self._Table__schema = schema
+            self.__metadata = True
+        elif isinstance(schema, dict):
+            self._Table__schema = QcSchema(schema)
+            self.__metadata = True
+        else:
+            self.__metadata = False
+
+    @property
+    def source(self):
+        """The file path of the dataset"""
+        return self.__source
+
+    @property
+    def filename(self):
+        """The filename of the csv file"""
+        return self.__filename
 
     @property
     def raw_rows(self):
@@ -52,6 +75,7 @@ class QcTable(Table):
             else:
                 super().infer(limit=limit, confidence=confidence)
 
+        self.__infered = True
         return self._Table__schema.descriptor
 
     def column_values(self, name):
@@ -62,3 +86,8 @@ class QcTable(Table):
             raise QCToolException('"{}" is not a column name among headers.'.format(name))
 
         return [row[column_index] for row in self.raw_rows]
+
+    @property
+    def with_metadata(self):
+        """True if a schema metadata json is used"""
+        return self.__metadata

@@ -18,10 +18,16 @@ def tupples2table(pairs):
     html_text = """<table width="100%">
 {% for pair in pairs %}
     <tr>
-        <td>{{pair[0]}}</td>
-        <td>{{pair[1]}}</td>
+        <td>{{ pair[0] }}</td>
+        <td>{{ pair[1] }}</td>
     </tr>
     {% endfor %}
 </table>"""
     table_tpl = Template(html_text)
     return table_tpl.render(pairs=pairs)
+
+def list2parag(values):
+    """Returns a html paragraph with the list values"""
+    html_text="""<p>{% for value in values %}{{ value }}, {% endfor %}</p>"""
+    parag_tmp = Template(html_text)
+    return parag_tmp.render(values=values)
