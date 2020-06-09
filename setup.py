@@ -18,14 +18,13 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/aueb-wim/DataQualityControlTool',
     lisence='Apache 2.0',
-    keywords='qualitycontrol dataprofiler miplocal',
+    keywords='qualitycontrol dataprofiler datacleaning',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
-    install_requires=['pandas', 'pylatex', 'pydicom',
-                      'xlwt'],
+    install_requires=[],
     entry_points={
         'console_scripts': [
-            'qctool = mipqctool.__main__:main',
+            'qctool = mipqctool.cli:main',
             'qctoolgui = mipqctool.qctoolgui:main'
             ]
     },

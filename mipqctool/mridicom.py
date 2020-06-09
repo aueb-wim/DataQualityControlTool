@@ -6,7 +6,6 @@ import collections
 import multiprocessing as mp
 from multiprocessing import Pool
 import pydicom
-import pandas as pd
 from .config import LOGGER
 from . import config, __version__
 

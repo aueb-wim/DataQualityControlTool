@@ -13,6 +13,7 @@ from mipqctool.qcschema import QcSchema
 
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
 DATASET1_PATH = os.path.join(APP_PATH, 'test_datasets/test_dataset.csv')
+DATASET2_PATH = os.path.join(APP_PATH, 'test_datasets/test_dataset2.csv')
 METADATA1_PATH = os.path.join(APP_PATH, 'test_datasets/test_dataset.json')
 ID_STATS1 = {
     'rows_only_id': 1,
@@ -54,12 +55,12 @@ F_ROWS_PER_COLUMN1 = {
 
 # these 3 lines is for creating the initial
 # metadata json file with the dataset's schema
-# TEST_TABLE = QcTable(DATASET1_PATH)
-# TEST_TABLE.infer()
-# TEST_TABLE.schema.save(os.path.join(APP_PATH, 'test_datasets/test_dataset.json')
+TEST_TABLE = QcTable(DATASET2_PATH, schema=None)
+TEST_TABLE.infer()
+TEST_TABLE.schema.save(os.path.join(APP_PATH, 'test_datasets/test_dataset2.json'))
 
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result, total_rows', [
-    (DATASET1_PATH, METADATA1_PATH, 'Patient_id', F_ROWS_PER_COLUMN1, 20)
+    (DATASET1_PATH, METADATA1_PATH, 1, F_ROWS_PER_COLUMN1, 20)
 ])
 def test_calc_rows_per_column(datasetpath, schemapath, id_column, result, total_rows):
     with open(schemapath) as json_file:
@@ -77,7 +78,7 @@ def test_calc_rows_per_column(datasetpath, schemapath, id_column, result, total_
 
 
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result', [
-    (DATASET1_PATH, METADATA1_PATH, 'Patient_id', FILLED_ROWS_STATS1)
+    (DATASET1_PATH, METADATA1_PATH, 1, FILLED_ROWS_STATS1)
 ])
 def test_filled_rows_stats(datasetpath, schemapath, id_column, result):
     with open(schemapath) as json_file:
@@ -90,7 +91,7 @@ def test_filled_rows_stats(datasetpath, schemapath, id_column, result):
         assert recorded.list == []
 
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result', [
-    (DATASET1_PATH, METADATA1_PATH, 'Patient_id', VALID_ROWS_STATS1)
+    (DATASET1_PATH, METADATA1_PATH, 1, VALID_ROWS_STATS1)
 ])
 def test_valid_rows_stats(datasetpath, schemapath, id_column, result):
     with open(schemapath) as json_file:
@@ -104,7 +105,7 @@ def test_valid_rows_stats(datasetpath, schemapath, id_column, result):
 
 
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result', [
-    (DATASET1_PATH, METADATA1_PATH, 'Patient_id', COR_FILLED_ROWS_STATS1)
+    (DATASET1_PATH, METADATA1_PATH, 1, COR_FILLED_ROWS_STATS1)
 ])
 def test_corrected_filled_rows_stats(datasetpath, schemapath, id_column, result):
     with open(schemapath) as json_file:

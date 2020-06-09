@@ -29,22 +29,24 @@ class TableReport(object):
     def __init__(self, table, id_column):
         """ Arguments:
             :param table: a QcTable object
+            :param id_column: column number of dataset's primary key (id)
         """
         if not table.schema:
             table.infer()
 
-        # check if id_column exist and get its index
+        # check if id_column number exist and get its column name
         try:
-            self.__id_index = table.schema.fields_names.index(id_column)
 
-        except ValueError:
-            raise TableReportError('{} is not included in csv headers'.format(id_column))
+            self.__id_column = table.schema.fields_names[id_column-1]
+
+        except IndexError:
+            raise TableReportError('{} column number is out of bounds'.format(id_column))
 
         else:
-            self.__id_column = id_column
+            self.__id_index = id_column - 1
             self.__table = table
             # check if table has a schema else infer
-            
+
             self.__total_columns = len(self.__table.schema.field_names)
             self.__columns_quantiles = None
             self.__calc_columns_quantiles()
@@ -117,7 +119,7 @@ class TableReport(object):
         docs.append(HTML(string=html_out).render(stylesheets=[css_path]))
         for columnreport in self.__columnreports:
             docs.append(HTML(string=columnreport.to_html()).render(stylesheets=[css_path]))
-        
+
         all_pages = [p for doc in docs for p in doc.pages]
         docs[0].copy(all_pages).write_pdf(target=filepath)
 

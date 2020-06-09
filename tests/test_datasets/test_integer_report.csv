@@ -1,4 +1,0 @@
-variable_name,count,mean,std,min,25%,50%,75%,max,desc,type,range_values,not_null_%,bottom,upper,#_of_outliers,type_estimated,category_levels,total_levels,bottom_5_text_values,top_5_text_values
-Subject Age Years,86,70.1627906977,9.3618254443,36,67,71,77,87,,numeric,,86,42.0773143647,98.2482670306,3,,,,,
-Subject Age Months,86,0,0,0,0,0,0,0,,numeric,,86,0,0,0,,,,,
-Mini Mental State,85,24.9529411765,5.115117376,9,23,26,29,30,,numeric,,85,9.6075890485,40.2982933045,1,,,,,

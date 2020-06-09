@@ -50,6 +50,9 @@ def test_describe_text(pattern, uniques, result):
      {'top': 'Germany', 'freq': 17, 'unique': 13, 
       'top5': ['Germany', 'Italy', 'Netherlands', 'Denmark', 'Belgium'],
       'bottom5': ['Austria', 'Albania', 'Ireland', 'Turkey', 'Spain']}),
+    ('data/text.csv', 2,
+     {'top': '', 'freq': 100, 'unique': 1,
+      'top5': [''], 'bottom5': ['']})
 ])
 def test_profile_text(path, column, result):
     pairs = []

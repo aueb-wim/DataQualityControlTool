@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import os
 import csv
+import json
 import getpass
 from tkinter import ttk
-import pandas as pd
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from .qctablib import DatasetCsv, Metadata
+from .qcschema import QcSchema
+from .qctable import QcTable
+from .tablereport import TableReport
 from .dicomreport import DicomReport
 from . import __version__
 
@@ -46,14 +48,12 @@ class CsvTab(tk.Frame):
         self.coltype = None
         self.metafilepath = None
         self.exportfiledir = None
-        self.dataset = None
+        self.datasetpath = None
         self.dname = None
         self.reportcsv = None
-        self.readable = tk.BooleanVar()
-        self.onlylatex = tk.BooleanVar()
+        self.cleaning = tk.BooleanVar()
         self.nometadata = tk.BooleanVar()
-        self.readable.set(False)
-        self.onlylatex.set(False)
+        self.cleaning.set(False)
         self.__init()
         self.__packing()
 
@@ -74,19 +74,10 @@ class CsvTab(tk.Frame):
                                         bg='white', pady=4, width=50)
         self.button_load_md = tk.Button(self.tblabelframe, text='Select File',
                                         command=self.setmetadatafile)
-        # Select column for variable name (Label and dropdown list)
-        self.label_columnvarname = tk.Label(self.tblabelframe,
-                                            text='Select variable name column:')
-        self.colvallist = ttk.Combobox(self.tblabelframe, width=50)
-        self.colvallist.config()
-        # Select column for variable type (Laber and dropdown list)
-        self.label_columntype = tk.Label(self.tblabelframe,
-                                         text='Select variable type column:')
-        self.coltypelist = ttk.Combobox(self.tblabelframe, width=50)
-        self.coltypelist.config()
+
         # No metadata file checkbox
         self.checkmetadata = tk.Checkbutton(self.tblabelframe,
-                                            text='No metadata file',
+                                            text='No metadata file \n Infer json',
                                             variable=self.nometadata,
                                             command=self._metadata_check)
 
@@ -105,13 +96,13 @@ class CsvTab(tk.Frame):
         #  Execution interface
         self.frame_exec = tk.Frame(self)
         # Checkbox readable columns in csv
-        self.checkreadble = tk.Checkbutton(self.frame_exec,
-                                           text='Readable columns',
-                                           variable=self.readable)
+        self.checkclean = tk.Checkbutton(self.frame_exec,
+                                         text='Perform Data Cleaning?',
+                                         variable=self.cleaning)
         # Checkbox for producing a Latex instead a pdf file
-        self.checklatex = tk.Checkbutton(self.frame_exec,
-                                         text='No pdf',
-                                         variable=self.onlylatex)
+        # self.checklatex = tk.Checkbutton(self.frame_exec,
+        #                                 text='No pdf',
+        #                                 variable=self.onlylatex)
         # Button execution
         self.button_exec = tk.Button(self.frame_exec,
                                      text='Create Report',
@@ -126,13 +117,10 @@ class CsvTab(tk.Frame):
         self.label_metadata.grid(row=1, column=0)
         self.label_dfilename.grid(row=0, column=1, pady=2)
         self.button_load_md.grid(row=1, column=2)
-        self.checkmetadata.grid(row=5, column=2)
+        self.checkmetadata.grid(row=1, column=3)
         self.label_mfilename.grid(row=1, column=1, pady=2)
         self.button_load_md.grid(row=1, column=2)
-        self.colvallist.grid(row=2, column=1, pady=4)
-        self.label_columnvarname.grid(row=2, column=0)
-        self.label_columntype.grid(row=3, column=0)
-        self.coltypelist.grid(row=3, column=1, pady=4)
+
         # Output frame
         self.tblabelframe_output.pack(fill='both', expand='yes',
                                       ipadx=4, ipady=4,
@@ -144,27 +132,21 @@ class CsvTab(tk.Frame):
         self.frame_exec.pack(fill='both', expand='yes',
                              padx=4, pady=4)
         self.frame_exec.grid_columnconfigure(0, weight=1)
-        self.checkreadble.grid(row=0, column=1, sticky='w')
-        self.checklatex.grid(row=0, column=0, sticky='e')
+        self.checkclean.grid(row=0, column=1, sticky='w')
+        # self.checklatex.grid(row=0, column=0, sticky='e')
         self.button_exec.grid(row=0, column=2, pady=4)
 
     def setmetadatafile(self):
-        """Sets the filepath of the metadata file """
+        """Sets the filepath of the  metadata file """
         filepath = tkfiledialog.askopenfilename(title='select metadata file',
-                                                filetypes=(('csv files', '*.csv'),
+                                                filetypes=(('json files', '*.json'),
                                                            ('all files', '*.*')))
         if filepath:
             name = os.path.basename(filepath)
             self.label_mfilename.config(text=name)
-            with open(filepath, 'r') as meta:
-                csvmeta = csv.DictReader(meta)
-                self.colvallist.config(values=csvmeta.fieldnames)
-                self.coltypelist.config(values=csvmeta.fieldnames)
             self.metafilepath = filepath
         else:
             self.metafilepath = None
-            self.colvallist.config(values=None)
-            self.coltypelist.config(values=None)
             self.label_mfilename.config(text='Not Selected')
 
     def loaddatasetfile(self):
@@ -175,7 +157,7 @@ class CsvTab(tk.Frame):
         if filepath:
             self.dname = os.path.basename(filepath)
             self.label_dfilename.config(text=self.dname)
-            self.dataset = pd.read_csv(filepath)
+            self.datasetpath = filepath
         else:
             self.dname = None
             self.label_dfilename.config(text='Not Selected')
@@ -188,8 +170,6 @@ class CsvTab(tk.Frame):
 
     def createreport(self):
         metadata = None
-        colval = self.colvallist.get()
-        coltype = self.coltypelist.get()
         warningtitle = 'Can not create report'
         if not self.dname:
             tkmessagebox.showwarning(warningtitle,
@@ -199,10 +179,6 @@ class CsvTab(tk.Frame):
             if not self.metafilepath:
                 tkmessagebox.showwarning(warningtitle,
                                          'Please, select metadata file')
-            elif colval == '' or coltype == '':
-                tkmessagebox.showwarning(warningtitle,
-                                         'Please, select metadata columns')
-            metadata = Metadata.from_csv(self.metafilepath, colval, coltype)
 
         elif not self.exportfiledir:
             tkmessagebox.showwarning(warningtitle,
@@ -210,15 +186,31 @@ class CsvTab(tk.Frame):
         else:
             filedir = self.exportfiledir
             basename = os.path.splitext(self.dname)[0]
-            dreportfile = os.path.join(filedir,
-                                       basename + '_dataset_report.csv')
-            vreportfile = os.path.join(filedir, basename + '_report.csv')
             pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
-            self.reportcsv = DatasetCsv(self.dataset, self.dname, metadata)
-            self.reportcsv.export_dstat_csv(dreportfile, self.readable.get())
-            self.reportcsv.export_vstat_csv(vreportfile, self.readable.get())
-            self.reportcsv.export_pdf(pdfreportfile)
-            # self.reportcsv.export_latex(pdfreportfile, pdf=not self.onlylatex.get())
+
+            # Is metadata json file provided?
+            if not self.nometadata.get():
+                with open(self.metafilepath) as json_file:
+                    dict_schema = json.load(json_file)
+                    schema = QcSchema(dict_schema)
+                    dataset = QcTable(self.datasetpath, schema=schema)
+            # no? then try to infer the schema and save it in the same folder 
+            else:
+                dataset = QcTable(self.datasetpath, schema=None)
+                dataset.infer()
+                datasetfolder = os.path.dirname(self.datasetpath)
+                metadatafile = os.path.join(datasetfolder, basename + '.json')
+                dataset.schema.save(metadatafile)
+
+            self.reportcsv = TableReport(dataset, id_column=1)
+            # Perform Data Cleaning?
+            if self.cleaning.get():
+                self.reportcsv.apply_corrections()
+                self.reportcsv.save_corrected(self.datasetpath)
+
+            # Create the pdf report
+            self.reportcsv.printpdf(pdfreportfile)
+
             self.label_export2.config(text=filedir)
             tkmessagebox.showinfo(title='Status info',
                 message='Reports have been created successully')
@@ -229,8 +221,6 @@ class CsvTab(tk.Frame):
         else:
             status = 'normal'
         self.button_load_md.config(state=status)
-        self.coltypelist.config(state=status)
-        self.colvallist.config(state=status)
         self.label_mfilename.config(state=status)
 
 

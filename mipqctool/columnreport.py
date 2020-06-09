@@ -346,7 +346,11 @@ class ColumnReport(object):
             else:
                 rows_with_nulls.append(pair[0])
                 total_rows_with_nulls += 1
-        stats = profiler(casted_pairs)
+        if len(casted_pairs) == 0:
+            # all values are null
+            stats = {}
+        else:
+            stats = profiler(casted_pairs)
         self.__not_nulls_total = len(casted_pairs)
         self.__null_total = total_rows_with_nulls
         self.__null_rows = rows_with_nulls

@@ -97,7 +97,7 @@ SEQUENCE_TAGS = ['PatientID', 'StudyID', 'SeriesDescription',
 ALL_TAGS = REQUIRED_TAGS + DATE_TAGS + OPTIONAL_TAGS
 
 
-#lookup tables
+# lookup tables
 PRETTY_STAT_NAMES = {
         'categories': 'List of category values',
         'categories_num': 'Number of categories',

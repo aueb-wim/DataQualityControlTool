@@ -10,7 +10,7 @@ import pandas as pd
 from .qctablib import DatasetCsv, Metadata
 from .dicomreport import DicomReport
 
-DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+DIR_PATH = os.path.dirname(os.path.abspath(__file__)
 
 def main():
     """Main app for quality control tool with CLI"""

@@ -136,7 +136,7 @@ _INFER_PRIORITY = [
 
 
 class _QcTypeGuesser(object):
-    """Guess the type for a value returning a tuple of ('type', 'pattern')
+    """Guess the type for a value returning a tuple of ('type', 'pattern', priority)
     """
     def infer(self, value):
         for priority, name in enumerate(_INFER_PRIORITY):
@@ -156,9 +156,17 @@ class _QcTypeResolver(object):
             name = results[0][0]
             pattern = results[0][1]
             describe = getattr(qctypes, 'describe_%s' % name)
-            rv = describe(pattern,
-                          uniques=uniques,
-                          maxlevels=maxlevels)
+            # all are null, special case, infer it as text
+            if pattern == 'nan':
+                nulluniques = []
+                nullmaxlevels = -100
+                rv = describe('text',
+                              uniques=nulluniques,
+                              maxlevels=nullmaxlevels)
+            else:
+                rv = describe(pattern,
+                              uniques=uniques,
+                              maxlevels=maxlevels)
         else:
             counts = {}
             for result in results:
@@ -169,6 +177,7 @@ class _QcTypeResolver(object):
                     counts[result] += 1
                 else:
                     counts[result] = 1
+
             # tuple representation of 'counts' dict sorted by values
             sorted_counts = sorted(counts.items(),
                                    key=lambda item: item[1],
