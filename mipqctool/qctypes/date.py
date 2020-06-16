@@ -20,7 +20,6 @@ def infer_date(value, **options):
     result = None
     datetype = None
     sep = None
-    year = '%y'
     year = None
     for priority, regex in enumerate(_PRIORITY_DATES, 1):
         match = re.match(regex, str(value), flags=re.UNICODE)
@@ -30,7 +29,7 @@ def infer_date(value, **options):
             if len(match.group('year')) == 4:
                 year = '%Y'
             break
-    if datetype:
+    if datetype and year:
         if datetype == 1:
             result = '%d' + sep + '%m' + sep + year
         elif datetype == 2:

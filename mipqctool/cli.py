@@ -52,7 +52,7 @@ def csv(input_csv, col_id, clean,
         dataset = QcTable(input_csv, schema=schema)
     else:
         dataset = QcTable(input_csv, schema=None)
-        dataset.infer()
+        dataset.infer(limit=sample_rows, maxlevels=max_levels)
     datasetreport = TableReport(dataset, col_id)
 
     # Apply data cleaning corrections?
@@ -90,11 +90,19 @@ def dicom(ctx, root_folder, report_folder, loris_folder=None):
 
 
 @main.command()
+@click.option('--max_levels', type=int, default=10, show_default=True,
+              help='Max unique values of a text variable \
+                    that below that will be infered as nominal \
+                    when no dataset metadata (schema) is provided')
+@click.option('--sample_rows', type=int, default=100, show_default=True,
+              help='Number rows that are going to be used as sample \
+                    for infering the dataset metadata (schema) when \
+                    metadata file is not provided')
 @click.argument('input_csv', type=click.Path(exists=True))
 @click.argument('output_json', type=click.Path())
-def infercsv(input_csv, output_json):
+def infercsv(input_csv, output_json, sample_rows, max_levels):
     dataset = QcTable(input_csv, schema=None)
-    dataset.infer()
+    dataset.infer(limit=sample_rows, maxlevels=max_levels)
     dataset.schema.save(output_json)
 
     

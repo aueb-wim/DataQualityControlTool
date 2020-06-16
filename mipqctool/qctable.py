@@ -64,7 +64,9 @@ class QcTable(Table):
                 with self._Table__stream as stream:
                     if self._Table__schema is None:
                         self._Table__schema = QcSchema()
-                        self._Table__schema.infer(stream.sample[:limit],
+                        # increase the upper limit by 1 because is exclusive
+                        limit_inc = limit + 1
+                        self._Table__schema.infer(stream.read(limit=limit),
                                                   headers=stream.headers,
                                                   maxlevels=maxlevels,
                                                   confidence=confidence)

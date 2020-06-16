@@ -36,6 +36,7 @@ def resolver():
     ('123longsuffix1234', ('text', 'text', 3)),
     ('N/A', ('text', 'nan', 3)),
     ('12/12/2013', ('date', '%d/%m/%Y', 0)),
+    ('', ('text', 'nan', 3))
 ])
 def test_guesser(guesser, value, result):
     with pytest.warns(None) as recorded:
@@ -54,16 +55,20 @@ def test_guesser(guesser, value, result):
     ({'number': 6, 'date': 5, 'nan': 15},
      {'type': 'date', 'format': '%d/%m/%Y',
       'MIPType': 'date'}),
-    ({'number': 8, 'text': 10, 'nan': 22},
+    ({'number': 8, 'text': 10, 'nan': 2200},
      {'type': 'number', 'format': 'default',
       'MIPType': 'numerical', 'decimalChar': '.',
       'bareNumber': True}),
-    ({'number': 8, 'text': 11, 'nan': 22},
+    ({'number': 8, 'text': 11, 'nan': 202},
      {'type': 'string', 'format': 'default',
       'MIPType': 'text'}),
     ({'integer': 10},
      {'type': 'integer', 'format': 'default',
       'MIPType': 'integer', 'bareNumber': True}),
+    ({'number': 1, 'nan': 5200},
+     {'type': 'number', 'format': 'default',
+      'MIPType': 'numerical', 'decimalChar': '.',
+      'bareNumber': True}),
 ])
 def test_resolver(resolver, counts, result):
     mocker = ResultMocker()

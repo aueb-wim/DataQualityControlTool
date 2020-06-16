@@ -45,6 +45,7 @@ class QcSchema(Schema):
         missingvalues = set()
         for header in headers:
             descriptor['fields'].append({'name': header})
+        LOGGER.info('{} of sample rows are used for table schema inference'.format(len(rows)))
         for index, row in enumerate(rows):
             # Normalize rows with invalid dimensions for sanity
             row_length = len(row)
