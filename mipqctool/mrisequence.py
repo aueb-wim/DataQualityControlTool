@@ -28,67 +28,6 @@ class MRISequence(object):
         self.__getseqdata()
         self.validate()
 
-    def __validate_dicoms(self, dicoms):
-        for dicom in dicoms:
-            if dicom.isvalid:
-                self.__validdicoms.append(dicom)
-            else:
-                self.__invaliddicoms.append(dicom)
-
-    def __getseqdata(self):
-        data = collections.OrderedDict()
-        dicoms = self.__validdicoms
-        # case of sequence with only invalid dicom files
-        # get sequence data from them
-        if len(self.__validdicoms) == 0 and len(self.__invaliddicoms) > 0:
-            dicoms = self.__invaliddicoms
-
-        for seqtag in config.SEQUENCE_TAGS:
-            values = list(d.data[seqtag] for d in dicoms)
-            # get the most frequent element
-            data[seqtag] = max(set(values), key=values.count)
-            # store the tag that has more than one values anyway
-            # in errortags, not used at the moment somewhere
-            if len(set(values)) != 1:
-                self.__errortags.append(seqtag)
-        self.__data = data
-
-    def validate(self):
-        # invalid dicom validation
-        if len(self.__invaliddicoms) > 0:
-            self.__errors.append('contains invalid dicom files')
-        # resolution validation
-        max_res = config.MAX_RESOLUTION
-        pixelspacing = self.data['PixelSpacing']
-        zspacing = self.data['SliceThickness']
-        if pixelspacing != 'Tag not found' and zspacing != 'Tag not found':
-            pixelspacing = ast.literal_eval(pixelspacing)
-            self.__px_X = float(pixelspacing[0])
-            self.__px_Y = float(pixelspacing[1])
-            self.__px_Z = float(zspacing)
-            if self.__px_X >= max_res or self.__px_Y >= max_res:
-                self.__errors.append('maximum resolution failure')
-            if self.__px_X == self.__px_Y:
-                self.__isisometric = True
-                if self.__px_X == self.__px_Z:
-                    self.__isisotropic = True
-        else:
-            self.__errors.append('resolution tags are missing')
-        # protocol validation
-        protocol = self.data['SeriesDescription']
-        if protocol != 'Tag not found':
-            for scan_type in config.SCAN_TYPES:
-                if scan_type in protocol:
-                    self.__protocol = scan_type
-                else:
-                    error_message = 'not a {} scan type'.format(scan_type)
-                    self.__errors.append(error_message)
-        else:
-            self.__errors.append('SeriesDescription tag is missing')
-        # number of slices validation
-        if self.slices < config.MIN_SLICES:
-            self.__errors.append('minimum number of slices failure')
-
     @property
     def studyid(self):
         return self.__studyid
@@ -104,6 +43,10 @@ class MRISequence(object):
     @property
     def seriesdate(self):
         return self.__data.get('SeriesDate')
+
+    @property
+    def seriesdescription(self):
+        return self.__data.get('SeriesDescription', 'No SeriesDescription')
 
     @property
     def pixelspacingX(self):
@@ -174,3 +117,66 @@ class MRISequence(object):
             except IndexError:
                 errordata[keyerror] = None
         return errordata
+
+    def validate(self):
+        # invalid dicom validation
+        if len(self.__invaliddicoms) > 0:
+            self.__errors.append('contains invalid dicom files')
+        # resolution validation
+        max_res = config.MAX_RESOLUTION
+        pixelspacing = self.data['PixelSpacing']
+        zspacing = self.data['SliceThickness']
+        if pixelspacing != 'Tag not found' and zspacing != 'Tag not found':
+            pixelspacing = ast.literal_eval(pixelspacing)
+            self.__px_X = float(pixelspacing[0])
+            self.__px_Y = float(pixelspacing[1])
+            self.__px_Z = float(zspacing)
+            if self.__px_X >= max_res or self.__px_Y >= max_res:
+                self.__errors.append('maximum resolution failure')
+            if self.__px_X == self.__px_Y:
+                self.__isisometric = True
+                if self.__px_X == self.__px_Z:
+                    self.__isisotropic = True
+        else:
+            self.__errors.append('resolution tags are missing')
+        # protocol validation
+        protocol = self.data['SeriesDescription']
+        if protocol != 'Tag not found':
+            for scan_type in config.SCAN_TYPES:
+                if scan_type in protocol:
+                    self.__protocol = scan_type
+                else:
+                    error_message = 'not a {} scan type'.format(scan_type)
+                    self.__errors.append(error_message)
+        else:
+            self.__errors.append('SeriesDescription tag is missing')
+        # number of slices validation
+        if self.slices < config.MIN_SLICES:
+            self.__errors.append('minimum number of slices failure')
+
+    # Private
+
+    def __validate_dicoms(self, dicoms):
+        for dicom in dicoms:
+            if dicom.isvalid:
+                self.__validdicoms.append(dicom)
+            else:
+                self.__invaliddicoms.append(dicom)
+
+    def __getseqdata(self):
+        data = collections.OrderedDict()
+        dicoms = self.__validdicoms
+        # case of sequence with only invalid dicom files
+        # get sequence data from them
+        if len(self.__validdicoms) == 0 and len(self.__invaliddicoms) > 0:
+            dicoms = self.__invaliddicoms
+
+        for seqtag in config.SEQUENCE_TAGS:
+            values = list(d.data[seqtag] for d in dicoms)
+            # get the most frequent element
+            data[seqtag] = max(set(values), key=values.count)
+            # store the tag that has more than one values anyway
+            # in errortags, not used at the moment somewhere
+            if len(set(values)) != 1:
+                self.__errortags.append(seqtag)
+        self.__data = data

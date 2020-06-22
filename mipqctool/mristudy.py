@@ -28,13 +28,28 @@ class MRIStudy(object):
         datestring = max(set(values), key=values.count)
         self.__studydate = datetime.strptime(datestring, '%Y%m%d')
 
+    @property
+    def patientid(self):
+        return self.__patientid
 
     @property
     def studydate(self):
+        """Returns the study date in datetime type"""
         return self.__studydate
+
+    @property
+    def studyid(self):
+        return self.__studyid
 
     @property
     def sequences(self):
         return self.__sequences
 
-
+    @property
+    def df_visit_info(self):
+        info = {
+            'PATIENT_ID': self.patientid,
+            'VISIT_ID': self.studyid,
+            'VISIT_DATE': self.studydate.strftime('%d/%m/%Y'),
+        }
+        return info

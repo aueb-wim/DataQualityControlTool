@@ -12,10 +12,17 @@ import sys
 # Create logger
 LOGGER = logging.getLogger('qctool')
 LOGGER.setLevel(logging.DEBUG)
-C_HANDLER = logging.StreamHandler(sys.stdout)
+DEBUG_HANDLER = logging.FileHandler('debug.log')
+DEBUG_HANDLER.setLevel(level=logging.DEBUG)
+INFO_HANDLER = logging.StreamHandler(sys.stdout)
+INFO_HANDLER.setLevel(level=logging.INFO)
+
 C_FORMAT = logging.Formatter('%(name)s: %(levelname)s: %(message)s')
-C_HANDLER.setFormatter(C_FORMAT)
-LOGGER.addHandler(C_HANDLER)
+INFO_HANDLER.setFormatter(C_FORMAT)
+DEBUG_HANDLER.setFormatter(C_FORMAT)
+
+LOGGER.addHandler(INFO_HANDLER)
+LOGGER.addHandler(DEBUG_HANDLER)
 
 
 def debug(debug_on=True):

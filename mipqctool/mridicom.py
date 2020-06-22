@@ -47,37 +47,7 @@ class MRIDicom(object):
         # discard pydicom.dataset object for preserving memory
         self.__pydicom = None
 
-    def __findmissingtags(self):
-        for tag in config.REQUIRED_TAGS:
-            if tag not in self.__pydicom.dir():
-                self.__missingtags.add(tag)
-        # check if the one of the two tags exist in the file
-        for tags in config.ONEOFTWO_TAGS:
-            numfound = 0
-            for tag in tags:
-                if tag in self.__pydicom.dir():
-                    numfound += 1
-            # if both are not present add them to missing tags
-            if numfound == 0:
-                for tag in tags:
-                    self.__missingtags.add(tag)
-
-    def __getdata(self):
-        for tag in config.ALL_TAGS:
-            try:
-                self.__data[tag] = str(self.__pydicom.data_element(tag).value)
-            except KeyError:
-                self.__data[tag] = 'Tag not found'
-
-    def __getids(self):
-        ids = set(config.ID_TAGS)
-        # id tags are not missing
-        if not ids.intersection(self.__missingtags):
-            self.__patientid = self.__pydicom.data_element('PatientID').value
-            self.__studyid = self.__pydicom.data_element('StudyID').value
-            self.__snumber = self.__pydicom.data_element('SeriesNumber').value
-            self.__instnumber = int(self.__pydicom.data_element('InstanceNumber').value)
-
+    
     @property
     def studyid(self):
         return self.__studyid
@@ -128,4 +98,39 @@ class MRIDicom(object):
         errordata['InstanceNumber'] = self.__data['InstanceNumber']
         errordata['MissingTags'] = ','.join(self.missingtags)
         return errordata
+
+    # Private
+
+    def __findmissingtags(self):
+        for tag in config.REQUIRED_TAGS:
+            if tag not in self.__pydicom.dir():
+                self.__missingtags.add(tag)
+        # check if the one of the two tags exist in the file
+        for tags in config.ONEOFTWO_TAGS:
+            numfound = 0
+            for tag in tags:
+                if tag in self.__pydicom.dir():
+                    numfound += 1
+            # if both are not present add them to missing tags
+            if numfound == 0:
+                for tag in tags:
+                    self.__missingtags.add(tag)
+
+    def __getdata(self):
+        for tag in config.ALL_TAGS:
+            try:
+                self.__data[tag] = str(self.__pydicom.data_element(tag).value)
+            except KeyError:
+                self.__data[tag] = 'Tag not found'
+
+    def __getids(self):
+        ids = set(config.ID_TAGS)
+        # id tags are not missing
+        if not ids.intersection(self.__missingtags):
+            self.__patientid = self.__pydicom.data_element('PatientID').value
+            self.__studyid = self.__pydicom.data_element('StudyID').value
+            self.__snumber = self.__pydicom.data_element('SeriesNumber').value
+            self.__instnumber = int(self.__pydicom.data_element('InstanceNumber').value)
+
+  
 

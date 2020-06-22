@@ -20,6 +20,7 @@ class Application(tk.Frame):
 
     def __init__(self, master=None):
         super().__init__(master)
+
         self.__init()
 
     def __init(self):
@@ -44,16 +45,21 @@ class Application(tk.Frame):
 class CsvTab(tk.Frame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.colval = None
-        self.coltype = None
+        # validation callback function for entering integer numbers
+        self.int_validation = self.register(only_integers)
+        # sample of rows for schema inferance variable 
+        self.sample_rows = tk.StringVar()
+        # maximum categories for schema inferance variable
+        self.max_categories = tk.StringVar()
         self.metafilepath = None
         self.exportfiledir = None
         self.datasetpath = None
         self.dname = None
         self.reportcsv = None
         self.cleaning = tk.BooleanVar()
-        self.nometadata = tk.BooleanVar()
         self.cleaning.set(False)
+        self.nometadata = tk.BooleanVar()
+
         self.__init()
         self.__packing()
 
@@ -69,17 +75,34 @@ class CsvTab(tk.Frame):
                                         command=self.loaddatasetfile)
         # Metadata csv (Labels and Button)
         self.label_metadata = tk.Label(self.tblabelframe,
-                                       text='Metadata file:')
+                                       text='Metadata (Schema) file:')
         self.label_mfilename = tk.Label(self.tblabelframe, text='Not selected',
                                         bg='white', pady=4, width=50)
         self.button_load_md = tk.Button(self.tblabelframe, text='Select File',
                                         command=self.setmetadatafile)
 
+        # Infer input
+        self.label_categories = tk.Label(self.tblabelframe, text='Maximum Category Levels:')
+        self.label_sample_rows = tk.Label(self.tblabelframe, text='Sample Rows:')
+        self.entry_categories = tk.Entry(self.tblabelframe, width=10, 
+                                         validate="key", textvariable=self.max_categories,
+                                         validatecommand=(self.int_validation, '%S'))
+        self.entry_categories.insert(0, '10')
+        self.entry_categories.config(state='disabled')
+        self.entry_sample_rows = tk.Entry(self.tblabelframe, width=10,
+                                          validate="key", textvariable=self.sample_rows,
+                                          validatecommand=(self.int_validation, '%S'))
+        self.entry_sample_rows.insert(0, '100')
+        self.entry_sample_rows.config(state='disabled')
+        self.button_infer = tk.Button(self.tblabelframe, text='Save Schema',
+                                      state='disabled', command=self.save_schema)
+
         # No metadata file checkbox
         self.checkmetadata = tk.Checkbutton(self.tblabelframe,
-                                            text='No metadata file \n Infer json',
+                                            text='Infer schema',
                                             variable=self.nometadata,
                                             command=self._metadata_check)
+
 
         # Output interface
         # Create a label frame where to put the output files interface
@@ -112,14 +135,23 @@ class CsvTab(tk.Frame):
         # Input frame
         self.tblabelframe.pack(fill='both', expand='yes', ipadx=4, ipady=4,
                                padx=4, pady=4)
-        self.label_dataset.grid(row=0, column=0)
-        self.button_load_df.grid(row=0, column=2)
-        self.label_metadata.grid(row=1, column=0)
-        self.label_dfilename.grid(row=0, column=1, pady=2)
+        self.label_dataset.grid(row=0, column=0, padx=2, sticky='e')
+        self.label_metadata.grid(row=1, column=0, padx=2, sticky='e')
+        self.button_load_df.grid(row=0, column=2, sticky='w')
+        self.label_dfilename.grid(row=0, column=1, pady=2, padx=2)
+        self.button_load_md.grid(row=1, column=2, sticky='w')
+        
+        self.label_mfilename.grid(row=1, column=1, pady=2, padx=2)
         self.button_load_md.grid(row=1, column=2)
-        self.checkmetadata.grid(row=1, column=3)
-        self.label_mfilename.grid(row=1, column=1, pady=2)
-        self.button_load_md.grid(row=1, column=2)
+
+        # infer
+        self.label_categories.grid(row=2, column=0, sticky='e')
+        self.entry_categories.grid(row=2, column=1, sticky='w')
+        self.label_sample_rows.grid(row=3, column=0, sticky='e')
+        self.entry_sample_rows.grid(row=3, column=1, sticky='w')
+        self.checkmetadata.grid(row=2, column=2, sticky='w')
+        self.button_infer.grid(row=3, column=2, sticky='w')
+    
 
         # Output frame
         self.tblabelframe_output.pack(fill='both', expand='yes',
@@ -127,7 +159,7 @@ class CsvTab(tk.Frame):
                                       padx=4, pady=4)
         self.label_export1.grid(row=0, column=0)
         self.label_export2.grid(row=0, column=1, padx=4)
-        self.button_export_folder.grid(row=0, column=3, sticky='e')
+        self.button_export_folder.grid(row=0, column=2, sticky='e')
         # Execution interface
         self.frame_exec.pack(fill='both', expand='yes',
                              padx=4, pady=4)
@@ -215,13 +247,34 @@ class CsvTab(tk.Frame):
             tkmessagebox.showinfo(title='Status info',
                 message='Reports have been created successully')
 
+    def save_schema(self):
+        output_json = tkfiledialog.asksaveasfilename(title='enter file name',
+                                                     filetypes=(('json files', '*.json'),
+                                                                ('all files', '*.*')))
+        warningtitle = 'Can not save the json schema'
+        if not self.dname:
+            tkmessagebox.showwarning(warningtitle,
+                                     'Please, select dataset file')
+        max_categories = int(self.max_categories.get())
+        sample_rows = int(self.sample_rows.get())
+        dataset = QcTable(self.datasetpath, schema=None)
+        dataset.infer(limit=sample_rows, maxlevels=max_categories)
+        dataset.schema.save(output_json)
+        
+
+    
     def _metadata_check(self):
         if self.nometadata.get():
             status = 'disabled'
+            entry_status = 'normal'
         else:
             status = 'normal'
+            entry_status = 'disabled'
         self.button_load_md.config(state=status)
         self.label_mfilename.config(state=status)
+        self.entry_sample_rows.config(state=entry_status)
+        self.entry_categories.config(state=entry_status)
+        self.button_infer.config(state=entry_status)
 
 
 class DicomTab(tk.Frame):
@@ -309,6 +362,9 @@ class DicomTab(tk.Frame):
                 report.reorganizefiles(self.exportfolder)
             tkmessagebox.showinfo(title='Status info',
                                   message='Reports have been created successully')
+
+def only_integers(char):
+    return char.isdigit()
 
 
 def main():
