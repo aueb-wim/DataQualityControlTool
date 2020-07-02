@@ -19,25 +19,32 @@ def main():
     pass
 
 
-@main.command()
-@click.argument('input_csv', type=click.Path(exists=True))
+@main.command(options_metavar='<options>')
+@click.argument('input_csv', type=click.Path(exists=True), metavar='<csv file>')
 @click.option('--col_id', type=int, required=True, default=1, show_default=True,
               help='Column number that holds id values (primary key)')
 @click.option('--clean', is_flag=True,
               help='Filepath for the new dataset csv file after data cleaning')
-@click.option('-m', '--metadata', type=click.Path(exists=True),
+@click.option('-m', '--metadata', type=click.Path(exists=True), metavar='<schema json>',
               help='Path of the metadata json file with the schema \
                     of the dataset csv file')
 @click.option('--max_levels', type=int, default=10, show_default=True,
               help='Max unique values of a text variable \
                     that below that will be infered as nominal \
-                    when no dataset metadata (schema) is provided')
+                    when no <schema json> is provided')
 @click.option('--sample_rows', type=int, default=100, show_default=True,
               help='Number rows that are going to be used as sample \
                     for infering the dataset metadata (schema) when \
-                    metadata file is not provided')
+                    <schema json> is not provided')
 def csv(input_csv, col_id, clean,
         metadata, sample_rows, max_levels):
+    """This command produces a validation report for <csv file>.
+
+    The report file is stored in the same folder where <csv file> is located.
+    
+    <schema json> file MUST be compliant with frirctionless
+      data table-schema specs(https://specs.frictionlessdata.io/table-schema/).
+    """
     filename = os.path.basename(input_csv)
     dataset_name = os.path.splitext(filename)[0]
     report_name = dataset_name + '_report.pdf'
@@ -63,17 +70,24 @@ def csv(input_csv, col_id, clean,
     datasetreport.printpdf(os.path.join(path, report_name))
 
 
-@main.command()
-@click.argument('root_folder', type=click.Path(exists=True))
-@click.argument('report_folder', type=click.Path())
-@click.option('--loris_folder', type=click.Path(),
-              help='')
-def dicom(ctx, root_folder, report_folder, loris_folder=None):
+@main.command(options_metavar='<options>')
+@click.argument('dicom_folder', type=click.Path(exists=True), metavar='<dicom folder>')
+@click.argument('report_folder', type=click.Path(), metavar='<report folder>')
+@click.option('--loris_folder', type=click.Path(), metavar='<loris input folder>',
+              help='LORIS input folder where the dcm files in <dicom folder> will be reorganized')
+def dicom(ctx, dicom_folder, report_folder, loris_folder=None):
+    """This command produces a validation report for MRIs in <dicom folder>.
+
+    All MRI dcm files belogning to the same Patient MUST
+    be in the same subfolder in <dicom folder>.
+    
+    The validation report files are stored in <report folder>.
+    """
     if loris_folder and len(os.listdir(loris_folder)) != 0:
         raise Exception('LORIS output dir is not empty! '
                         'Select another folder '
                         'or delete existing dicom files')
-    dicomreport = DicomReport(root_folder, getpass.getuser())
+    dicomreport = DicomReport(dicom_folder, getpass.getuser())
 
     if not os.path.exists(report_folder):
         os.mkdir(report_folder)
@@ -89,18 +103,21 @@ def dicom(ctx, root_folder, report_folder, loris_folder=None):
         dicomreport.reorganizefiles(loris_folder)
 
 
-@main.command()
+@main.command(options_metavar='<options>')
 @click.option('--max_levels', type=int, default=10, show_default=True,
               help='Max unique values of a text variable \
-                    that below that will be infered as nominal \
-                    when no dataset metadata (schema) is provided')
+                    that below that will be infered as nominal')
 @click.option('--sample_rows', type=int, default=100, show_default=True,
               help='Number rows that are going to be used as sample \
-                    for infering the dataset metadata (schema) when \
-                    metadata file is not provided')
-@click.argument('input_csv', type=click.Path(exists=True))
-@click.argument('output_json', type=click.Path())
+                    for infering the dataset metadata (schema)')
+@click.argument('input_csv', type=click.Path(exists=True), metavar='<csv file>')
+@click.argument('output_json', type=click.Path(), metavar='<schema json>')
 def infercsv(input_csv, output_json, sample_rows, max_levels):
+    """This command infers the schema of the <csv file> it and stored in <schema json>.
+
+    The <schema json> follows the frictionless data specs(https://specs.frictionlessdata.io/table-schema/).
+    
+    """
     dataset = QcTable(input_csv, schema=None)
     dataset.infer(limit=sample_rows, maxlevels=max_levels)
     dataset.schema.save(output_json)
