@@ -57,6 +57,7 @@ class DicomReport(object):
         # statistic info
         self.__totalvalidseq = 0
         self.__totalstudies = 0
+        self.__totalinvaliddicoms = 0
         self.__seriesdescriptions_valid = set()
         self.__seriesdescriptions_invalid = set()
         self.__seqperpatient_distr = {
@@ -263,7 +264,7 @@ class DicomReport(object):
             'totalpatients': self.totalpatients,
             'total_valid_seqs': self.totalvalidsequences,
             'total_invalid_seqs': self.totalinvalidsequences,
-            'total_invalid_dcms': self.totalbadfiles,
+            'total_invalid_dcms': self.__totalinvaliddicoms,
         }
 
         allprotocols = self.__seriesdescriptions_valid | self.__seriesdescriptions_invalid
@@ -293,6 +294,7 @@ class DicomReport(object):
         # collect the protocols of invalid seq
         for seq in self.__invalidseq:
             protocol = seq.seriesdescription
+            self.__totalinvaliddicoms += len(seq.invaliddicoms)
             self.__seriesdescriptions_invalid.add(protocol)
             self.__patientid_with_invalids.add(seq.patientid)
 
