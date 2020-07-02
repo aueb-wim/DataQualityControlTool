@@ -98,7 +98,7 @@ class TableReport(object):
             list_new_values = (col.corrected_values for col in self.__columnreports)
             new_values = zip(*list_new_values)
             with open(path, 'w') as out:
-                csv_out = csv.writer(out)
+                csv_out = csv.writer(out, quoting=csv.QUOTE_ALL)
                 csv_out.writerow(self.__table.headers)
                 for row in new_values:
                     csv_out.writerow(row)
