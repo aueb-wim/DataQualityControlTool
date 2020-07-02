@@ -2,7 +2,13 @@
 
 # HBP-MIP Data Quality Control Tool
 
-This tool is a component developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP). The main purpose of this tool is to produce statistical report of a given dataset and its variables (tabular dataset profiling) and propose value corrections for problematic data-entries. Also, the tool has the ability to extract and export meta-data headers of a set of DICOM MRIs.
+## Description
+
+This tool is a component developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP) and it developed with 
+The tool has two major functionalities:
+1. Validate data and produce reports with the validation results and with some overall statistics about the data
+2. Perform data cleaning 
+The main purpose of this tool is to produce statistical report of a given dataset and its variables (tabular dataset profiling) and propose value corrections for problematic data-entries. Also, the tool has the ability to extract and export meta-data headers of a set of DICOM MRIs.
 
 ## Installing / Getting started
 
@@ -49,44 +55,64 @@ sh build.sh
 ## Usage
 
 **Command Line Interface**
+
 For profiling a csv dataset:
 
 ``` shell 
-$ qctool csv --input_csv [dataset csv path] --meta_csv [metadata csv path] --col_val [metadata column name for variable codes/names] --col_type [metadata column name for variable types] (--readable) (--pdf)
-```
+Usage: qctool csv <options> <csv file>
 
-first positional argument can take two flags `csv` or `dicom`. Here we use `csv` because the dataset is in csv format. 
-`--readable` is an option if we want the reports csv files to have more descriptive column names.
-`--pdf` is an option if we want to produce a report in pdf format. 
-`col_val` and `col_type` are obligatory. They referred to column names of the metadata csv. The `col_val` is the name of the column that contains the variables codes used as columns in the datatset csv and the `col_type` is the name of the column in metadata csv that contains the variables types. 
+  This command produces a validation report for <csv file>.
 
-At  the moment the tool needs the metadata file to detect the nominal variables. So, the `col_type` column must be filled with the value `nominal` (is not case sensitive)  for the categorical variables in order to work properly. Other types like `int`, `float`, `text`, `numerical`, `date` are not taken into account at the moment. 
+  The report file is stored in the same folder where <csv file> is located.
 
-After the execution, three files will be produced:
+  <schema json> file MUST be compliant with frirctionless   data table-
+  schema specs(https://specs.frictionlessdata.io/table-schema/).
 
--   a csv file <dataset_file> + ‘_dataset_report.csv’ containing the Statistical Report of the given dataset.
--   a csv file <dataset_file> + ‘_report.csv’ containing the Statistical Reports of the variables of the given dataset.
--   a pdf or LaTex file <dataset_file>+’_report’ containg the above two reports in a readable format.
+Options:
+  --col_id INTEGER              Column number that holds id values (primary
+                                key)  [default: 1; required]
+  --clean                       Filepath for the new dataset csv file after
+                                data cleaning
+  -m, --metadata <schema json>  Path of the metadata json file with the schema
+                                of the dataset csv file
+  --max_levels INTEGER          Max unique values of a text variable
+                                that below that will be infered as nominal
+                                when no <schema json> is provided  [default:
+                                10]
+  --sample_rows INTEGER         Number rows that are going to be used as
+                                sample                     for infering the
+                                dataset metadata (schema) when
+                                <schema json> is not provided  [default: 100]
+  --help                        Show this message and exit.
+  ```
+
+After the execution, the report is stored in a pdf file:
+
 
 For profiling a dicom dataset:
 
 ``` shell
-$ qctool dicom --root_folder [folder with dicoms] --report_folder [dicom report folderpath] (--loris_folder) [export folder for reorganized dicoms]
+Usage: qctool dicom <options> <dicom folder> <report folder>
 ```
 
-`--root_folder` is the root folder where the DICOM dataset is stored. It is assumed that each subfolder corresponds to one patient.
-`--report_folder` is the folder where the report files will be placed. If the folder does not exist, the tool will create it.
-`--loris_folder` after this flag we provide the path of the folder where the dcm files are reorganized for LORIS pipeline
+`<dicom folder>` is the root folder where the DICOM  is stored. It is assumed that each subfolder corresponds to one patient.
+
+`<report folder>` is the folder where the report files will be placed. If the folder does not exist, the tool will create it.
+
+Options: 
+
+`--loris_folder`  folder path where the dcm files are reorganized for LORIS pipeline
 
 For the LORIS pipeline the dcm files are reorganized in stored in a folder structure <loris_folder>/<patientid><patientid_visitcount>.
 All the dcm sequence files that belong to the same scanning session (visit) are stored in a common folder <patientid>_<visitcount>
 
-The tool, depending of the results, creates the csv files:
+The tool creates in the `<report folder>`, a pdf report file (`dicom_report.pdf`) and, depending of the results, also creates the following csv files :
 
 -   validsequences.csv
 -   invalidsequences.csv
 -   invaliddicoms.csv
 -   notprocessed.csv
+-   mri_visits.csv
 
 The above files are created even if no valid/invalid sequences/dicoms files have been found. In such case, the files will be empty.
 ### validsequences.csv
@@ -122,10 +148,21 @@ If in the given root folder are some files that the QC tool can not process (not
 
 `Folder`, `File`
 
+### mri_visits.csv
+
+This file contains MRI visit information for each patient. This file is necessary for the HBP MIP DataFactory's [Step3_B](https://github.com/HBPMedical/ehr-datafactory-template#importing-the-volumetric-brain-features-into-the-i2b2-capture-database) and it has the following headers:
+
+`PATIENT_ID`, `VISIT_ID`, `VISIT_DATE`
+
+
 ### GUI
 
 We run `qctoolgui`
-See docs/quickguide.docx for further instructions.
+
+![csv image](docs/img/gui_csv_screenshot.png)
+![csv image](docs/img/gui_dicom_screenshot.png)
+
+See **GUI User Guide** section in the wik for further usage details. 
 
 ## Features
 
