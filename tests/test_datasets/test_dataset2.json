@@ -4,162 +4,160 @@
     ],
     "fields": [
         {
+            "name": "subjectcode",
             "MIPType": "text",
             "format": "default",
-            "type": "string",
-            "name": "subjectcode"
+            "type": "string"
         },
         {
+            "name": "subjectageyears",
             "MIPType": "integer",
             "bareNumber": true,
             "format": "default",
-            "type": "integer",
-            "name": "subjectageyears"
+            "type": "integer"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "gender",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "F",
                     "M"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "_3rdventricle",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "_4thventricle",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "rightaccumbensarea",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "leftaccumbensarea",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "rightamygdala",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "leftamygdala",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "brainstem",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "rightstgsuperiortemporalgyrus",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "leftstgsuperiortemporalgyrus",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "righttmptemporalpole",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "lefttmptemporalpole",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "righttrifgtriangularpartoftheinferiorfrontalgyrus",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "lefttrifgtriangularpartoftheinferiorfrontalgyrus",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
+            "format": "default",
+            "type": "number",
             "name": "rightttgtransversetemporalgyrus",
-            "bareNumber": true,
-            "format": "default",
-            "type": "number"
+            "bareNumber": true
         },
         {
             "MIPType": "numerical",
             "decimalChar": ".",
-            "name": "leftttgtransversetemporalgyrus",
-            "bareNumber": true,
             "format": "default",
-            "type": "number"
+            "type": "number",
+            "name": "leftttgtransversetemporalgyrus",
+            "bareNumber": true
         },
         {
+            "name": "minimentalstate",
             "MIPType": "integer",
             "bareNumber": true,
             "format": "default",
-            "type": "integer",
-            "name": "minimentalstate"
+            "type": "integer"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "agegroup",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "+80y",
@@ -168,75 +166,77 @@
                     "60-69y",
                     "70-79y"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "edsdcategory",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "AD",
                     "CN",
                     "MCI"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "alzheimerbroadcategory",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "AD",
                     "CN",
                     "MCI"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "parkinsonbroadcategory",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "CN",
                     "Other"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "neurodegenerativescategories",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "AD",
                     "CN",
                     "MCI"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
-            "MIPType": "nominal",
-            "format": "default",
-            "type": "string",
             "name": "dataset",
+            "MIPType": "nominal",
             "constraints": {
                 "enum": [
                     "edsd"
                 ]
-            }
+            },
+            "format": "default",
+            "type": "string"
         },
         {
+            "name": "empty",
             "MIPType": "text",
             "format": "default",
-            "type": "string",
-            "name": "empty"
+            "type": "string"
         }
     ]
 }
