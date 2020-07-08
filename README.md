@@ -95,7 +95,7 @@ For profiling a dicom dataset:
 Usage: qctool dicom <options> <dicom folder> <report folder>
 ```
 
-`<dicom folder>` is the root folder where the DICOM  is stored. It is assumed that each subfolder corresponds to one patient.
+`<dicom folder>` is the root folder where all DICOM files are stored. It is assumed that each subfolder corresponds to one patient.
 
 `<report folder>` is the folder where the report files will be placed. If the folder does not exist, the tool will create it.
 
@@ -103,8 +103,8 @@ Options:
 
 `--loris_folder`  folder path where the dcm files are reorganized for LORIS pipeline
 
-For the LORIS pipeline the dcm files are reorganized in stored in a folder structure <loris_folder>/<patientid><patientid_visitcount>.
-All the dcm sequence files that belong to the same scanning session (visit) are stored in a common folder <patientid>_<visitcount>
+For the LORIS pipeline the dcm files are reorganized and stored in a folder structure `<loris_folder>/<patientid>/<patientid_visitcount>`.
+All the dcm sequence files that belong to the same scanning session (visit) are stored in the common folder `<patientid_visitcount>`.
 
 The tool creates in the `<report folder>`, a pdf report file (`dicom_report.pdf`) and, depending of the results, also creates the following csv files :
 
