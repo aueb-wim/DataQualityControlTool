@@ -29,7 +29,7 @@ class FrictionlessFromDC(object):
 
 
 class DcVariable(object):
-    """"""
+    """A class to store data from a Data Catalogue json"""
     __conceptpath = ''
 
     def __init__(self, dcdescriptor, node):
@@ -53,6 +53,10 @@ class DcVariable(object):
         self.__minvalue = self.__descriptor.get('minValue', None)
         
         self.__find_conceptpath()
+
+    @property
+    def conceptpath(self):
+        return self.__conceptpath
 
     def createqcfield(self):
         """Returns the descriptor of the corresponding QcField."""

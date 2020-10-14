@@ -2,6 +2,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from tests.test_qcfield import test_validate
 
 import pytest
 from mock import Mock
@@ -93,3 +94,13 @@ def test_createqcfield(dcdescriptor, result):
     node.conceptpath = '/category'
     testvariable = DcVariable(dcdescriptor, node)
     assert testvariable.createqcfield() == result
+
+
+@pytest.mark.parametrize('dcdescriptor, result', [
+    (DCVAR1, '/category/val1'),
+])
+def test_conceptpath(dcdescriptor, result):
+    node = Mock()
+    node.conceptpath = '/category'
+    testvariable = DcVariable(dcdescriptor, node)
+    assert testvariable.conceptpath == result
