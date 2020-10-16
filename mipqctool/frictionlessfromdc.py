@@ -7,25 +7,44 @@ import json
 from tableschema import Schema, exceptions
 from .qcfield import QcField
 from . import config, qctypes
-from .config import LOGGER
+from .config import LOGGER, DEFAULT_MISSING_VALUES
 
 
 class FrictionlessFromDC(object):
     """This class is made for parsing a DC JSON metadata file and creating
-    its corresponding Frictionless descriptor dictionary."""
+    its corresponding Frictionless descriptor dictionary.
+    
+    Arguments:
+    :param json_path: (str) the path of a datacatalue produced json file
 
-    dict_dc = None
+    """
+    __qcdescriptor = None
 
-    def __init__(self, json_path):
-        with open(json_path) as json_file:
-            self.dict_dc = json.load(json_file)
+    def __init__(self, dcjson):
         # generates the tree structure of the loaded DC json
-        self.rootnode = Node(self.dict_dc)
-        self.findtree(self.rootnode)
+        LOGGER.info('Finding variable tree...')
+        self.rootnode = Node(dcjson)
+        self.__dc2qc()
 
-    def findtree(self, dict):
-        """generates the tree structure of the loaded DC json."""
-        pass
+    @property
+    def total_variables(self):
+        return len(self.rootnode.all_below_qcdesc)
+
+    @property
+    def qcdescriptor(self):
+        return self.__qcdescriptor
+
+    def save2frictionless(self, filepath):
+        with open(filepath, 'w') as jsonfile:
+            json.dump(self.__qcdescriptor, jsonfile)
+
+    def __dc2qc(self):
+        self.__qcdescriptor = {
+            'fields': self.rootnode.all_below_qcdesc,
+            'missingValues': DEFAULT_MISSING_VALUES
+        }
+
+
 
 
 class DcVariable(object):
@@ -51,7 +70,7 @@ class DcVariable(object):
         # for numeric variables
         self.__maxvalue = self.__descriptor.get('maxValue', None)
         self.__minvalue = self.__descriptor.get('minValue', None)
-        
+
         self.__find_conceptpath()
 
     @property
@@ -66,6 +85,7 @@ class DcVariable(object):
             'title': self.__label,
             'description': self.__description,
             'format': 'default',
+            'conceptPath': self.conceptpath
         }
 
         if self.__type in ['real', 'numeric']:
@@ -78,7 +98,7 @@ class DcVariable(object):
                 fdict['MIPType'] = 'nominal'
             else:
                 fdict['MIPType'] = 'integer'
-        
+
         elif self.__type in ['nominal', 'binominal', 'multinominal']:
             fdict['MIPType'] = 'nominal'
             if self.__sql_type == 'int':
@@ -97,14 +117,11 @@ class DcVariable(object):
 
         if self.__minvalue:
             constraints['minimum'] = int(self.__minvalue)
-        
+
         if constraints:
             fdict['constraints'] = constraints
 
         return fdict
-            
-
-
 
     def __get_enum(self):
         return [enum['label'] for enum in self.__enumerations]
@@ -116,22 +133,34 @@ class DcVariable(object):
 
 class Node(object):
     """"""
-    parent = None
-    # self.dcvariable = None # DcVariable object
-    # self.code = None
     __children = []
     __variables = []
     __conceptpath = ''
+    __qcdescriptors = []
+    __all_below_qcdesc = []
 
     def __init__(self, dcdescriptor, parent=None):
         self.__descriptor = dcdescriptor
         self.__code = self.__descriptor.get('code', '')
         self.__description = self.__descriptor.get('description', '')
         self.__label = self.__descriptor.get('label', '')
-        self.parent = parent
+        self.__parent = parent
         self.__find_conceptpath()
         self.__create_variables()
         self.__create_children()
+
+        if parent:
+            self.__give_qcdesc_to_parent()
+            self.__qcdescriptors = None
+            self.__all_below_qcdesc = None
+        else:
+            LOGGER.debug('This node is the root. Adding root variables..')
+            self.add_below_qcdesc(self.qcdescriptors)
+            LOGGER.debug('Total variables found on the tree: {}'.format(len(self.__all_below_qcdesc)))
+
+    @property
+    def parent(self):
+        return self.__parent
 
     @property
     def description(self):
@@ -157,10 +186,16 @@ class Node(object):
     def variables(self):
         return self.__variables
 
-    @code.setter
-    def code(self, val):
-        self.__code = val
-        self.dcvariable.code = val
+    @property
+    def qcdescriptors(self):
+        return self.__qcdescriptors
+
+    @property
+    def all_below_qcdesc(self):
+        return self.__all_below_qcdesc
+
+    def add_below_qcdesc(self, qcdescs):
+        self.__all_below_qcdesc = self.__all_below_qcdesc + qcdescs
 
     def __find_conceptpath(self):
         # does node has a parent?
@@ -175,16 +210,11 @@ class Node(object):
         # get the list with the desc
         vars = self.__descriptor.get('variables', [])
         self.__variables = [DcVariable(var, self) for var in vars]
+        self.__qcdescriptors = [var.createqcfield() for var in self.__variables]
 
     def __create_children(self):
         groups = self.__descriptor.get('groups', [])
         self.__children = [Node(group, self) for group in groups]
 
-    def create_fdiscriptor(self):
-        """Returns a frictionless dictionary with the node info."""
-        dict_info = {
-            'code': self.code,
-            'label': self.label,
-            'description': self.description}
-        return dict_info
-
+    def __give_qcdesc_to_parent(self):
+        self.parent.add_below_qcdesc(self.qcdescriptors + self.all_below_qcdesc)

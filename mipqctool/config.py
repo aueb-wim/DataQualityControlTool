@@ -17,7 +17,7 @@ DEBUG_HANDLER.setLevel(level=logging.DEBUG)
 INFO_HANDLER = logging.StreamHandler(sys.stdout)
 INFO_HANDLER.setLevel(level=logging.INFO)
 
-C_FORMAT = logging.Formatter('%(name)s: %(levelname)s: %(message)s')
+C_FORMAT = logging.Formatter('%(asctime)s: %(name)s: %(levelname)s: %(message)s')
 INFO_HANDLER.setFormatter(C_FORMAT)
 DEBUG_HANDLER.setFormatter(C_FORMAT)
 
@@ -39,13 +39,17 @@ def debug(debug_on=True):
 
 
 # force level=Warning
-debug(False)
+debug(True)
 
 # Global constants
+DC_DOMAIN = 'http://dc.hbp.link:8086'
 ERROR = 'qctool.error'
 REMOTE_SCHEMES = ['http', 'https', 'ftp', 'ftps']
 DEFAULT_MISSING_VALUES = ['']
 DEFAULT_QCFIELD_MIPTYPE = 'text'
+DEFAULT_QCFIELD_CONCEPTPATH = ''
+DEFAULT_QCFIELD_METHODOLOGY = ''
+
 DEFAULT_DATE_FORMAT = '%Y-%m-%d'
 PANDAS_NANS = ['', '#N/A', '#N/A N/A', '#NA', '-1.#IND',
                    '-1.#QNAN', '-NaN', '-nan', '1.#IND', '1.#QNAN',
