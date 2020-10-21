@@ -7,10 +7,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-from collections import defaultdict
+from csv import DictReader
 from tableschema import Table
-from tableschema.exceptions import CastError
-from tabulator import Stream
 from .qcschema import QcSchema
 from .exceptions import QCToolException
 
@@ -22,6 +20,13 @@ class QcTable(Table):
         super().__init__(source, **kargs)
         self.__source = source
         self.__filename = os.path.basename(source)
+        # if csv file get headers (tabulator aka csv file)
+        if not self._Table__storage:
+            with open(source, 'r') as csv_file:
+                reader = DictReader(csv_file)
+                self.__actual_headers = reader.fieldnames
+        else:
+            self.__actual_headers = None
 
         # QcSchema
         if isinstance(schema, QcSchema):
@@ -47,6 +52,15 @@ class QcTable(Table):
     def raw_rows(self):
         return [row for row in self.iter(cast=False)]
 
+    @property
+    def with_metadata(self):
+        """True if a schema metadata json is used"""
+        return self.__metadata
+
+    @property
+    def actual_headers(self):
+        return self.__actual_headers
+
     def infer(self, limit=100, maxlevels=10, confidence=0.75):
         """Tries to infer the table schema only for csv file.
         Arguments:
@@ -64,8 +78,6 @@ class QcTable(Table):
                 with self._Table__stream as stream:
                     if self._Table__schema is None:
                         self._Table__schema = QcSchema()
-                        # increase the upper limit by 1 because is exclusive
-                        limit_inc = limit + 1
                         self._Table__schema.infer(stream.read(limit=limit),
                                                   headers=stream.headers,
                                                   maxlevels=maxlevels,
@@ -88,8 +100,3 @@ class QcTable(Table):
             raise QCToolException('"{}" is not a column name among headers.'.format(name))
 
         return [row[column_index] for row in self.raw_rows]
-
-    @property
-    def with_metadata(self):
-        """True if a schema metadata json is used"""
-        return self.__metadata

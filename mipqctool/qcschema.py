@@ -15,6 +15,15 @@ config.debug(True)
 
 
 class QcSchema(Schema):
+    """ QcSchema representation
+
+     Arguments:
+    :param descriptor: a frictionless json object schema (dict)
+    :param strict: flag to specify validation behaviour:
+        - if false, errors will not be raised but instead collected in `schema.errors`
+        - if true, validation errors are raised immediately
+
+    """
 
     def __init__(self, descriptor={}, strict=False):
         super().__init__(descriptor, strict)
@@ -123,7 +132,6 @@ class QcSchema(Schema):
                 else:
                     field = False
             self._Schema__fields.append(field)
-
 
 
 # Internal

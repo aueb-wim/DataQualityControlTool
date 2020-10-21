@@ -12,7 +12,7 @@ from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 from collections import namedtuple, Counter, defaultdict
-from .exceptions import TableReportError
+from .exceptions import TableReportError, QCToolException
 from .columnreport import ColumnReport
 from .qctable import QcTable
 from . import config, qctypes
@@ -26,11 +26,17 @@ config.debug(True)
 class TableReport(object):
     """This class is for creating a report in pdf and csv files
     """
+
+    __missing_headers = []
+    __valid_headers = []
+    __invalid_headers = []
+
     def __init__(self, table, id_column):
         """ Arguments:
             :param table: a QcTable object
             :param id_column: column number of dataset's primary key (id)
         """
+        # check if table has a schema else infer
         if not table.schema:
             table.infer()
 
@@ -38,16 +44,20 @@ class TableReport(object):
         try:
 
             self.__id_column = table.schema.fields_names[id_column-1]
+            self.__id_index = id_column - 1
 
+        # id column does not exist
         except IndexError:
-            raise TableReportError('{} column number is out of bounds'.format(id_column))
+            self.__id_column = None
+            self.__id_index = None
 
         else:
-            self.__id_index = id_column - 1
+
             self.__table = table
-            # check if table has a schema else infer
 
             self.__total_columns = len(self.__table.schema.field_names)
+            if self.__table.with_metadata:
+                self.__validate_headers()
             self.__columns_quantiles = None
             self.__calc_columns_quantiles()
 
@@ -86,6 +96,26 @@ class TableReport(object):
     def filled_rows_stats(self):
         """Dict with rows data completion overall stats"""
         return self.__calc_rstat_dict(columns='filled')
+
+    @property
+    def missing_headers(self):
+        return self.__missing_headers
+
+    @property
+    def valid_headers(self):
+        return self.__valid_headers
+
+    @property
+    def invalid_headers(self):
+        return self.__invalid_headers
+
+    @property
+    def isvalid(self):
+        all_invalid_headers = self.invalid_headers + self.missing_headers
+        if all_invalid_headers or self.__total_invalid_rows != 0:
+            return False
+        else:
+            return True
 
     def apply_corrections(self):
         for columnreport in self.__columnreports:
@@ -127,10 +157,13 @@ class TableReport(object):
     def __create_reports(self):
         """Create column reports."""
         for qcfield in self.__table.schema.fields:
-            raw_values = self.__table.column_values(qcfield.name)
-            column_report = ColumnReport(raw_values, qcfield)
-            column_report.validate()
-            self.__columnreports.append(column_report)
+            try:
+                raw_values = self.__table.column_values(qcfield.name)
+                column_report = ColumnReport(raw_values, qcfield)
+                column_report.validate()
+                self.__columnreports.append(column_report)
+            except QCToolException:
+                pass
 
     def __collect_row_stats(self):
         # get the rows with no id
@@ -236,7 +269,7 @@ class TableReport(object):
             use_metadata = 'Yes'
         else:
             use_metadata = 'No'
-        
+
         html_vars = {
             'datasetfile': self.__table.filename,
             'date_run': daterun.strftime("%d/%m/%Y %H:%M:%S"),
@@ -256,7 +289,7 @@ class TableReport(object):
         html_vars.update(self.filled_rows_stats)
         html_vars.update(self.valid_rows_stats)
         html_vars.update(self.__columns_quantiles)
-        
+
         # calc the percentages for valid and filled row stats
         for item in self.filled_rows_stats.items():
             key_perc = item[0] + '_perc'
@@ -268,4 +301,23 @@ class TableReport(object):
 
         return html_vars
 
-        
+    def __validate_headers(self):
+        # metadata json is provided so we can validate the headers
+        valid_headers = []
+        missing_headers = []
+        invalid_headers = []
+        schema_headers = self.__table.schema.field_names
+        actual_headers = self.__table.actual_headers
+        for name in schema_headers:
+            if name in actual_headers:
+                valid_headers.append(name)
+            else:
+                missing_headers.append(name)
+        invalid_headers = [
+            header for header in actual_headers
+            if header not in schema_headers
+        ]
+
+        self.__valid_headers = valid_headers
+        self.__missing_headers = missing_headers
+        self.__invalid_headers = invalid_headers
