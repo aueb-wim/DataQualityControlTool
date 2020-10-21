@@ -24,6 +24,8 @@ DEBUG_HANDLER.setFormatter(C_FORMAT)
 LOGGER.addHandler(INFO_HANDLER)
 LOGGER.addHandler(DEBUG_HANDLER)
 
+DEBUGGING = False
+
 
 def debug(debug_on=True):
     """Turn debugging of qctool on or off.

@@ -6,7 +6,7 @@ from tests.test_qcfield import test_validate
 
 import pytest
 from mock import Mock
-from mipqctool.frictionlessfromdc  import DcVariable
+from mipqctool.qcfrictionless.frictionlessfromdc  import DcVariable
 from mipqctool.config import ERROR
 
 DCVAR1 = {

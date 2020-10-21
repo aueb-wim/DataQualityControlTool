@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import pytest
 from copy import deepcopy
 from mipqctool.config import ERROR
-from mipqctool.qctable import QcTable
-from mipqctool.qcschema import QcSchema
+from mipqctool.qcfrictionless import QcTable
+from mipqctool.qcfrictionless import QcSchema
 from tableschema import Table
 from mipqctool.tableprofiler import TableProfiler
 

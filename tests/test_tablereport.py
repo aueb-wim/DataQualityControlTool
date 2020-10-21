@@ -7,8 +7,8 @@ import pytest
 import os
 import json
 from mipqctool.tablereport import TableReport
-from mipqctool.qctable import QcTable
-from mipqctool.qcschema import QcSchema
+from mipqctool.qcfrictionless import QcTable
+from mipqctool.qcfrictionless import QcSchema
 
 
 APP_PATH = os.path.abspath(os.path.dirname(__file__))

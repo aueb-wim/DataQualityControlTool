@@ -18,10 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 import pydicom
 from .config import LOGGER
-from .mridicom import MRIDicom
-from .mrisequence import MRISequence
-from .mristudy import MRIStudy
-from .mripatient import MRIPatient
+from .mri import MRIDicom, MRISequence, MRIStudy, MRIPatient
 from . import config, __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))

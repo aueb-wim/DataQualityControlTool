@@ -14,7 +14,7 @@ from weasyprint import HTML
 from collections import namedtuple, Counter, defaultdict
 from .exceptions import TableReportError, QCToolException
 from .columnreport import ColumnReport
-from .qctable import QcTable
+from .qcfrictionless import QcTable
 from . import config, qctypes
 from .config import LOGGER
 

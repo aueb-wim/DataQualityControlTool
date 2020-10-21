@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import pytest
 import csv
 from mock import Mock, patch
-from mipqctool.qctable import QcTable
+from mipqctool.qcfrictionless import QcTable
 from mipqctool.exceptions import QCToolException
 
 

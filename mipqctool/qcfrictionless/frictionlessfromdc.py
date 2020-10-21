@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import json
 from tableschema import Schema, exceptions
 from .qcfield import QcField
-from . import config, qctypes
-from .config import LOGGER, DEFAULT_MISSING_VALUES
+from .. import config, qctypes
+from ..config import LOGGER, DEFAULT_MISSING_VALUES
 
 
 class FrictionlessFromDC(object):

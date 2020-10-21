@@ -10,7 +10,7 @@ import os
 from csv import DictReader
 from tableschema import Table
 from .qcschema import QcSchema
-from .exceptions import QCToolException
+from ..exceptions import QCToolException
 
 
 class QcTable(Table):

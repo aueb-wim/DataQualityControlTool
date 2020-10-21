@@ -7,7 +7,7 @@ import pytest
 import json
 from random import choice
 from tests.mocker import ResultMocker
-from mipqctool.frictionlessfromdc import FrictionlessFromDC
+from mipqctool.qcfrictionless import FrictionlessFromDC
 from mipqctool.config import ERROR
 
 TEST_JSON_PATH1 = 'tests/test_datasets/simple_dc_cdes.json'

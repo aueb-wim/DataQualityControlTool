@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import pytest
 from random import choice
 from tests.mocker import ResultMocker
-from mipqctool.qcschema import QcSchema, _QcTypeGuesser, _QcTypeResolver
+from mipqctool.qcfrictionless.qcschema import QcSchema, _QcTypeGuesser, _QcTypeResolver
 from mipqctool.config import ERROR
 
 

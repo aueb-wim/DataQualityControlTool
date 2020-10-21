@@ -7,7 +7,7 @@ import pytest
 import json
 from random import choice
 from tests.mocker import ResultMocker
-from mipqctool.frictionlessfromdc import Node
+from mipqctool.qcfrictionless.frictionlessfromdc import Node
 from mipqctool.config import ERROR
 
 SIMPLE_DESCRIPTOR = {

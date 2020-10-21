@@ -8,8 +8,8 @@ from __future__ import unicode_literals
 
 from tableschema import Schema, exceptions
 from .qcfield import QcField
-from . import config, qctypes
-from .config import LOGGER
+from .. import config, qctypes
+from ..config import LOGGER
 
 config.debug(True)
 

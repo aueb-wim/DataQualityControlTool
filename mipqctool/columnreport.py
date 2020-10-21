@@ -7,7 +7,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import namedtuple, OrderedDict
-from .qcfield import QcField
+from .qcfrictionless import QcField
 from . import config, qctypes
 from .config import LOGGER, PRETTY_STAT_NAMES
 from .exceptions import DataTypeError, ConstraintViolationError
