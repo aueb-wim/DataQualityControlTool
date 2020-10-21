@@ -48,11 +48,11 @@ def test_describe_date(pattern, result):
 
 
 @pytest.mark.parametrize('path, variable, format, result', [
-    ('data/dates.csv', 1, '%Y-%m-%d',
+    ('tests/test_datasets/dates.csv', 1, '%Y-%m-%d',
      {'mode': date(2001, 5, 31), 'freq': 6,
       'min': date(2001, 5, 31),
       'max': date(2001, 6, 26)}),
-    ('data/dates.csv', 2, '%d/%m/%Y',
+    ('tests/test_datasets/dates.csv', 2, '%d/%m/%Y',
      {'mode': date(2011, 6, 16), 'freq': 2,
       'min': date(1936, 6, 4),
       'max': date(2019, 5, 31)}),

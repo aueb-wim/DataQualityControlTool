@@ -32,7 +32,7 @@ SCHEMA_SIMPLE = {'fields': [
 
 
 def test_infer_schema_empty_file():
-    s = QcTable('data/empty.csv', schema=None)
+    s = QcTable('tests/test_datasets/empty.csv', schema=None)
     d = s.infer()
     assert d == {
         'fields': [],
@@ -41,7 +41,7 @@ def test_infer_schema_empty_file():
 
 
 @pytest.mark.parametrize('path, schema', [
-    ('data/simple.csv', SCHEMA_SIMPLE),
+    ('tests/test_datasets/simple.csv', SCHEMA_SIMPLE),
     ])
 def test_schema_infer_tabulator(path, schema):
     table = QcTable(path, schema=None)
@@ -63,8 +63,8 @@ def test_schema_infer_storage(import_module, apply_defaults):
 
 
 @pytest.mark.parametrize('path, column_name', [
-    ('data/simple.csv', 'name'),
-    ('data/simple.csv', 'id')
+    ('tests/test_datasets/simple.csv', 'name'),
+    ('tests/test_datasets/simple.csv', 'id')
 ])
 def test_column_values(path, column_name):
     with open(path) as csvfile:
@@ -79,11 +79,26 @@ def test_column_values(path, column_name):
 
 
 @pytest.mark.parametrize('path, column_name', [
-    ('data/simple.csv', 'non_exist_column'),
-    ('data/simple.csv', 'on exist column with spaces')
+    ('tests/test_datasets/simple.csv', 'non_exist_column'),
+    ('tests/test_datasets/simple.csv', 'on exist column with spaces')
 ])
 def test_column_values_exception(path, column_name):
     table = QcTable(path, schema=None)
     table.infer()
     with pytest.raises(QCToolException):
         assert table.column_values(column_name)
+
+@pytest.mark.parametrize('path, result', [
+    (
+        'tests/test_datasets/simple.csv',
+        ['id', 'name', 'diagnosis']
+    ),
+    (
+        'tests/test_datasets/test_dataset.csv',
+        ['Patient_id', 'Diagnosis Categories', 'Gender_num', 'Date_visit']
+    ),
+
+])
+def test_actual_headers(path, result):
+    table = QcTable(path, schema=None)
+    assert table.actual_headers == result

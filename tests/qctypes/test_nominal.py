@@ -14,11 +14,11 @@ NULL = DEFAULT_MISSING_VALUES[0]
 
 
 @pytest.mark.parametrize('path, column, result', [
-    ('data/nominal.csv', 1,
+    ('tests/test_datasets/nominal.csv', 1,
      {'top': 'NL', 'freq': 37,
       'categories': set(['AD', 'MCI', 'NL']),
       'categories_num': 3}),
-    ('data/nominal.csv', 2,
+    ('tests/test_datasets/nominal.csv', 2,
      {'top': '2', 'freq': 53,
       'categories': set(['2', '1']),
       'categories_num': 2}),

@@ -1,0 +1,21 @@
+Patient_id,integers_floats,percentage,sparse_integers_na,with_groupsep,string_var1
+1,132,100%,not applicable,5432,jonhny
+2,132,93.80%,not applicable,52,lenny
+3,1.32,100%,not applicable,23,kirk
+4,,100%,not applicable,67,joe
+5,,100%,,,n/a
+6,13,93.80%,,,n/a
+7,1,93.80%,,,louis
+8,31,87.50%,,NULL,sam
+9,-INF,NAN,,,jesica
+10,null,,,,null
+11,,93.80(%),,,
+12,1.23,90.60 (%),,,richy
+13,123,100%,,,sonia
+14,11,87.50%,,,lary
+15,333,84.40%,,,guybrush
+16,,87.50%,,,null
+17,1334,96.87%,2,,
+18,12,100%,3,,
+19,32.23,96.87%,,,
+20,1300,100%,2,,

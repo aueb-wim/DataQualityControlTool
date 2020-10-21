@@ -83,14 +83,14 @@ def test_get_suffix_numerical(pattern, result):
 
 
 @pytest.mark.parametrize('path, variable, result', [
-    ('data/random_numeric.csv', 1,
+    ('tests/test_datasets/random_numeric.csv', 1,
      {'mean': -0.0227587041, 'std': 0.9347881169,
       'min': -2.2315064208, 'max': 3.0881165577,
       'q1': -0.773279829, 'median': -0.0678199662,
       'q3': 0.610162354, 'upperbound': 2.7816056467,
       'lowerbound': -2.8271230549, 'outliers': 1,
       'outliersrows': [(93, 3.0881165577)]}),
-    ('data/random_numeric.csv', 3,
+    ('tests/test_datasets/random_numeric.csv', 3,
      {'mean': 3.6610246582, 'std': 2.6826183943,
       'min': 0.0189946653, 'max': 14.5695842802,
       'q1': 1.7913899685, 'median': 2.9051041444,

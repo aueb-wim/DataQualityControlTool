@@ -96,17 +96,17 @@ def test_get_suffix_integer(pattern, result):
 
 
 @pytest.mark.parametrize('path, variable, result', [
-    ('data/integer.csv', 1,
+    ('tests/test_datasets/integer.csv', 1,
      {'mode': 71, 'freq': 8,
       'min': 36, 'max': 87,
       'q1': 67, 'median': 71,
       'q3': 77}),
-    ('data/integer.csv', 2,
+    ('tests/test_datasets/integer.csv', 2,
      {'mode': 0, 'freq': 86,
       'min': 0, 'max': 0,
       'q1': 0, 'median': 0,
       'q3': 0}),
-    ('data/integer.csv', 3,
+    ('tests/test_datasets/integer.csv', 3,
      {'mode': 29, 'freq': 13,
       'min': 9, 'max': 30,
       'q1': 23, 'median': 26,

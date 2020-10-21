@@ -88,10 +88,10 @@ def test_validate_row_dublicate(row, result):
 
 
 @pytest.mark.parametrize('path, schema, valid, rows_with_invalids', [
-    ('data/simple.csv', SCHEMA_SIMPLE, True, []),
-    ('data/integer.csv', SCHEMA_SIMPLE, False, []),
-    ('data/simple_invalid.csv', SCHEMA_SIMPLE, False, [7]),
-    ('data/complex_invalid.csv', SCHEMA_COMPLEX, False, [4, 7, 9]),
+    ('tests/test_datasets/simple.csv', SCHEMA_SIMPLE, True, []),
+    ('tests/test_datasets/integer.csv', SCHEMA_SIMPLE, False, []),
+    ('tests/test_datasets/simple_invalid.csv', SCHEMA_SIMPLE, False, [7]),
+    ('tests/test_datasets/complex_invalid.csv', SCHEMA_COMPLEX, False, [4, 7, 9]),
 ])
 def test_vadidate_rows_with_invalids(path, schema, valid, rows_with_invalids):
     profiler = TableProfiler(schema)
@@ -103,16 +103,16 @@ def test_vadidate_rows_with_invalids(path, schema, valid, rows_with_invalids):
 
 def test_invalid_rows():
     profiler = TableProfiler(SCHEMA_SIMPLE)
-    table = QcTable('data/simple_invalid_2.csv', schema=None)
+    table = QcTable('tests/test_datasets/simple_invalid_2.csv', schema=None)
     rows = table.read(cast=False)
     assert profiler.validate(rows, table.headers) == False
     assert profiler.invalid_rows == [5]
 
 
 @pytest.mark.parametrize('path, schema, primary_keys, dublicates', [
-    ('data/simple_invalid.csv', SCHEMA_SIMPLE, 'id', [6]),
-    ('data/complex_invalid.csv', SCHEMA_COMPLEX, ['id'], [4, 6]),
-    ('data/complex_invalid.csv', SCHEMA_COMPLEX, ['id', 'visitid'], [4]),
+    ('tests/test_datasets/simple_invalid.csv', SCHEMA_SIMPLE, 'id', [6]),
+    ('tests/test_datasets/complex_invalid.csv', SCHEMA_COMPLEX, ['id'], [4, 6]),
+    ('tests/test_datasets/complex_invalid.csv', SCHEMA_COMPLEX, ['id', 'visitid'], [4]),
 ])
 def test_dublicates(path, schema, primary_keys, dublicates):
     schema['primaryKey'] = primary_keys
@@ -124,8 +124,8 @@ def test_dublicates(path, schema, primary_keys, dublicates):
 
 
 @pytest.mark.parametrize('path, schema, primary_keys, missing_pk, missing_rq', [
-    ('data/complex_invalid.csv', SCHEMA_COMPLEX, ['id'], [], [8]),
-    ('data/complex_invalid.csv', SCHEMA_COMPLEX, ['id', 'visitid'], [9], [8]),
+    ('tests/test_datasets/complex_invalid.csv', SCHEMA_COMPLEX, ['id'], [], [8]),
+    ('tests/test_datasets/complex_invalid.csv', SCHEMA_COMPLEX, ['id', 'visitid'], [9], [8]),
 ])
 def test_missing(path, schema, primary_keys, missing_pk, missing_rq):
     schema['primaryKey'] = primary_keys

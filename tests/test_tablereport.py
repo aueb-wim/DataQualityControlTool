@@ -59,6 +59,7 @@ TEST_TABLE = QcTable(DATASET2_PATH, schema=None)
 TEST_TABLE.infer()
 TEST_TABLE.schema.save(os.path.join(APP_PATH, 'test_datasets/test_dataset2.json'))
 
+
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result, total_rows', [
     (DATASET1_PATH, METADATA1_PATH, 1, F_ROWS_PER_COLUMN1, 20)
 ])
@@ -74,7 +75,29 @@ def test_calc_rows_per_column(datasetpath, schemapath, id_column, result, total_
         assert recorded.list == []
 
 
-
+@pytest.mark.parametrize('datasetpath, schemapath, valid_headers, missing_headers, invalid_headers, isvalid', [
+    (
+        os.path.join(APP_PATH, 'test_datasets/test_dataset_wrong1.csv'),
+        METADATA1_PATH,
+        ['Patient_id', 'Diagnosis Categories'],
+        ['Gender_num', 'Date_visit'],
+        ['Gender_12', 'Date_vit12'],
+        False
+    )
+])
+def test_valid_headers(datasetpath, schemapath, valid_headers,
+                       missing_headers, invalid_headers, isvalid):
+    with open(schemapath) as json_file:
+        dict_schema = json.load(json_file)
+    schema = QcSchema(dict_schema)
+    testtable = QcTable(datasetpath, schema=schema)
+    testreport = TableReport(testtable, 1)
+    with pytest.warns(None) as recorded:
+        assert testreport.valid_headers == valid_headers
+        assert testreport.missing_headers == missing_headers
+        assert testreport.invalid_headers == invalid_headers
+        assert testreport.isvalid == isvalid
+        assert recorded.list == []
 
 
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result', [
@@ -89,6 +112,7 @@ def test_filled_rows_stats(datasetpath, schemapath, id_column, result):
     with pytest.warns(None) as recorded:
         assert testreport.filled_rows_stats == result
         assert recorded.list == []
+
 
 @pytest.mark.parametrize('datasetpath, schemapath, id_column, result', [
     (DATASET1_PATH, METADATA1_PATH, 1, VALID_ROWS_STATS1)
