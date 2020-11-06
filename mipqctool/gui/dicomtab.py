@@ -49,13 +49,13 @@ class DicomTab(tk.Frame):
                                   command=self.createreport)
 
     def __packing(self):
-        self.tblabelframe.pack(fill='x', expand='yes', ipadx=4, ipady=4,
+        self.tblabelframe.pack(fill='x', ipadx=4, ipady=4,
                                padx=4, pady=4)
         self.lbl_tag1.pack(anchor='w', padx=4)
         self.lbl_root_f.pack(fill='x', padx=4, pady=2)
         self.btn_root_f.pack(anchor='e', padx=4, pady=2)
 
-        self.tblabelframe_output.pack(fill='x', expand='yes',
+        self.tblabelframe_output.pack(fill='x',
                                       ipadx=4, ipady=4,
                                       padx=4, pady=4)
         self.lbl_tag2.pack(anchor='w', padx=4)
