@@ -1,13 +1,10 @@
 # qcdicom.py
-import datetime
 import os
-import json
 import collections
-import multiprocessing as mp
 from multiprocessing import Pool
 import pydicom
-from .config import LOGGER
-from . import config, __version__
+from ..config import LOGGER
+from .. import config, __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 config.debug(True)

@@ -1,8 +1,8 @@
 # sequence.py
 import ast
 import collections
-from . import config
-from .config import LOGGER
+from .. import config
+from ..config import LOGGER
 
 config.debug(True)
 
