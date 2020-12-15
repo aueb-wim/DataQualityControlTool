@@ -5,11 +5,9 @@ import os
 import click
 import getpass
 import json
-
 from .dicomreport import DicomReport
 from .tablereport import TableReport
-from .qctable import QcTable
-from .qcschema import QcSchema
+from .qcfrictionless import QcTable, QcSchema
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
