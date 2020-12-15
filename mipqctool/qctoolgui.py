@@ -5,7 +5,6 @@ import queue
 from tkinter import ttk, N, S, E, W
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
-from .texthandler import TextHandler
 from .gui import CsvTab, DicomTab, InferTab
 from . import __version__
 from .config import LOGGER, C_FORMAT, debug

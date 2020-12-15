@@ -22,6 +22,10 @@ class CsvTab(tk.Frame):
         self.reportcsv = None
         self.cleaning = tk.BooleanVar()
         self.cleaning.set(False)
+        # set default option for json metadata type to Frictionless
+        self.report_type = tk.IntVar()
+        self.report_type.set(1)
+        self.report_types = [('Excel (xlsx)', 1), ('Pdf', 2)]
 
         self.__init()
         self.__packing()
@@ -46,10 +50,21 @@ class CsvTab(tk.Frame):
         # Create a label frame where to put the output files interface
         self.tblabelframe_output = tk.LabelFrame(self, text='Validation / Verification Report')
         # Label for presenting the export folder
-        self.label_export1 = tk.Label(self.tblabelframe_output,
-                                      text='Report Folder:')
+        #self.label_export1 = tk.Label(self.tblabelframe_output,
+        #                              text='Report Folder:')
+        self.report_tblabelframe = tk.LabelFrame(self.tblabelframe_output,
+                                                 text='Report Type:')
+        self.report_radiobutton1 = tk.Radiobutton(self.report_tblabelframe,
+                                                  text='Excel (xlsx)',
+                                                  variable=self.report_type,
+                                                  value=1)
+        self.report_radiobutton2 = tk.Radiobutton(self.report_tblabelframe,
+                                                  text='Pdf',
+                                                  variable=self.report_type,
+                                                  value=2)
         self.label_export2 = tk.Label(self.tblabelframe_output,
-                                      width=45, bg='white')
+                                      width=45, bg='white',
+                                      text='Not Selected')
         # Button Select export folder
         self.button_export_folder = tk.Button(self.tblabelframe_output,
                                               text='Select Folder',
@@ -84,9 +99,11 @@ class CsvTab(tk.Frame):
 
         # Output Frame
         self.tblabelframe_output.pack(fill='both', expand='yes',
-                                      ipadx=4, ipady=4,
-                                      padx=4, pady=4)
-        self.label_export1.grid(row=0, column=0)
+                                      ipadx=4, ipady=2)
+        self.report_tblabelframe.grid(row=0, column=0, padx=4, pady=4, ipady=2)
+        self.report_radiobutton1.pack(anchor='w', padx=4)
+        self.report_radiobutton2.pack(anchor='w', padx=4)
+        #self.label_export1.grid(row=0, column=0)
         self.label_export2.grid(row=0, column=1, padx=4)
         self.button_export_folder.grid(row=0, column=2, sticky='e')
         # Execution interface
@@ -148,6 +165,7 @@ class CsvTab(tk.Frame):
             filedir = self.__exportfiledir
             basename = os.path.splitext(self.dname)[0]
             pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
+            xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
 
             if self.md_frame.from_disk.get():
                 LOGGER.info('Retrieving Metadata from localdisk...')
@@ -182,8 +200,11 @@ class CsvTab(tk.Frame):
                     self.reportcsv.apply_corrections()
                     self.reportcsv.save_corrected(self.datasetpath)
 
-                # Create the pdf report
-                self.reportcsv.printpdf(pdfreportfile)
+                # Create the  report
+                if self.report_type.get() == 1:
+                    self.reportcsv.printexcel(xlsxreportfile)
+                else:
+                    self.reportcsv.printpdf(pdfreportfile)
 
                 self.label_export2.config(text=filedir)
                 tkmessagebox.showinfo(

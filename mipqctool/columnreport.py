@@ -68,6 +68,10 @@ class ColumnReport(object):
         return self.__field
 
     @property
+    def name(self):
+        return self.qcfield.name
+
+    @property
     def miptype(self):
         return self.__miptype
 
@@ -89,6 +93,14 @@ class ColumnReport(object):
     def stats(self):
         """Statistics dictionary, different keys per qctype"""
         return self.__stats
+    @property
+    def value_range(self):
+        """Value range derived from stats."""
+        if self.miptype == 'nominal':
+            return self.stats['categories']
+        elif self.miptype in ['integer', 'numerical']:
+            return [self.stats['min'], self.stats['max']]
+
 
     @property
     def invalid_rows(self):

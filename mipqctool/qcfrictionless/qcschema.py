@@ -27,10 +27,19 @@ class QcSchema(Schema):
 
     def __init__(self, descriptor={}, strict=False):
         super().__init__(descriptor, strict)
+        self.__infered = False
 
         # overide __build and replace Fields objects
         # with QcFields ones
         self.__build()
+
+    @property
+    def fields_names(self):
+        """Schema's field names
+        # Returns
+            str[]: an array of field names
+        """
+        return [field.name for field in self.fields]
 
     def infer(self, rows, headers=1,
               confidence=0.75, maxlevels=10):
@@ -55,7 +64,7 @@ class QcSchema(Schema):
         for header in headers:
             descriptor['fields'].append({'name': header})
         LOGGER.info('{} of sample rows are used for table schema inference'.format(len(rows)))
-        for index, row in enumerate(rows):
+        for row_number, row in enumerate(rows):
             # Normalize rows with invalid dimensions for sanity
             row_length = len(row)
             headers_length = len(headers)
@@ -107,16 +116,28 @@ class QcSchema(Schema):
         # Save descriptor
         self._Schema__current_descriptor = descriptor
         self.__build()
+        self.__infered = True
 
         return descriptor
 
-    @property
-    def fields_names(self):
-        """Schema's field names
-        # Returns
-            str[]: an array of field names
+    def update_fields_constraints(self, updates):
+        """Updates the given fields for inferred schema only.
+        Arguments:
+        :param updates: dict with keys the field names and values dicts with the updates
+                        {<name1>: {'minimum':value, 'maximum':value}
         """
-        return [field.name for field in self.fields]
+        if self.__infered:
+            for name, constraints in updates.items():
+                for field in self._Schema__current_descriptor['fields']:
+                    if field['name'] == name:
+                        field['constraints'] = constraints
+            self.__build()
+            return True
+        else:
+            return False
+
+
+    # Private methods
 
     def __build(self):
         self._Schema__build()

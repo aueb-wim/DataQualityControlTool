@@ -46,7 +46,7 @@ class MetadataFrame(tk.Frame):
                                                variable=self.from_disk,
                                                command=self._check_lc)
         self.metaname_label = tk.Label(self.lc_frame, text='Not selected',
-                                       bg='white', pady=4, width=35)
+                                       bg='white', pady=4, width=46)
 
         self.metaload_button = tk.Button(self.lc_frame, text='Select File',
                                          command=self.setmetadatafile)
@@ -55,12 +55,12 @@ class MetadataFrame(tk.Frame):
                                                text='Json Type:')
         self.json_radiobutton1 = tk.Radiobutton(self.json_tblabelframe,
                                                 text='Frictionless',
-                                                padx=20,
+                                                padx=4,
                                                 variable=self.json_type,
                                                 value=1)
         self.json_radiobutton2 = tk.Radiobutton(self.json_tblabelframe,
                                                 text='DataCatalogue',
-                                                padx=20,
+                                                padx=4,
                                                 variable=self.json_type,
                                                 value=2)
 
@@ -92,7 +92,7 @@ class MetadataFrame(tk.Frame):
     def __packing(self):
         # metadata frame packing
         # Main Skeleton
-        self.tblabelframe.pack(fill='both', expand='yes', ipadx=4, ipady=4,
+        self.tblabelframe.pack(fill='both', expand='yes', ipadx=2, ipady=4,
                                padx=4, pady=4)
         self.fromdisc_cbutton.pack(anchor='w', padx=2, pady=2)
         self.lc_frame.pack(fill='x', expand='yes', padx=4, pady=4)  

@@ -1,3 +1,4 @@
 #! /bin/bash
-pip3 install -r requirements.txt
-pip3 install .
+python3 -m vevn venv/qctool
+pip install -r requirements.txt
+pip install .

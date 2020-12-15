@@ -57,6 +57,16 @@ PANDAS_NANS = ['', '#N/A', '#N/A N/A', '#NA', '-1.#IND',
                    '-1.#QNAN', '-NaN', '-nan', '1.#IND', '1.#QNAN',
                    'N/A', 'NA', 'NULL', 'NaN', 'n/a', 'nan', 'null']
 
+# Data Catalogue 
+DC_HEADERS = [
+    'csvFile', 'name', 'code', 'type', 'values',
+    'unit', 'canBeNull', 'description', 'comments', 'conceptPath',
+    'methodology', 'sql_type', 'cde'
+    ]
+
+DC_TYPES = ['real', 'integer', 'nominal', 'ordinal', 'date', 'text']
+DC_DATE_FORMAT = '%Y-%m-%d'
+
 # Dicom constants
 ID_TAGS = ['PatientID', 'StudyID', 'SeriesNumber', 'InstanceNumber']
 DATE_TAGS = ['AcquisitionDate', 'SeriesDate', 'StudyDate', 'PatientAge',
@@ -132,3 +142,24 @@ PRETTY_STAT_NAMES = {
         'min': 'Minimum value',
         'bottom5': '5 least frequent values',
         'top5': '5 most frequent values'}
+
+COLUMN_STAT_HEADERS = [
+    'mean',
+    'std',
+    'max', 
+    'min',
+    'mode',
+    'q1',  
+    'median',
+    'q3',
+    'categories', 
+    'categories_num',
+    'unique',
+    'top',                      
+    'outliers',
+    'upperbound', 
+    'lowerbound', 
+    'outliersrows', 
+    'bottom5', 
+    'top5',
+]

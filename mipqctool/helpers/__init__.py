@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 import os
 from copy import deepcopy
+from nltk import edit_distance
 from .. import config
 
 
@@ -68,3 +69,35 @@ def expand_qcfield_descriptor(descriptor):
     descriptor = deepcopy(descriptor)
     descriptor.setdefault('MIPType', config.DEFAULT_QCFIELD_MIPTYPE)
     return descriptor
+
+
+def edit_distance_f1(s1, s2, substitution_cost=1, transpositions=False) -> float:
+    """A modified f1-like similarity measure based on lenenstein distance.
+    The edit distance(ED) is considerd to be the number of True Negatives. 
+    The True Positives(TP) is assumed that are equal to max(l1,l2) - ED, where
+    l1, l2 the lenght of the s1, s2 strings. 
+    As precision is calculated the TP / min(l1,l2) and recall TP / max(l1,l2)
+    f1_score 2 * (precision * recall) / (precision + recall)
+    
+    :param s1, s2: The strings to be analysed
+    :param transpositions: Whether to allow transposition edits
+    :type s1: str
+    :type s2: str
+    :type substitution_cost: int
+    :type transpositions: bool
+    :rtype int
+    """
+    ed = edit_distance(s1, s2,
+                       substitution_cost=substitution_cost,
+                       transpositions=transpositions)
+    l1 = len(s1)
+    l2 = len(s2)
+    found = max(l1, l2) - ed
+    precision = found / min(l1, l2)
+    recall = found / max(l1, l2)
+    try:
+        f1 = 2 * (precision * recall) / (precision + recall)
+    except ZeroDivisionError:
+        f1 = 0
+    
+    return f1

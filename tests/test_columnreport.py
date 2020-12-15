@@ -70,6 +70,20 @@ def test_null_rows(descriptor, values, result):
 
 
 @pytest.mark.parametrize('descriptor, values, result', [
+    (INTEGER_DESC, INTEGER_VALUES, [3, 5]),
+    (NUMERICAL_DESC, NUMERICAL_VALUES, [2.31, 4]),
+    (NOMINAL_DESC, NOMINAL_VALUES, ['Category1', 'Category2'])
+])
+def test_value_range(descriptor, values, result):
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
+    testcolumn.validate()
+    with pytest.warns(None) as recorded:
+        assert testcolumn.value_range == result
+        assert recorded.list == []
+
+
+@pytest.mark.parametrize('descriptor, values, result', [
     (INTEGER_DESC, INTEGER_VALUES, [1, 4, 7, 9, 10, 11]),
 ])
 def test_violated_rows(descriptor, values, result):

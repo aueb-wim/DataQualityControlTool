@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from tests.test_qcfield import test_validate
 
 import pytest
-from mock import Mock
+from unittest.mock import Mock
 from mipqctool.qcfrictionless.frictionlessfromdc  import DcVariable
 from mipqctool.config import ERROR
 

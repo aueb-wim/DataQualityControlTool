@@ -5,8 +5,6 @@ from __future__ import unicode_literals
 
 import pytest
 import json
-from random import choice
-from tests.mocker import ResultMocker
 from mipqctool.qcfrictionless import FrictionlessFromDC
 from mipqctool.config import ERROR
 
