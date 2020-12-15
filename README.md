@@ -23,7 +23,7 @@ Required installed packages for Debian based distros
 
 ```shell
 sudo apt-get update
-sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi python-venv libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
 ```
 
 
@@ -42,6 +42,8 @@ In a terminal we run
 ```shell
 git clone https://github.com/aueb-wim/DataQualityControlTool.git
 cd DataQualityControlTool
+python3 -m venv venv/qctool
+source venv/qctool/bin/activate
 sh install.sh
 ```
 ### Docker image
@@ -55,6 +57,12 @@ sh build.sh
 ## Usage
 
 **Command Line Interface**
+
+Activate the qctool virtual enviroment
+
+```shell
+source venv/qctool/bin/activate
+```
 
 For profiling a csv dataset:
 
