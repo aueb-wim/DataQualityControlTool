@@ -1,0 +1,2 @@
+opt/venvs/mipqctool/bin/qctool usr/bin/qctool
+opt/venvs/mipqctool/bin/qctoolgui usr/bin/mipqctoolgui
