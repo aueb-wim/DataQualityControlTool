@@ -12,7 +12,7 @@ from nltk import edit_distance
 from ..config import DEFAULT_MISSING_VALUES
 
 
-def profile_nominal(pairs):
+def profile_nominal(pairs, **options):
     """Return stats for the nominal field
 
     Arguments:

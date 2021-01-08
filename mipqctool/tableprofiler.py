@@ -10,7 +10,7 @@ from copy import deepcopy
 from collections import namedtuple
 from tableschema.exceptions import CastError
 from tableschema import Schema
-from . import config
+from mipqctool import config
 
 config.debug(True)
 ErrorType = namedtuple('ErrorType', ['type', 'desc'])

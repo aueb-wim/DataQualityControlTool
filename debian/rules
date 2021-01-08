@@ -2,3 +2,12 @@
 
 %:
 	dh $@ --with python-virtualenv
+
+override_dh_virtualenv:
+	dh_virtualenv --python python3 \
+	--upgrade-pip
+
+.PHONY: override_dh_strip override_dh_shlibdeps
+
+override_dh_shlibdeps:
+	dh_shlibdeps -X/x86/ -X/numpy.libs -X/Pillow.libs

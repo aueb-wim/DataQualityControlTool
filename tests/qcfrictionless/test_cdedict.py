@@ -22,12 +22,14 @@ VARIABLE_7 = ['MADRS testee', 'integer', [-12, 86]]
 VARIABLE_8 = ['MADRS tewecew', 'integer', [44, 86]]
 VARIABLE_9 = ['md nonsenese', 'integer', [-12, -2]]
 
+
 @pytest.mark.parametrize('filename, result', [
     (DICT_PATH1, 168)
 ])
 def test_total_cdes(filename, result):
     test = CdeDict(filename)
     assert test.total_cdes == result
+
 
 @pytest.mark.parametrize('filename, variable, result', [
     (DICT_PATH1, VARIABLE_1, 'gender_type'),
@@ -52,4 +54,4 @@ def test_suggest(filename, variable, result):
         totest = suggested_cde.code
     else:
         totest = None
-    assert totest == result 
+    assert totest == result

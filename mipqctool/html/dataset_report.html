@@ -13,16 +13,9 @@
         <p>Is metadata JSON file with table schema provided? <b>{{ use_metadata }}</b></p>
         <p>Data Cleaning performed? <b>No</b></p>
         <p>Number of rows with invalid values: <b>{{ total_invalid_rows }}</b></p>
+        <p>Number of columns containg invalid values: </p>
         <h3>Rows Data Completeness Overall Statistics</h3>
         <table>
-            <tr>
-                <td>Number of rows with only the ID column filled (the others are filled with nulls)</td>
-                <td>{{ only_ids }} ({{only_ids_perc}}%)</td>
-            </tr>
-            <tr>
-                <td>Number of rows with nulls in ID column</td>
-                <td>{{ no_ids }} ({{no_ids_perc}}%)</td>
-            </tr>
             <tr>
                 <td>Number of rows with 100% (all {{ total_columns }}) of the columns filled</td>
                 <td>{{ filled_100 }} ({{ filled_100_perc }}%)</td>

@@ -54,7 +54,7 @@ def describe_text(pattern, uniques, maxlevels=10):
         return ERROR
 
 
-def profile_text(pairs):
+def profile_text(pairs, **options):
     """Return stats for the text field
 
     Arguments:

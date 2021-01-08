@@ -70,11 +70,12 @@ def get_suffix_numerical(pattern):
         return ERROR
 
 
-def profile_numerical(pairs):
+def profile_numerical(pairs, threshold=3, **options):
     """Return stats for the numerical field
 
     Arguments:
     :param pairs: list with pairs (row, value)
+    :param threshold: lenght in std, outside of which a value is consider outlier 
     :return: dictionary with stats
     """
     result = OrderedDict()
@@ -89,9 +90,9 @@ def profile_numerical(pairs):
     result['q1'] = np.quantile(values, 0.25)
     result['median'] = np.median(values)
     result['q3'] = np.quantile(values, 0.75)
-    high = result['mean'] + 3 * result['std']
+    high = result['mean'] + threshold * result['std']
     result['upperbound'] = high
-    low = result['mean'] - 3 * result['std']
+    low = result['mean'] - threshold * result['std']
     result['lowerbound'] = low
     outlier_rows = list(filter(lambda x:
                                x[1] >= high or x[1] <= low, pairs))

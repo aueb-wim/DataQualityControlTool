@@ -6,16 +6,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from collections import namedtuple, OrderedDict
-from .qcfrictionless import QcField
-from . import config, qctypes
-from .config import LOGGER, PRETTY_STAT_NAMES
-from .exceptions import DataTypeError, ConstraintViolationError
-# for testing htlm2pdf columnreport template
 import os
+from collections import namedtuple, OrderedDict
+
+# for testing htlm2pdf columnreport template
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
-from .helpers.html import list2parag, tupples2table
+
+from mipqctool.qcfrictionless import QcField
+from mipqctool import config, qctypes
+from mipqctool.config import LOGGER, PRETTY_STAT_NAMES
+from mipqctool.exceptions import DataTypeError, ConstraintViolationError
+from mipqctool.helpers.html import list2parag, tupples2table
 
 config.debug(True)
 
@@ -24,11 +26,15 @@ class ColumnReport(object):
     """This class is used to hold statistical and validation data of values
     of a dataset column.
     """
-    def __init__(self, raw_values, qcfield):
+    def __init__(self, raw_values, qcfield, threshold=3, **options):
         """Arguments:
         :param raw_values: list of strings representing values of a column
         :param qcfield: QcField object
+        :param threshold: outlier threshold - (mean - threshold * std, mean + threshold * std) 
+                          outside this length, a numerical value is considered outlier
         """
+
+        self.__threshold = threshold
         # Stores all the values of the column in a list of
         # tupples (row number, raw value)
         self.__raw_pairs = enumerate(raw_values, start=1)
@@ -362,7 +368,7 @@ class ColumnReport(object):
             # all values are null
             stats = {}
         else:
-            stats = profiler(casted_pairs)
+            stats = profiler(casted_pairs, threshold=self.__threshold)
         self.__not_nulls_total = len(casted_pairs)
         self.__null_total = total_rows_with_nulls
         self.__null_rows = rows_with_nulls

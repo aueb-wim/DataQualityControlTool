@@ -90,7 +90,7 @@ def get_suffix_integer(pattern):
         return ERROR
 
 
-def profile_integer(pairs):
+def profile_integer(pairs, **options):
     """Return stats for the integer field
 
     Arguments:

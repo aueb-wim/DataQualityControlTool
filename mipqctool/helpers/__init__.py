@@ -6,8 +6,10 @@ from __future__ import unicode_literals
 
 import os
 from copy import deepcopy
+
 from nltk import edit_distance
-from .. import config
+
+from mipqctool import config
 
 
 # Module API

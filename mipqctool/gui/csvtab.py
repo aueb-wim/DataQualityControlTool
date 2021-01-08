@@ -1,21 +1,26 @@
 import os
 import csv
 import json
+
 from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from .metadataframe import MetadataFrame
-from ..qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
-from ..tablereport import TableReport
-from ..exceptions import TableReportError
-from ..config import LOGGER
+
+from mipqctool.gui.metadataframe import MetadataFrame
+from mipqctool.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
+from mipqctool.tablereport import TableReport
+from mipqctool.exceptions import TableReportError
+from mipqctool.config import LOGGER
 
 # TODO: make the selection of columnID optional
 # 
 class CsvTab(tk.Frame):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.float_validation = self.register(is_number)
+        # outlier threshold 
+        self.outlier_threshold = tk.StringVar()
         self.__exportfiledir = None
         self.__datasetpath = None
         self.dname = None
@@ -38,8 +43,8 @@ class CsvTab(tk.Frame):
         self.d_dataset_label = tk.Label(self.tblabelframe, text='Dataset file:')
         self.d_datasetpath_label = tk.Label(self.tblabelframe, text='Not selected',
                                             bg='white', pady=4, width=50)
-        self.d_columnid_label = tk.Label(self.tblabelframe, text='Select ColumnID:')
-        self.d_headers_cbox = ttk.Combobox(self.tblabelframe, width=48)
+        #self.d_columnid_label = tk.Label(self.tblabelframe, text='Select ColumnID:')
+        #self.d_headers_cbox = ttk.Combobox(self.tblabelframe, width=48)
         self.d_load_button = tk.Button(self.tblabelframe, text='Select File',
                                        command=self.loaddatasetfile)
   
@@ -62,6 +67,13 @@ class CsvTab(tk.Frame):
                                                   text='Pdf',
                                                   variable=self.report_type,
                                                   value=2)
+        self.threshold_label1 = tk.Label(self.tblabelframe_output,
+                                         text='Outlier Threshold (in Standard Deviations):')
+        self.threshold_entry1 = tk.Entry(self.tblabelframe_output, width=5,
+                                         validate="key", textvariable=self.outlier_threshold,
+                                         validatecommand=(self.float_validation, '%P'))
+        self.threshold_entry1.insert(0, '3')
+
         self.label_export2 = tk.Label(self.tblabelframe_output,
                                       width=45, bg='white',
                                       text='Not Selected')
@@ -91,8 +103,8 @@ class CsvTab(tk.Frame):
         self.d_dataset_label.grid(row=0, column=0, padx=2, sticky='e')
         self.d_load_button.grid(row=0, column=2, sticky='w')
         self.d_datasetpath_label.grid(row=0, column=1, pady=2)
-        self.d_columnid_label.grid(row=1, column=0, padx=2, sticky='e')
-        self.d_headers_cbox.grid(row=1, column=1, padx=2, pady=2)
+        #self.d_columnid_label.grid(row=1, column=0, padx=2, sticky='e')
+        #self.d_headers_cbox.grid(row=1, column=1, padx=2, pady=2)
 
         # Metadata Frame
         self.md_frame.pack(fill='both')
@@ -100,12 +112,15 @@ class CsvTab(tk.Frame):
         # Output Frame
         self.tblabelframe_output.pack(fill='both', expand='yes',
                                       ipadx=4, ipady=2)
-        self.report_tblabelframe.grid(row=0, column=0, padx=4, pady=4, ipady=2)
+        self.report_tblabelframe.grid(row=1, column=0, padx=4, pady=4, ipady=2)
         self.report_radiobutton1.pack(anchor='w', padx=4)
         self.report_radiobutton2.pack(anchor='w', padx=4)
+        self.threshold_label1.grid(row=0, column=1, sticky='e')
+        self.threshold_entry1.grid(row=0, column=2, sticky='w')
+    
         #self.label_export1.grid(row=0, column=0)
-        self.label_export2.grid(row=0, column=1, padx=4)
-        self.button_export_folder.grid(row=0, column=2, sticky='e')
+        self.label_export2.grid(row=1, column=1, padx=4)
+        self.button_export_folder.grid(row=1, column=2, sticky='e')
         # Execution interface
         self.frame_exec.pack(fill='both', expand='yes',
                              padx=4, pady=4)
@@ -122,14 +137,14 @@ class CsvTab(tk.Frame):
             self.dname = os.path.basename(filepath)
             self.d_datasetpath_label.config(text=self.dname)
             self.datasetpath = filepath
-            self.d_headers_cbox.delete(0, "end")
-            with open(filepath, 'r') as csvfile:
-                data = csv.DictReader(csvfile)
-                self.d_headers_cbox.config(values=data.fieldnames)
+            #self.d_headers_cbox.delete(0, "end")
+            #with open(filepath, 'r') as csvfile:
+            #    data = csv.DictReader(csvfile)
+            #    self.d_headers_cbox.config(values=data.fieldnames)
         else:
             self.dname = None
             self.d_datasetpath_label.config(text='Not Selected')
-            self.d_headers_cbox.delete(0, "end")
+            #self.d_headers_cbox.delete(0, "end")
 
     def setexportdir(self):
         """Folder path where the reports are stored"""
@@ -147,9 +162,9 @@ class CsvTab(tk.Frame):
         if not self.dname:
             tkmessagebox.showwarning(warningtitle,
                                      'Please, select dataset file')
-        elif not self.d_headers_cbox.get():
-            tkmessagebox.showwarning(warningtitle,
-                                     'Please, select ColumnID')
+        #elif not self.d_headers_cbox.get():
+        #    tkmessagebox.showwarning(warningtitle,
+        #                             'Please, select ColumnID')
         elif self.md_frame.from_disk.get() and not self.md_frame.metafilepath:
             tkmessagebox.showwarning(warningtitle,
                                      'Please, select metadata file')
@@ -161,11 +176,19 @@ class CsvTab(tk.Frame):
             tkmessagebox.showwarning(warningtitle,
                                      'Please, select export folder first')
         else:
+            try:
+                threshold = float(self.outlier_threshold.get())
+                LOGGER.info('Outlier threshold: %s' % self.outlier_threshold.get())
+            except ValueError:
+                LOGGER.warning('Could not retrieve outlier threshold. \
+                                Setting it to default value: 3')
+                threshold = 3
             LOGGER.info('Everything looks ok...')
             filedir = self.__exportfiledir
             basename = os.path.splitext(self.dname)[0]
             pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
             xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
+            correctedcsvfile = os.path.join(filedir, basename + '_corrected.csv')
 
             if self.md_frame.from_disk.get():
                 LOGGER.info('Retrieving Metadata from localdisk...')
@@ -189,7 +212,7 @@ class CsvTab(tk.Frame):
             dataset = QcTable(self.datasetpath, schema=schema)
 
             try:
-                self.reportcsv = TableReport(dataset, id_column=self.d_headers_cbox.current())
+                self.reportcsv = TableReport(dataset, threshold=threshold)#id_column=self.d_headers_cbox.current())
                 if self.reportcsv.isvalid:
                     LOGGER.info('The dataset has is valid.')
                 else:
@@ -198,7 +221,8 @@ class CsvTab(tk.Frame):
                 # Perform Data Cleaning?
                 if self.cleaning.get():
                     self.reportcsv.apply_corrections()
-                    self.reportcsv.save_corrected(self.datasetpath)
+
+                    self.reportcsv.save_corrected(correctedcsvfile)
 
                 # Create the  report
                 if self.report_type.get() == 1:
@@ -215,3 +239,12 @@ class CsvTab(tk.Frame):
             except TableReportError:
                 errortitle = 'Something went wrong!'
                 tkmessagebox.showerror(errortitle, 'Please check metadata json')
+	
+def is_number(s):
+    if s == '':
+        return True
+    try:
+        float(s)
+    except ValueError:
+        return False
+    return True

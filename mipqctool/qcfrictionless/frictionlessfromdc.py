@@ -4,10 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
-from tableschema import Schema, exceptions
-from .qcfield import QcField
-from .. import config, qctypes
-from ..config import LOGGER, DEFAULT_MISSING_VALUES
+
+from mipqctool.config import LOGGER, DEFAULT_MISSING_VALUES
 
 
 class FrictionlessFromDC(object):
@@ -43,8 +41,6 @@ class FrictionlessFromDC(object):
             'fields': self.rootnode.all_below_qcdesc,
             'missingValues': DEFAULT_MISSING_VALUES
         }
-
-
 
 
 class DcVariable(object):
@@ -124,7 +120,7 @@ class DcVariable(object):
         return fdict
 
     def __get_enum(self):
-        return [enum['label'] for enum in self.__enumerations]
+        return [enum['code'] for enum in self.__enumerations]
 
     def __find_conceptpath(self):
         path = '/'.join([self.node.conceptpath, self.__code])

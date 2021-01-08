@@ -1,8 +1,9 @@
 # sequence.py
 import ast
 import collections
-from .. import config
-from ..config import LOGGER
+
+from mipqctool import config
+from mipqctool.config import LOGGER
 
 config.debug(True)
 

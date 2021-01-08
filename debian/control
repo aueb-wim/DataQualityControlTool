@@ -8,7 +8,6 @@ Standards-Version: 3.9.5
 
 Package: mipqctool
 Architecture: any
-Pre-Depends: ddpkg (>= 1.16.1), python3 (>= 3.5), ${misc:Pre-Depends}
+Pre-Depends:  python3 (>= 3.5), ${misc:Pre-Depends}
 Depends: libcairo2, libpango-1.0-0, libpangocairo-1.0-0, libgdk-pixbuf2.0-0, libffi-dev, shared-mime-info, ${python:Depends}, ${misc:Depends}
-Description: A tool for profiling tabular and dicom data
- A tool for profiling tabular and dicom data
+Description: MIP's Data Quality Control tool

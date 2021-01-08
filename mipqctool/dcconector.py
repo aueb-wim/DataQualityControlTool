@@ -1,27 +1,26 @@
 import requests
 import json
-from .config import LOGGER
+
+from mipqctool.config import LOGGER
 
 
 class DcConnector(object):
     """This class gets cde json data from Data Cataloge web API.
 
     Arguemnts:
-    :param dc_url: (string) a url of Data Catalgue main domain
+    :param dcrequest: request object from DC api returning all 
+                      pathologies metadata
     """
-    __api_subdomain = '/pathology/allPathologies'
+
     __pnames = []
     __versions = []
     __all_json = None
     __status_code = None
 
-    def __init__(self, dc_url):
-        self.__dc_domain = dc_url
-        self.__all_pathologies_url = ''.join([self.__dc_domain, self.__api_subdomain])
-        r = requests.get(self.__all_pathologies_url)
-        all_json = r.json()
+    def __init__(self, dcrequest):
+        all_json = dcrequest.json()
         # did we have a success respond from server?
-        if r.status_code == 200:
+        if dcrequest.status_code == 200:
             # get all pathologies names in a list
             self.__pnames = [t['name'] for t in all_json]
             # get all avalable versions per pathology in a dictionary
@@ -29,7 +28,7 @@ class DcConnector(object):
             # store all the data in a dictionary
             self.__all_json = all_json
 
-        self.__status_code = r.status_code
+        self.__status_code = dcrequest.status_code
 
     def getjson(self, pathology, version):
         p_index = self.__pnames.index(pathology)

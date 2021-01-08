@@ -2,12 +2,14 @@
 import os
 import logging
 import queue
+
 from tkinter import ttk, N, S, E, W
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
-from .gui import CsvTab, DicomTab, InferTab
-from . import __version__
-from .config import LOGGER, C_FORMAT, debug
+
+from mipqctool.gui import CsvTab, DicomTab, InferTab
+from mipqctool import __version__
+from mipqctool.config import LOGGER, C_FORMAT, debug
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 

@@ -1,4 +1,4 @@
-# setup.py
+#!/usr/bin/env python3
 from setuptools import setup, find_packages
 from os import path
 from mipqctool import __version__

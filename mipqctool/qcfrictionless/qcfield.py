@@ -9,10 +9,11 @@ from __future__ import unicode_literals
 from tableschema import Field
 from tableschema.exceptions import CastError
 from tableschema.config import DEFAULT_FIELD_FORMAT
-from .. import config, qctypes
-from ..exceptions import DataTypeError, ConstraintViolationError
-from ..config import LOGGER
-from ..helpers import expand_qcfield_descriptor
+
+from mipqctool import config, qctypes
+from mipqctool.exceptions import DataTypeError, ConstraintViolationError
+from mipqctool.config import LOGGER
+from mipqctool.helpers import expand_qcfield_descriptor
 
 config.debug(True)
 

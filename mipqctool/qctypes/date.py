@@ -67,7 +67,7 @@ def describe_date(pattern, **options):
         return ERROR
 
 
-def profile_date(pairs):
+def profile_date(pairs, **options):
     """Return stats for the date field
 
     Arguments:

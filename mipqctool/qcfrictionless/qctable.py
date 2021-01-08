@@ -8,9 +8,11 @@ from __future__ import unicode_literals
 
 import os
 from csv import DictReader
+
 from tableschema import Table
-from .qcschema import QcSchema
-from ..exceptions import QCToolException
+
+from mipqctool.qcfrictionless.qcschema import QcSchema
+from mipqctool.exceptions import QCToolException
 
 
 class QcTable(Table):
@@ -95,7 +97,7 @@ class QcTable(Table):
     def column_values(self, name):
         """Return a list of all values of the given column."""
         try:
-            column_index = self._Table__schema.field_names.index(name)
+            column_index = self.actual_headers.index(name)
         except ValueError:
             raise QCToolException('"{}" is not a column name among headers.'.format(name))
 

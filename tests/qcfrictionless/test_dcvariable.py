@@ -2,11 +2,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
-from tests.test_qcfield import test_validate
 
 import pytest
 from unittest.mock import Mock
-from mipqctool.qcfrictionless.frictionlessfromdc  import DcVariable
+from mipqctool.qcfrictionless.frictionlessfromdc import DcVariable
 from mipqctool.config import ERROR
 
 DCVAR1 = {
@@ -68,8 +67,8 @@ QCVAR2 = {
     'description': 'fefw',
     'constraints': {
         'enum': [
-            'Cat 1',
-            'Cat 2',
+            'cat1',
+            'cat2',
         ]
     }
 }

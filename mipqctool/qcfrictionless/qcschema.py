@@ -7,9 +7,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from tableschema import Schema, exceptions
-from .qcfield import QcField
-from .. import config, qctypes
-from ..config import LOGGER
+
+from mipqctool.qcfrictionless.qcfield import QcField
+from mipqctool import config, qctypes
+from mipqctool.config import LOGGER
 
 config.debug(True)
 

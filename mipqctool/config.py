@@ -45,6 +45,7 @@ debug(True)
 
 # Global constants
 DC_DOMAIN = 'http://dc.hbp.link:8086'
+DC_SUBDOMAIN_ALLPATHOLOGIES = '/pathology/allPathologies'
 ERROR = 'qctool.error'
 REMOTE_SCHEMES = ['http', 'https', 'ftp', 'ftps']
 DEFAULT_MISSING_VALUES = ['']
@@ -60,8 +61,8 @@ PANDAS_NANS = ['', '#N/A', '#N/A N/A', '#NA', '-1.#IND',
 # Data Catalogue 
 DC_HEADERS = [
     'csvFile', 'name', 'code', 'type', 'values',
-    'unit', 'canBeNull', 'description', 'comments', 'conceptPath',
-    'methodology', 'sql_type', 'cde'
+    'unit', 'description', 'comments', 'conceptPath',
+    'methodology', 'cde'
     ]
 
 DC_TYPES = ['real', 'integer', 'nominal', 'ordinal', 'date', 'text']
@@ -133,7 +134,7 @@ PRETTY_STAT_NAMES = {
         'median': '50% of records are below this value (median)',
         'q3': ('75% of records are below this value'
                '(limit value of the third quartile)'),
-        'outliers': 'Total number of outliers (outside 3 std.dev)',
+        'outliers': 'Total number of outliers',
         'upperbound': 'Outlier upper bound',
         'lowerbound': 'Outlier lower bound',
         'outliersrows': 'Rows with outliers',

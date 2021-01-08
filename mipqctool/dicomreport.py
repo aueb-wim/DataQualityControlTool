@@ -14,12 +14,14 @@ import json
 import csv
 import multiprocessing as mp
 from multiprocessing import Pool
+
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 import pydicom
-from .config import LOGGER
-from .mri import MRIDicom, MRISequence, MRIStudy, MRIPatient
-from . import config, __version__
+
+from mipqctool.config import LOGGER
+from mipqctool.mri import MRIDicom, MRISequence, MRIStudy, MRIPatient
+from mipqctool import config, __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 config.debug(True)

@@ -1,17 +1,23 @@
 import csv
+
 import pandas as pd
-from ..config import LOGGER, DC_HEADERS
+
+from mipqctool.config import LOGGER, DC_HEADERS
 
 
 class QCtoDC(object):
     """Class for transforming a frictionless json to Data Catalogue format
     """
 
-    def __init__(self, qcdescriptor, csvname=None, cde_suggestions={}):
+    def __init__(self, qcdescriptor, csvname=None, cde_suggestions=None):
         self.__qctodcvars = []
+        if cde_suggestions:
+            self.__suggestions = cde_suggestions
+        else:
+            self.__suggestions = {}
         for qcdesc in qcdescriptor['fields']:
             name = qcdesc['name']
-            cde_suggestion = cde_suggestions.get(name, [None, name])
+            cde_suggestion = self.__suggestions.get(name, [None, name])
             cde = cde_suggestion[0]
             conceptpath = cde_suggestion[1]
             qc2dcvar = QctoDCVariable(qcdesc, csvname, conceptpath, cde)

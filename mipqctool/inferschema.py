@@ -1,6 +1,6 @@
 
-from .qcfrictionless import QCtoDC, CdeDict
-from .tablereport import TableReport
+from mipqctool.qcfrictionless import QCtoDC, CdeDict
+from mipqctool.tablereport import TableReport
 
 class InferSchema(object):   
 
@@ -17,16 +17,17 @@ class InferSchema(object):
         self.__table = table
         self.__csvname = csvname
         self.__table.infer(limit=sample_rows, maxlevels=maxlevels)
+        self.__suggestions = None
         if cdedict:
             self.__cdedict = cdedict
             self.__tablereport = TableReport(self.__table, id_column=1)
         
-    def suggest_cdes(self):
+    def suggest_cdes(self, threshold):
         if self.__cdedict:
             suggestions = {}
             for columnreport in self.__tablereport.columnreports:
                 var_name = columnreport.name
-                cde = self.__cdedict.suggest_cde(columnreport)
+                cde = self.__cdedict.suggest_cde(columnreport, threshold=threshold)
                 if cde:
                     suggestions[var_name] = [cde.code, cde.conceptpath]
                 else:
@@ -39,8 +40,6 @@ class InferSchema(object):
         qctodc = QCtoDC(self.__table.schema.descriptor, self.__csvname, self.__suggestions)
         qctodc.export2excel(filepath)
 
-
-
-
-
+    def expoct2qcjson(self, filename):
+        self.__table.schema.save(filename)
     

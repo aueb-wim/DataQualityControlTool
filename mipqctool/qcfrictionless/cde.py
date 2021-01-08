@@ -1,8 +1,10 @@
 # cde.py
 import re
+
 from openpyxl import load_workbook
-from ..helpers import edit_distance_f1
-from ..config import LOGGER
+
+from mipqctool.helpers import edit_distance_f1
+from mipqctool.config import LOGGER
 
 QC_FROM_CDE_NUMERICAL = ['numerical', 'numeric', 'real']
 QC_FROM_CDE_INTEGER = ['integer', 'int']
@@ -36,7 +38,7 @@ class CdeDict(object):
     def total_cdes(self):
         return len(self.__cdes)
 
-    def suggest_cde(self, columnreport, threshold = 0.6):
+    def suggest_cde(self, columnreport, threshold=0.6):
         """Suggests the most similar CDE for the column.
         Arguments:
         :param columnreport: ColumnReport object with info of a datset column

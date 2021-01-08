@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import os
 import csv
 from datetime import datetime
+
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
@@ -18,13 +19,13 @@ from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils import get_column_letter
 from collections import namedtuple, Counter, defaultdict
-from .exceptions import TableReportError, QCToolException
-from .columnreport import ColumnReport
-from .qcfrictionless import QcTable
-from . import config, qctypes
-from .config import LOGGER, COLUMN_STAT_HEADERS
 
-from . import __version__
+from mipqctool.exceptions import TableReportError, QCToolException
+from mipqctool.columnreport import ColumnReport
+from mipqctool.qcfrictionless import QcTable
+from mipqctool import config, qctypes, __version__
+from mipqctool.config import LOGGER, COLUMN_STAT_HEADERS
+
 
 config.debug(True)
 
@@ -33,11 +34,14 @@ class TableReport(object):
     """This class is for creating a report in pdf and csv files
     """
 
-    def __init__(self, table, id_column):
+    def __init__(self, table, id_column=1, threshold=3, **options):
         """ Arguments:
             :param table: a QcTable object
             :param id_column: column number of dataset's primary key (id)
+            :param threshold: outlier threshold - (mean - threshold * std, mean + threshold * std) 
+                              outside this length, a numerical value is considered outlier
         """
+        self.__threshold = threshold
         self.__missing_headers = []
         self.__valid_headers = []
         self.__invalid_headers = []
@@ -56,29 +60,29 @@ class TableReport(object):
         except IndexError:
             self.__id_column = None
             self.__id_index = None
+            raise QCToolException("Could not find any columns in the csv. Please check the seperator.")
 
-        else:
 
-            self.__table = table
+        self.__table = table
 
-            self.__total_columns = len(self.__table.schema.field_names)
-            if self.__table.with_metadata:
-                self.__validate_headers()
-            self.__columns_quantiles = None
-            # Calc which column number corresponds to which quantile
-            self.__calc_columns_quantiles()
-            # list to hold ColumnReport objects
-            self.__columnreports = []
+        self.__total_columns = len(self.__table.schema.field_names)
+        if self.__table.with_metadata:
+            self.__validate_headers()
+        self.__columns_quantiles = None
+        # Calc which column number corresponds to which quantile
+        self.__calc_columns_quantiles()
+        # list to hold ColumnReport objects
+        self.__columnreports = []
 
-            self.__total_rows = None
-            self.__rows_only_id = None
-            self.__rows_no_id = None
-            self.__tvalid_columns = None
-            self.__tfilled_columns = None
-            self.__corrected = False
+        self.__total_rows = None
+        self.__rows_only_id = None
+        self.__rows_no_id = None
+        self.__tvalid_columns = None
+        self.__tfilled_columns = None
+        self.__corrected = False
 
-            self.__create_reports()
-            self.__collect_row_stats()
+        self.__create_reports()
+        self.__collect_row_stats()
 
     @property
     def table(self):
@@ -211,8 +215,8 @@ class TableReport(object):
         col2 = ws2.column_dimensions['A']
         col2.width = 40
         col2.font = Font(bold=True)
-        ws2.append(['rows with only id column filled', len(self.__rows_only_id)])
-        ws2.append(['rows with no id column filled', len(self.__rows_no_id)])
+        #ws2.append(['rows with only id column filled', len(self.__rows_only_id)])
+        #ws2.append(['rows with no id column filled', len(self.__rows_no_id)])
         ws2.append(['rows with 0-24% of the columns filled', self.filled_rows_stats['filled_0_24']])
         ws2.append(['rows with 25-49% of the columns filled', self.filled_rows_stats['filled_25_49']])
         ws2.append(['rows with 50-74% of the columns filled', self.filled_rows_stats['filled_50_74']])
@@ -310,7 +314,7 @@ class TableReport(object):
         for qcfield in self.__table.schema.fields:
             try:
                 raw_values = self.__table.column_values(qcfield.name)
-                column_report = ColumnReport(raw_values, qcfield)
+                column_report = ColumnReport(raw_values, qcfield, threshold=self.__threshold)
                 column_report.validate()
                 self.__columnreports.append(column_report)
             except QCToolException:
@@ -443,10 +447,10 @@ class TableReport(object):
             'csvfilepath': self.__table.source,
             'use_metadata': use_metadata,
             'applied_corrections': applied_corrections,
-            'only_ids': len(self.__rows_only_id),
-            'only_ids_perc': round(len(self.__rows_only_id) / self.total_rows * 100, 2),
-            'no_ids': len(self.__rows_no_id),
-            'no_ids_perc': round(len(self.__rows_no_id) / self.total_rows * 100, 2),
+            #'only_ids': len(self.__rows_only_id),
+            #'only_ids_perc': round(len(self.__rows_only_id) / self.total_rows * 100, 2),
+            #'no_ids': len(self.__rows_no_id),
+            #'no_ids_perc': round(len(self.__rows_no_id) / self.total_rows * 100, 2),
             'total_columns': self.total_columns,
             'total_rows': self.total_rows,
             'total_invalid_rows': self.__total_invalid_rows

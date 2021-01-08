@@ -3,8 +3,8 @@ import os
 import collections
 from multiprocessing import Pool
 import pydicom
-from ..config import LOGGER
-from .. import config, __version__
+from mipqctool.config import LOGGER
+from mipqctool import config, __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 config.debug(True)

@@ -6,9 +6,10 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-
-from ..config import LOGGER
 from jinja2 import Template
+
+from mipqctool.config import LOGGER
+
 
 def tupples2table(pairs):
     """Returns an html table str

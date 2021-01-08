@@ -1,13 +1,15 @@
 import os
-import csv
+import requests
 import json
+
 from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from ..dcconector import DcConnector
-from ..qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
-from ..config import LOGGER, DC_DOMAIN
+
+from mipqctool.dcconector import DcConnector
+from mipqctool.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
+from mipqctool.config import LOGGER, DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES
 
 
 class MetadataFrame(tk.Frame):
@@ -87,7 +89,8 @@ class MetadataFrame(tk.Frame):
         self.dc_cde_button = tk.Button(self.dc_frame, text='Get pathologies',
                                        command=self.get_all_cdes)
 
-        self.dc_save_button = tk.Button(self.dc_frame, text='Save to disc')
+        self.dc_save_button = tk.Button(self.dc_frame, text='Save to disc',
+                                        command=self.save_2_disc)
 
     def __packing(self):
         # metadata frame packing
@@ -178,10 +181,35 @@ class MetadataFrame(tk.Frame):
 
     def get_all_cdes(self):
         LOGGER.info('Trying to retrive cde metadata from Data Cataloge. Using DC url: {}'.format(DC_DOMAIN))
-        self.dc = DcConnector(DC_DOMAIN)        
+        all_pathologies_url = ''.join([DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES])
+        r = requests.get(all_pathologies_url)
+        self.dc = DcConnector(r)
         if self.dc.status_code == 200:
             self.dc_combox1.config(values=self.dc.pathology_names)
         elif 500 <= self.dc.status_code <= 599:
             LOGGER.info('Data Cataloge server internal error.')
         elif 400 <= self.dc.status_code <= 499:
             LOGGER.info('Data Cataloge could not be reach!. Please check DC_DOMAIN in config url')
+
+    def save_2_disc(self):
+        if self.dc_json:
+            output_file = tkfiledialog.asksaveasfilename(title='enter file name',
+                                                         filetypes=(('json files', '*.json'),
+                                                                    ('all files', '*.*')))
+            if output_file:
+                with open(output_file, 'w') as jsonfile:
+                    json.dump(self.dc_json, jsonfile)
+                    tkmessagebox.showinfo(
+                        title='Status info',
+                        message='Schema file has been saved.'
+                    )
+            else:
+                tkmessagebox.showerror(
+                    title='File not found',
+                    message='Please give an output file.'
+                )
+        else:
+            tkmessagebox.showerror(
+                title='Data Catalogue schema not found',
+                message='Please select Data Catalogue schema.'
+            )

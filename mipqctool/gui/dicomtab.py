@@ -1,10 +1,12 @@
 import os
 import getpass
+
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from ..config import LOGGER
-from ..dicomreport import DicomReport
+
+from mipqctool.config import LOGGER
+from mipqctool.dicomreport import DicomReport
 
 
 class DicomTab(tk.Frame):
