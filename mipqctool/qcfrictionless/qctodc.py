@@ -68,12 +68,10 @@ class QctoDCVariable(object):
             'type': self.__type,
             'values': self.__values,
             'unit': '',
-            'canBeNull': 'Y',
             'description': self.__desc,
             'comments': '',
             'conceptPath': self.__conceptpath,
             'methodology': '',
-            'sql_type': self.__sqltype,
             'cde': self.__cde
         }
         return d
