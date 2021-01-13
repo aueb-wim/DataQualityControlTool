@@ -8,6 +8,7 @@ This tool is a component developed for the [Human Brain Project Medical Informat
 The tool has two major functionalities:
 1. Validate data and produce reports with the validation results and with some overall statistics about the data
 2. Perform data cleaning 
+3. Infer a dataset's schema which in in the form of a csv file. 
 The main purpose of this tool is to produce statistical report of a given dataset and its variables (tabular dataset profiling) and propose value corrections for problematic data-entries. Also, the tool has the ability to extract and export meta-data headers of a set of DICOM MRIs.
 
 ## Installing / Getting started
@@ -21,10 +22,14 @@ Required installed packages for Debian based distros
 -   Pango
 -   GDK-PixBuf
 
+To install the above packages, give in a terminal the below commands:
+
 ```shell
 sudo apt-get update
 sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi python3-venv libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
 ```
+
+In the case were of using the deb file for the installation, the above packages are installed automatically during the installation.
 
 
 Required installed software for Windows
@@ -35,7 +40,15 @@ Required installed software for Windows
   
 Please refer to the [WeasyPrint's documentation page](https://weasyprint.readthedocs.io/en/latest/install.html#windows) for installing the proper GDK+ version.
 
-### Installation
+### Installation (through deb file)
+
+First download the proper deb package for your system version(currently the deb packages are for **ubuntu 16.04, 18.04 and 20.04**) then install the deb package in terminal by giving the below command:
+
+```shell
+sudo dpkg -i path_to_deb_file
+```
+
+#### Manual installation 
 
 In a terminal we run
 
@@ -47,17 +60,9 @@ source venv/qctool/bin/activate
 pip install --upgrade pip
 sh install.sh
 ```
-### Docker image
-
-For containerized version of the qctool, build the docker image with:
-
-```shell
-sh build.sh
-```
-
 ## Usage
 
-**Command Line Interface**
+### Command Line Interface
 
 Activate the qctool virtual enviroment
 
@@ -65,38 +70,60 @@ Activate the qctool virtual enviroment
 source venv/qctool/bin/activate
 ```
 
-For profiling a csv dataset:
+For profiling/validating a csv dataset:
 
-``` shell 
-Usage: qctool csv <options> <csv file>
+``` shell
+Usage: qctool csv <options> <csv file> <schema json>
 
   This command produces a validation report for <csv file>.
 
   The report file is stored in the same folder where <csv file> is located.
 
   <schema json> file MUST be compliant with frirctionless   data table-
-  schema specs(https://specs.frictionlessdata.io/table-schema/).
+  schema specs(https://specs.frictionlessdata.io/table-schema/) or   with
+  Data Catalogue json format.
 
 Options:
-  --col_id INTEGER              Column number that holds id values (primary
-                                key)  [default: 1; required]
-  --clean                       Filepath for the new dataset csv file after
-                                data cleaning
-  -m, --metadata <schema json>  Path of the metadata json file with the schema
-                                of the dataset csv file
-  --max_levels INTEGER          Max unique values of a text variable
-                                that below that will be infered as nominal
-                                when no <schema json> is provided  [default:
-                                10]
-  --sample_rows INTEGER         Number rows that are going to be used as
-                                sample                     for infering the
-                                dataset metadata (schema) when
-                                <schema json> is not provided  [default: 100]
-  --help                        Show this message and exit.
+  --clean                 Filepath for the new dataset csv file after data
+                          cleaning.
+
+  -m, --metadata [dc|qc]  Select "dc" for Data Catalogue spec json
+                          or "qc" for frictionless spec json.
+
+  -r, --report [xls|pdf]  Select the report file format.
+  -o, --outlier FLOAT     outlier threshold in standard deviations.
+  --help                  Show this message and exit.
   ```
 
-After the execution, the report is stored in a pdf file:
 
+For infering a dataset's schema:
+
+```shell
+Usage: qctool infercsv <options> <csv file>
+
+  This command infers the schema of the <csv file> it and stored in <output
+  file>.
+
+  The <output file> either a json file following the frictionless data
+  specs(https://specs.frictionlessdata.io/table-schema/) or an xlsx file
+  following MIP Data Catalogue's format.
+
+Options:
+  --max_levels INTEGER         Max unique values of a text variable
+                               that below that will be infered as nominal
+                               [default: 10]
+
+  --sample_rows INTEGER        Number rows that are going to be used as sample
+                               for infering the dataset metadata (schema)
+                               [default: 100]
+
+  --schema_spec [dc|qc]        Select "dc" for Data Catalogue spec xlsx file
+                               or "qc" for frictionless spec json.
+
+  --cde_file PATH              CDE dictionary Excel file (xlsx)
+  -t, --threshold FLOAT RANGE  CDE similarity threshold.
+  --help                       Show this message and exit.
+```
 
 For profiling a dicom dataset:
 
@@ -168,16 +195,18 @@ This file contains MRI visit information for each patient. This file is necessar
 
 We run `qctoolgui`
 
-![csv image](docs/img/gui_csv_screenshot.png)
-![csv image](docs/img/gui_dicom_screenshot.png)
+![csv image](docs/img/DQCtool_v3_csvtab.png)
+![csv image](docs/img/DQCtool_v3_infertab.png)
+![csv image](docs/img/DQCtool_v3_dicomtab.png)
 
-See **GUI User Guide** section in the wik for further usage details. 
+See **GUI User Guide** section in the wiki for further usage details. 
 
 ## Features
 
--   Creates a statistical report for the dataset and its variables 
--   Creates a report with meta-data tags (headers) of each sequence (3D MRI Image) in a DICOM dataset
--   Command Line Interface and GUI
+-   Creates a statistical/validation report for the dataset and its variables.
+-   Infer the schema of a dataset which is in csv format.
+-   Creates a report with meta-data tags (headers) of each sequence (3D MRI Image) in a DICOM dataset.
+-   Command Line Interface and GUI.
 
 ## Versioning
 
@@ -198,5 +227,6 @@ This work is part of SP8 of the Human Brain Project (SGA2).
 Special thanks to:
 
 -   **Prof. Vasilis Vassalos** - Athens University of Economics and Business
--   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candiate
+-   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candidate
 -   **Jacek Manthey** - CHUV
+-   **Abu-Nawwas Laith** - CHUV
