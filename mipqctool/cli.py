@@ -26,7 +26,8 @@ def main():
 #@click.option('--col_id', type=int, required=True, default=1, show_default=True,
 #              help='Column number that holds id values (primary key).')
 @click.option('--clean', is_flag=True,
-              help='Filepath for the new dataset csv file after data cleaning.')
+              help='Flag for performing data cleaning.The cleaned file will \
+                    be saved in the report folder.')
 @click.option('-m', '--metadata', type=click.Choice(['dc', 'qc']), default='dc',
               help='Select "dc" for Data Catalogue spec json \
                     or "qc" for frictionless spec json.')

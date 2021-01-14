@@ -84,8 +84,8 @@ Usage: qctool csv <options> <csv file> <schema json>
   Data Catalogue json format.
 
 Options:
-  --clean                 Filepath for the new dataset csv file after data
-                          cleaning.
+  --clean                 Flag for performing data cleaning.The cleaned file will 
+                          be saved in the report folder.
 
   -m, --metadata [dc|qc]  Select "dc" for Data Catalogue spec json
                           or "qc" for frictionless spec json.
@@ -95,6 +95,14 @@ Options:
   --help                  Show this message and exit.
   ```
 
+**outlier threshold** input field is related with the outlier detection for numerical variables of the incoming dataset. The way that the Data Quality Control tool handles the outlier detection of a certain numerical variable, is that first calculates the **mean** and the **standard deviation** based on the valid values of that column and then calculates the upper and the lower limit by the formula: `upper_limit = mean + outlier threshold * standard deviation`, `lower_limit = mean - outlier threshold * standard deviation`. If any value is outside those limits then it is considered as an outlier. 
+
+The report file will be saved in the folder where the incoming dataset file is located.
+
+
+#### Data Cleaning
+
+After reviewing the **Data Validation** report created in the previous step (Please refer to the **Data Validation Report** wiki section for further details), we can proceed with the data cleaning operation. The cleaned dataset file will be saved in same folder where the incoming dataset is located by using the original dataset name with the addition of the suffix '_corrected'.
 
 For infering a dataset's schema:
 
@@ -124,6 +132,14 @@ Options:
   -t, --threshold FLOAT RANGE  CDE similarity threshold.
   --help                       Show this message and exit.
 ```
+
+ The schema could be saved in two formats:
+1. Frictionless spec json
+2. Data Catalogue's spec Excel (xlsx) file, that can be used for creating a new CDE pathology version. 
+
+In the infer option section, we give the number of rows that the tool will based on for the schema inference. Also, we declare the maximum number of categories that a `nominal` MIPType variable can have. 
+
+If we choose the Data Catalogue's excel as an output, the tool offers the option of suggesting CDE variables for each column of the incoming dataset. This option is possible, only when a CDE dictionary is provided. This dictionary is an excel file that contains information for all the CDE variables that are included or will be included in the MIP (this dictionary will be available in the Data Catalogue in the near future). The tool calculates a similarity measure for each column based on the column name similarity (80%) and the value range similarity (20%). The similarity measure takes values between 0 and 1. With the option **similarity threshold** we can define the minimum similarity measure between an incoming column and a CDE variable that need to be met in order the tool to suggest that CDE variable as a possible correspondence. The tool stores those CDE suggestions in the excel file in the column named **CDE** and  also stores the corresponding concept path under the column **conceptPath**.
 
 For profiling a dicom dataset:
 
