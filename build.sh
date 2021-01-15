@@ -22,6 +22,7 @@ tar -c --files-from build/git-files | tar -C $staging_dir -x
 sed -i -r -e 1s/stretch/$codename/g $staging_dir/debian/changelog
 sed -r -e s/#UUID#/$(< /proc/sys/kernel/random/uuid)/g \
     -e s/#DIST_ID#/$dist_id/g -e s/#CODENAME#/$codename/g \
+    -e s/"#CODENAME#"/$codename/g \
     -e s/#NODEREPO#/$NODEREPO/g -e s/#PYPI#/$pypi_name/g -e s/#PKGNAME#/$pkgname/g \
     <Dockerfile.build >$staging_dir/Dockerfile
 cp dh-virtualenv-build-deps_1.2.2-1_all.deb $staging_dir/dh-virtualenv-build-deps_1.2.2-1_all.deb

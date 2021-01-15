@@ -10,19 +10,13 @@ RUN apt-get update -qq && apt-get install -yqq \
         libxml2-dev libxslt1-dev libyaml-dev libjpeg-dev \
         libssl-dev libncurses5-dev libncursesw5-dev libzmq3-dev \
         python3-sphinx python3-mock dh-exec dh-python libjs-jquery libjs-underscore \
-        python3-sphinx-rtd-theme python3-virtualenv\
+        python3-sphinx-rtd-theme python3-virtualenv python-virtualenv\
    && rm -rf "/var/lib/apt/lists"/*
 
 WORKDIR /dpkg-build
 COPY ./ ./
-RUN ls 
 
-#RUN if [["#CODENAME#" == "focal"]]; then \ 
-#         apt install build\dh-virtualenv-build-deps_1.2.2-1_all.deb; else \
-#        apt-get install -yqq dh_virtualenv; \
-#    fi
-
-RUN dpkg -i dh-virtualenv-build-deps_1.2.2-1_all.deb
+#RUN dpkg -i dh-virtualenv-build-deps_1.2.2-1_all.deb
 RUN dpkg -i dh-virtualenv_1.2.2-1~bionic_all.deb
 RUN dpkg-buildpackage -us -uc -b && mkdir -p /dpkg && cp -pl /#PKGNAME#[-_]* /dpkg
 # RUN pwd && dh_virtualenv --version && ls -la && du -sch . ##UUID#
