@@ -20,7 +20,7 @@ from weasyprint import HTML
 import pydicom
 
 from mipqctool.config import LOGGER
-from mipqctool.mri import MRIDicom, MRISequence, MRIStudy, MRIPatient
+from mipqctool.model.mri import MRIDicom, MRISequence, MRIStudy, MRIPatient
 from mipqctool import config, __version__
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))

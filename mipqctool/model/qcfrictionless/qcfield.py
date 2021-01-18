@@ -10,7 +10,8 @@ from tableschema import Field
 from tableschema.exceptions import CastError
 from tableschema.config import DEFAULT_FIELD_FORMAT
 
-from mipqctool import config, qctypes
+from mipqctool import config
+from mipqctool.model import qctypes
 from mipqctool.exceptions import DataTypeError, ConstraintViolationError
 from mipqctool.config import LOGGER
 from mipqctool.helpers import expand_qcfield_descriptor

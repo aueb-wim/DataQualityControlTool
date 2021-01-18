@@ -6,9 +6,9 @@ from __future__ import unicode_literals
 import pytest
 import os
 import json
-from mipqctool.tablereport import TableReport
-from mipqctool.qcfrictionless import QcTable
-from mipqctool.qcfrictionless import QcSchema
+from mipqctool.controller.tablereport import TableReport
+from mipqctool.model.qcfrictionless import QcTable
+from mipqctool.model.qcfrictionless import QcSchema
 
 
 APP_PATH = os.path.abspath(os.path.dirname(__file__))

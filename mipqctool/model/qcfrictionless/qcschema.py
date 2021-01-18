@@ -8,8 +8,9 @@ from __future__ import unicode_literals
 
 from tableschema import Schema, exceptions
 
-from mipqctool.qcfrictionless.qcfield import QcField
-from mipqctool import config, qctypes
+from mipqctool.model.qcfrictionless import QcField
+from mipqctool.model import qctypes
+from mipqctool import config
 from mipqctool.config import LOGGER
 
 config.debug(True)

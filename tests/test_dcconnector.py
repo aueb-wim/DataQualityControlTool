@@ -9,7 +9,7 @@ from unittest.mock import Mock, PropertyMock
 
 import pytest
 
-from mipqctool.dcatalogue import DcConnector
+from mipqctool.controller import DcConnector
 
 THISFILEDIR = os.path.dirname(os.path.realpath(__file__))
 

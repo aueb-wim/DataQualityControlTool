@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import re
 import numpy as np
 from collections import Counter, OrderedDict
-from ..config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
+from mipqctool.config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
 # Regex unicode support
 
 

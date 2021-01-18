@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import pytest
 from unittest.mock import Mock
-from mipqctool.dcatalogue import DcVariable
+from mipqctool.model.dcatalogue import DcVariable
 from mipqctool.config import ERROR
 
 DCVAR1 = {

@@ -7,8 +7,8 @@ import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
-from mipqctool.dcatalogue import DcConnector
-from mipqctool.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
+from mipqctool.controller import DcConnector
+from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
 from mipqctool.config import LOGGER, DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES
 
 

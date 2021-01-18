@@ -11,7 +11,7 @@ import tkinter.messagebox as tkmessagebox
 #from tkinter.ttk import *
 from mipqctool.gui.metadataframe import MetadataFrame
 from mipqctool.gui.guicorr import *
-from mipqctool.dcatalogue.node import *
+from mipqctool.model.dcatalogue.node import *
 #from prepare import produce_encounter_properties, produce_patient_properties
 #from prepare import produce_unpivot_files, produce_run_sh_script
 
@@ -26,8 +26,8 @@ class Preprocess(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.corrs = []
-        self.loadTrFunctions()
-        self.create_all_frames()
+        self.__loadTrFunctions()
+        self.__create_all_frames()
         #self.unpivotcsvs = {}
         #self.selected_csv_name = None #I it is not needed since it is stored in csv_file_label
         self.csv_file_path = None
@@ -39,13 +39,13 @@ class Preprocess(tk.Frame):
         self.cdes_l = []#List of CDE codes: just to preserve the original sequence when they had been parsed in the JSON
         self.rootnode = None
 
-    def create_all_frames(self):
-        self.hospital_frame()
-        self.cdes_metadata_frame()
-        self.csv_file_frame()
-        self.output_frame()
+    def __create_all_frames(self):
+        self.__hospital_frame()
+        self.__cdes_metadata_frame()
+        self.__csv_file_frame()
+        self.__output_frame()
 
-    def csv_file_frame(self):
+    def __csv_file_frame(self):
         self.harm_labelframe = tk.LabelFrame(self, text='Mapping Configuration')
         self.harm_label_csv = tk.Label(self.harm_labelframe, text='CSV File:')
         self.csv_file_label = tk.Label(self.harm_labelframe, text='Not selected', bg='white', pady=4, width=40)
@@ -59,10 +59,10 @@ class Preprocess(tk.Frame):
         self.separator.grid(row=1, columnspan=8)
         #now here comes the repeatable section with the correspondences
         for c in self.corrs:
-            self.corr_line(c)
-        self.corr_line()
+            self.__corr_line(c)
+        self.__corr_line()
         
-    def corr_line(self, c=None):
+    def __corr_line(self, c=None):
         if c is None:#all parameters in python are passed by reference
             self.newCButton = tk.Button(self.harm_labelframe, text="New",
                                         command=lambda: guiCorr(self.newCButton,
@@ -79,7 +79,7 @@ class Preprocess(tk.Frame):
         self.label_corr.grid(row=i+1, column=0)
         self.editCButton.grid(row=i+1, column=5)
 
-    def hospital_frame(self):
+    def __hospital_frame(self):
         self.hosp_labelframe = tk.LabelFrame(self, text='Hospital')
         self.hospital_label = tk.Label(self.hosp_labelframe, text='Hospital Code:')
         self.hospital_entry = tk.Entry(self.hosp_labelframe)
@@ -88,7 +88,7 @@ class Preprocess(tk.Frame):
         self.hospital_label.grid(row=0, column=0,sticky='w')
         self.hospital_entry.grid(row=0, column=1, columnspan=2, sticky='w')
 
-    def cdes_metadata_frame(self):
+    def __cdes_metadata_frame(self):
         # self.cde_labelframe = tk.LabelFrame(self, text='CDEs')
         # self.cde_label_file = tk.Label(self.cde_labelframe, text='Metadata file:')
         # self.cde_label = tk.Label(self.cde_labelframe, text='Not Selected', bg='white',  width=40)
@@ -102,7 +102,7 @@ class Preprocess(tk.Frame):
         self.cde_md_frame.grid(row=1, columnspan=8, padx=4, pady=4, ipadx=4, ipady=4, sticky=['w','e'])
 
     
-    def output_frame(self):
+    def __output_frame(self):
         self.out_labelframe = tk.LabelFrame(self, text='Output folder')
         self.out_label = tk.Label(self.out_labelframe, text='Not Selected', bg='white', width=40)       
         self.o_button1 = tk.Button(self.out_labelframe, text='Open', command=self.select_output)
@@ -113,7 +113,7 @@ class Preprocess(tk.Frame):
         self.o_button1.grid(row=7, column=2)
         #self.o_button2.grid(row=7, column=3, pady=2, padx=2)
 
-    def loadTrFunctions(self):
+    def __loadTrFunctions(self):
         #read the trFunctions.csv and load the trFunctions dict
         #This dict will be loaded in Combobox functions_cbox in guiCorr!!
         self.trFunctions = {}
@@ -170,6 +170,7 @@ class Preprocess(tk.Frame):
                 self.unpivotcsvs[csv_name] = unpivot_csv
             self.u_listbox2.delete(0, tk.END)
             self.u_listbox3.delete(0, tk.END)
+    
     def loadCDEs(self):
         #Sets the filepath of the CDEs metadata file
         filepath = tkfiledialog.askopenfilename(title='select CDEs file',

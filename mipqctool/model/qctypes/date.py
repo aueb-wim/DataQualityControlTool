@@ -10,8 +10,8 @@ import re
 import datetime
 from collections import Counter, OrderedDict
 from tableschema.config import DEFAULT_FIELD_FORMAT
-from ..config import ERROR, LOGGER, DEFAULT_DATE_FORMAT
-from ..config import DEFAULT_MISSING_VALUES
+from mipqctool.config import ERROR, LOGGER, DEFAULT_DATE_FORMAT
+from mipqctool.config import DEFAULT_MISSING_VALUES
 
 
 def infer_date(value, **options):

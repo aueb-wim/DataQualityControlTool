@@ -7,14 +7,16 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+from pathlib import Path
 from collections import namedtuple, OrderedDict
 
 # for testing htlm2pdf columnreport template
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
-from mipqctool.qcfrictionless import QcField
-from mipqctool import config, qctypes
+from mipqctool.model.qcfrictionless import QcField
+from mipqctool.model import qctypes
+from mipqctool import config
 from mipqctool.config import LOGGER, PRETTY_STAT_NAMES
 from mipqctool.exceptions import DataTypeError, ConstraintViolationError
 from mipqctool.helpers.html import list2parag, tupples2table
@@ -260,7 +262,9 @@ class ColumnReport(object):
 
     def printpdf(self, filepath):
         app_path = os.path.abspath(os.path.dirname(__file__))
-        env_path = os.path.join(app_path, 'data', 'html')
+        path = Path(app_path)
+        parentpath = str(path.parent)
+        env_path = os.path.join(parentpath, 'data', 'html')
         css_path = os.path.join(env_path, 'style.css')
         env = Environment(loader=FileSystemLoader(env_path))
         template = env.get_template('column_report.html')
@@ -286,7 +290,9 @@ class ColumnReport(object):
 
     def to_html(self):
         app_path = os.path.abspath(os.path.dirname(__file__))
-        env_path = os.path.join(app_path, 'data', 'html')
+        path = Path(app_path)
+        parentpath = str(path.parent)
+        env_path = os.path.join(parentpath, 'data', 'html')
         env = Environment(loader=FileSystemLoader(env_path))
         template = env.get_template('column_report.html')
         if self.__corrected:

@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 import os
 import pytest
 from unittest.mock import Mock, PropertyMock, patch
-from mipqctool.qcfrictionless.cde import CdeDict
-from mipqctool.columnreport import ColumnReport
+from mipqctool.model.qcfrictionless.cde import CdeDict
+from mipqctool.controller.columnreport import ColumnReport
 from mipqctool.config import ERROR
 
 DICT_PATH1 = 'tests/test_datasets/extract_mip_dictionary.xlsx'

@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import pytest
-from mipqctool.qcfrictionless.qctodc import QCtoDC
+from mipqctool.model.qcfrictionless.qctodc import QCtoDC
 from mipqctool.config import LOGGER
 
 QCDESC1={

@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from mipqctool.qcfrictionless.qctodc import QctoDCVariable
+from mipqctool.model.qcfrictionless.qctodc import QctoDCVariable
 
 NUMERICAL_DESC = {
     'name': 'testvar',

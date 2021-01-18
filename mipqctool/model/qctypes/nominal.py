@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import operator
 from collections import Counter, OrderedDict
 from nltk import edit_distance
-from ..config import DEFAULT_MISSING_VALUES
+from mipqctool.config import DEFAULT_MISSING_VALUES
 
 
 def profile_nominal(pairs, **options):

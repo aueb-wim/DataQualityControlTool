@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 
 import pytest
 import os
-from mipqctool.columnreport import ColumnReport
-from mipqctool.qcfrictionless import QcField
+from mipqctool.controller.columnreport import ColumnReport
+from mipqctool.model.qcfrictionless import QcField
 from mipqctool.config import ERROR
 
 

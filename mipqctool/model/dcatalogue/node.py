@@ -1,4 +1,4 @@
-from mipqctool.dcatalogue.dcvariable import *
+from mipqctool.model.dcatalogue.dcvariable import *
 
 class Node(object):
     """"""

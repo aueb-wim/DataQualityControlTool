@@ -6,7 +6,7 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.config import LOGGER
-from mipqctool.dicomreport import DicomReport
+from mipqctool.controller import DicomReport
 
 
 class DicomTab(tk.Frame):

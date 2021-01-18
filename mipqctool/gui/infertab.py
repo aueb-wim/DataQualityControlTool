@@ -5,10 +5,10 @@ from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from ..qcfrictionless import QcSchema, QcTable, FrictionlessFromDC, CdeDict
-from ..inferschema import InferSchema
-from ..exceptions import TableReportError
-from ..config import LOGGER
+from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC, CdeDict
+from mipqctool.controller import InferSchema
+from mipqctool.exceptions import TableReportError
+from mipqctool.config import LOGGER
 
 
 class InferTab(tk.Frame):

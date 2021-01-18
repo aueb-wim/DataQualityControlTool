@@ -11,7 +11,7 @@ from csv import DictReader
 
 from tableschema import Table
 
-from mipqctool.qcfrictionless.qcschema import QcSchema
+from mipqctool.model.qcfrictionless import QcSchema
 from mipqctool.exceptions import QCToolException
 
 

@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import re
 import numpy as np
 from collections import OrderedDict
-from ..config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
+from mipqctool.config import ERROR, LOGGER, DEFAULT_MISSING_VALUES
 
 
 def infer_numerical(value, **options):

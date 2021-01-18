@@ -8,8 +8,8 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.gui.metadataframe import MetadataFrame
-from mipqctool.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
-from mipqctool.tablereport import TableReport
+from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
+from mipqctool.controller import TableReport
 from mipqctool.exceptions import TableReportError
 from mipqctool.config import LOGGER
 

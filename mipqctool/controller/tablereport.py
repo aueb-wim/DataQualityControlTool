@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 import os
 import csv
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
@@ -21,9 +22,10 @@ from openpyxl.utils import get_column_letter
 from collections import namedtuple, Counter, defaultdict
 
 from mipqctool.exceptions import TableReportError, QCToolException
-from mipqctool.columnreport import ColumnReport
-from mipqctool.qcfrictionless import QcTable
-from mipqctool import config, qctypes, __version__
+from mipqctool.controller.columnreport import ColumnReport
+from mipqctool.model.qcfrictionless import QcTable
+from mipqctool.model import qctypes
+from mipqctool import config, __version__
 from mipqctool.config import LOGGER, COLUMN_STAT_HEADERS
 
 
@@ -158,7 +160,9 @@ class TableReport(object):
 
     def printpdf(self, filepath):
         app_path = os.path.abspath(os.path.dirname(__file__))
-        env_path = os.path.join(app_path, 'data', 'html')
+        path = Path(app_path)
+        parentpath = str(path.parent)
+        env_path = os.path.join(parentpath, 'data', 'html')
         css_path = os.path.join(env_path, 'style.css')
         docs = []
         template_vars = self.__prepare_stat2pdf()

@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import pytest
-from mipqctool.qcfrictionless.cde import CdeVariable
+from mipqctool.model.qcfrictionless.cde import CdeVariable
 from mipqctool.config import ERROR
 
 CDE_NOMINAL1 = [

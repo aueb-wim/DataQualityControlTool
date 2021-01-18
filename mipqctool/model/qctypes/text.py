@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import re
 from collections import Counter, OrderedDict
-from ..config import ERROR, LOGGER, PANDAS_NANS, DEFAULT_MISSING_VALUES
+from mipqctool.config import ERROR, LOGGER, PANDAS_NANS, DEFAULT_MISSING_VALUES
 
 
 def infer_text(value, **options):

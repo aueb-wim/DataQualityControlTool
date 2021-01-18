@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import json
 
-from mipqctool.dcatalogue import Node, DcVariable
+from mipqctool.model.dcatalogue import Node, DcVariable
 from mipqctool.config import LOGGER, DEFAULT_MISSING_VALUES
 
 

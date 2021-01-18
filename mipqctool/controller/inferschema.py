@@ -1,6 +1,6 @@
 
-from mipqctool.qcfrictionless import QCtoDC, CdeDict
-from mipqctool.tablereport import TableReport
+from mipqctool.model.qcfrictionless import QCtoDC, CdeDict
+from mipqctool.controller.tablereport import TableReport
 
 class InferSchema(object):   
 

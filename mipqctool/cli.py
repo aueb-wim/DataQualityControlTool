@@ -6,10 +6,10 @@ import click
 import getpass
 import json
 
-from mipqctool.dicomreport import DicomReport
-from mipqctool.tablereport import TableReport
-from mipqctool.inferschema import InferSchema
-from mipqctool.qcfrictionless import QcTable, QcSchema, FrictionlessFromDC, CdeDict
+from mipqctool.controller.dicomreport import DicomReport
+from mipqctool.controller.tablereport import TableReport
+from mipqctool.controller.inferschema import InferSchema
+from mipqctool.model.qcfrictionless import QcTable, QcSchema, FrictionlessFromDC, CdeDict
 from mipqctool.config import LOGGER
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
