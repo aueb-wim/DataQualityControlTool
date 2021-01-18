@@ -1,17 +1,8 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-import json
-
-from mipqctool.config import LOGGER
-
-from .dcvariable import DcVariable
+from mipqctool.dcatalogue.dcvariable import *
 
 class Node(object):
     """"""
-    __children = []
+    __children = []#the groups of the Node
     __variables = []
     __conceptpath = ''
     __qcdescriptors = []
@@ -32,9 +23,9 @@ class Node(object):
             self.__qcdescriptors = None
             self.__all_below_qcdesc = None
         else:
-            LOGGER.debug('This node is the root. Adding root variables..')
+            #LOGGER.debug('This node is the root. Adding root variables..')
             self.add_below_qcdesc(self.qcdescriptors)
-            LOGGER.debug('Total variables found on the tree: {}'.format(len(self.__all_below_qcdesc)))
+            #LOGGER.debug('Total variables found on the tree: {}'.format(len(self.__all_below_qcdesc)))
 
     @property
     def parent(self):
