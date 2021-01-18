@@ -9,6 +9,7 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 #from tkinter import *
 #from tkinter.ttk import *
+from mipqctool.gui.metadataframe import MetadataFrame
 from mipqctool.gui.guicorr import *
 from mipqctool.dcatalogue.node import *
 #from prepare import produce_encounter_properties, produce_patient_properties
@@ -88,15 +89,17 @@ class Preprocess(tk.Frame):
         self.hospital_entry.grid(row=0, column=1, columnspan=2, sticky='w')
 
     def cdes_metadata_frame(self):
-        self.cde_labelframe = tk.LabelFrame(self, text='CDEs')
-        self.cde_label_file = tk.Label(self.cde_labelframe, text='Metadata file:')
-        self.cde_label = tk.Label(self.cde_labelframe, text='Not Selected', bg='white',  width=40)
-        self.cde_load_btn = tk.Button(self.cde_labelframe, text='Select', command=self.loadCDEs)
-        #packing...
-        self.cde_labelframe.grid(row=1, columnspan=8, padx=4, pady=4, ipadx=4, ipady=4, sticky=['w','e'])
-        self.cde_label_file.grid(row=0, column=0)
-        self.cde_label.grid(row=0, column=1, columnspan=3, padx=4, pady=4)
-        self.cde_load_btn.grid(row=0, column=5)
+        # self.cde_labelframe = tk.LabelFrame(self, text='CDEs')
+        # self.cde_label_file = tk.Label(self.cde_labelframe, text='Metadata file:')
+        # self.cde_label = tk.Label(self.cde_labelframe, text='Not Selected', bg='white',  width=40)
+        # self.cde_load_btn = tk.Button(self.cde_labelframe, text='Select', command=self.loadCDEs)
+        # #packing...
+        # self.cde_labelframe.grid(row=1, columnspan=8, padx=4, pady=4, ipadx=4, ipady=4, sticky=['w','e'])
+        # self.cde_label_file.grid(row=0, column=0)
+        # self.cde_label.grid(row=0, column=1, columnspan=3, padx=4, pady=4)
+        # self.cde_load_btn.grid(row=0, column=5)
+        self.cde_md_frame = MetadataFrame(self)
+        self.cde_md_frame.grid(row=1, columnspan=8, padx=4, pady=4, ipadx=4, ipady=4, sticky=['w','e'])
 
     
     def output_frame(self):
