@@ -158,7 +158,7 @@ class TableReport(object):
 
     def printpdf(self, filepath):
         app_path = os.path.abspath(os.path.dirname(__file__))
-        env_path = os.path.join(app_path, 'html')
+        env_path = os.path.join(app_path, 'data', 'html')
         css_path = os.path.join(env_path, 'style.css')
         docs = []
         template_vars = self.__prepare_stat2pdf()

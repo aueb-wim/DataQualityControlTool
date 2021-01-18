@@ -260,7 +260,7 @@ class ColumnReport(object):
 
     def printpdf(self, filepath):
         app_path = os.path.abspath(os.path.dirname(__file__))
-        env_path = os.path.join(app_path, 'html')
+        env_path = os.path.join(app_path, 'data', 'html')
         css_path = os.path.join(env_path, 'style.css')
         env = Environment(loader=FileSystemLoader(env_path))
         template = env.get_template('column_report.html')
@@ -286,7 +286,7 @@ class ColumnReport(object):
 
     def to_html(self):
         app_path = os.path.abspath(os.path.dirname(__file__))
-        env_path = os.path.join(app_path, 'html')
+        env_path = os.path.join(app_path, 'data', 'html')
         env = Environment(loader=FileSystemLoader(env_path))
         template = env.get_template('column_report.html')
         if self.__corrected:

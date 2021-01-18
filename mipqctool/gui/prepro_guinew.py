@@ -118,7 +118,7 @@ class Preprocess(tk.Frame):
         #This dict will be loaded in Combobox functions_cbox in guiCorr!!
         self.trFunctions = {}
         #with open(DIR_PATH+'/mapping/trFunctions.csv', 'r') as F:
-        with open(str(parentPath)+'/mapping/trFunctions.csv', 'r') as F:
+        with open(os.path.join(str(parentPath) ,'data', 'trFunctions.csv'), 'r') as F:
             functionsFile = csv.DictReader(F)
             for row in functionsFile:
                 self.trFunctions[row["label"]]=row["expression"]
