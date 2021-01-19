@@ -1,3 +1,3 @@
-from mipqctool.mapping.correspondence import Correspondence
-from mipqctool.mapping.mapping import Mapping
-from mipqctool.mapping.trfunction import TrFunction
+from mipqctool.model.mapping.correspondence import Correspondence
+from mipqctool.model.mapping.mapping import Mapping
+from mipqctool.model.mapping.trfunction import TrFunction

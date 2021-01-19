@@ -5,6 +5,9 @@ import os
 from tkinter import ttk
 import tkinter as tk
 import json
+from mipqctool.model.mapping import Correspondence
+from mipqctool.config import LOGGER
+from mipqctool.controller import correspondenceParser
 
 class guiCorr():
     """Whenever the New Button in prepro_guiNEW is pushed, a guiCorr object is created.
@@ -81,11 +84,19 @@ class guiCorr():
         self.expressions_text.insert(tk.END, temp)
     
     def save(self):
-        expression = expressions_text.get("1.0", END)
-        #call the MIPMAP py parser
-        self.corrs.append(Correspondence(expression=expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
+        try:
+            expression = expressions_text.get("1.0", END)
+        except NameError as nm:
+            LOGGER.info("-Empty expression text. The value stays the same...")
+            expression = None
+            pass
+        #call the MIPMAP expression parser..!
+        corParser = correspondenceParser(expression)
+        corParser.separateSourceColumnsAndFunctions()
+        self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
         self.button.configure(state="active")
         self.master.destroy()
+        LOGGER.info('*** Just created Mapping Correspondence #%d for CDE:%s ***', self.i_cor, self.corrs[self.i_cor-1])
 
     def cancel(self):
         self.button.configure(state="active")

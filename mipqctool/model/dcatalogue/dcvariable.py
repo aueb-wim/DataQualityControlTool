@@ -35,6 +35,10 @@ class DcVariable(object):
     def conceptpath(self):
         return self.__conceptpath
 
+    @property
+    def label(self):
+        return self.__label
+
     def createqcfield(self):
         """Returns the descriptor of the corresponding QcField."""
         constraints = {}

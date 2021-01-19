@@ -6,12 +6,12 @@ class Mapping(object):
         self.target = None
         self.correspondences = {}#Dict: key:CDE code ->Value: correspondence
 
-    def add_correspondence(self, key, value)
+    def add_correspondence(self, key, value):
         self.correspondences.add(key, value)
 
-    def del_correspondence(self, key)
+    def del_correspondence(self, key):
         self.correspondences.pop(key)#throughs KeyError exception
 
     #examines if there already exists a correspondence for this CDE
-    def contains(self, code)
+    def contains(self, code):
         return code in self.correspondences

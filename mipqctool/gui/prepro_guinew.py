@@ -70,7 +70,7 @@ class Preprocess(tk.Frame):
                                                                 i=len(self.corrs)+1,
                                                                 trFunctions=self.trFunctions,
                                                                 csv_columns=self.csv_file_headers,
-                                                                cdes_d=self.cdes_d, cdes_l=self.cdes_l))
+                                                                cdes_d=self.cde_md_frame.cdescontroller.cdes_d, cdes_l=self.cde_md_frame.cdescontroller.cdes_l))
             self.newCButton.grid(row=len(self.corrs)+1, column=5)
             return
         self.label_corr = tk.Label(self.harm_labelframe, text="Mapping #"+self.corrs.index(c)+"# to "+c.target)

@@ -8,6 +8,7 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.controller import DcConnector
+from mipqctool.controller import CDEsController
 from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
 from mipqctool.config import LOGGER, DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES
 
@@ -30,6 +31,7 @@ class MetadataFrame(tk.Frame):
         self.selected_pathology = tk.StringVar()
         self.selected_version = tk.StringVar()
         self.dc_json = None
+        self.cdescontroller = None
 
         self.__init()
         self.__packing()
@@ -162,6 +164,7 @@ class MetadataFrame(tk.Frame):
             name = os.path.basename(filepath)
             self.metaname_label.config(text=name)
             self.metafilepath = os.path.abspath(filepath)
+            self.cdescontroller = CDEsController(filepath)
         else:
             self.metafilepath = None
             self.metaname_label.config(text='Not Selected')
