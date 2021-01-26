@@ -5,7 +5,8 @@
 
 override_dh_virtualenv:
 	dh_virtualenv --python python3 \
-	--upgrade-pip
+	--upgrade-pip \
+	--verbose
 
 .PHONY: override_dh_strip override_dh_shlibdeps
 

@@ -26,3 +26,6 @@ class ConstraintViolationError(QCToolException):
 
 class TableReportError(QCToolException):
     pass
+
+class DockerExecError(QCToolException):
+    pass
