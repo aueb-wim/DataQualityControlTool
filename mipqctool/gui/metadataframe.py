@@ -51,7 +51,7 @@ class MetadataFrame(tk.Frame):
                                                command=self._check_lc)
         self.metaname_label = tk.Label(self.lc_frame, text='Not selected',
                                        bg='white', pady=4, width=46)
-
+        self.setfilepath()#call this so as to initialize a couple of objects...
         self.metaload_button = tk.Button(self.lc_frame, text='Select File',
                                          command=self.setmetadatafile)
 
@@ -160,6 +160,9 @@ class MetadataFrame(tk.Frame):
         filepath = tkfiledialog.askopenfilename(title='select metadata file',
                                                 filetypes=(('json files', '*.json'),
                                                            ('all files', '*.*')))
+        self.setfilepath(filepath)
+
+    def setfilepath(self, filepath=None):
         if filepath:
             name = os.path.basename(filepath)
             self.metaname_label.config(text=name)
@@ -168,6 +171,7 @@ class MetadataFrame(tk.Frame):
         else:
             self.metafilepath = None
             self.metaname_label.config(text='Not Selected')
+            self.cdescontroller = CDEsController()
 
     def on_select_pathology(self, event):
         strpathology = self.selected_pathology.get()

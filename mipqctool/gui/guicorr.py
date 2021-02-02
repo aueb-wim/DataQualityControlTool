@@ -7,7 +7,7 @@ import tkinter as tk
 import json
 from mipqctool.model.mapping import Correspondence
 from mipqctool.config import LOGGER
-from mipqctool.controller import correspondenceParser
+from mipqctool.controller import CorrespondenceParser as CP
 
 class guiCorr():
     """Whenever the New Button in prepro_guiNEW is pushed, a guiCorr object is created.
@@ -19,6 +19,9 @@ class guiCorr():
     :param cdes_d: 
     :param cdes_l:"""
     def __init__(self, button, c, i, trFunctions, csv_columns, cdes_d, cdes_l):
+        if not cdes_d or not cdes_l:#if the CDE metadata has not been loaded...
+            LOGGER.info("Need to load a CDEs metadata file before start defining mapping correspondences!")
+            return
         self.button = button
         self.corrs = c
         self.i_cor = i
@@ -26,7 +29,9 @@ class guiCorr():
         self.csv_columns = csv_columns #List
         self.cdes_d = cdes_d #Dict: 
         self.cdes_l = cdes_l
-        #self.newCorr = None
+        self.functions = []
+        self.sourceCols = []
+        self.expression = None
         self.button.configure(state="disable")
         self.master = tk.Tk()
         self.master.geometry("750x150")
@@ -44,7 +49,7 @@ class guiCorr():
         self.columns_cbox = ttk.Combobox(self.master, values=self.csv_columns, width=20)
         self.functions_cbox = ttk.Combobox(self.master, values=sorted(list(self.trFunctions.keys())), width=20)
         self.expressions_text = tk.Text(self.master, width=40, height=6)
-        #self.expressions_text.insert(tk.INSERT, "")#initilization
+        #self.expressions_text.insert(tk.INSERT, "")#initialization
         self.harm_plusCol_btn = tk.Button(self.master, text='+', command=self.add_column)
         self.harm_plusFun_btn = tk.Button(self.master, text='+', command=self.add_function)
         self.cdes_cbox = ttk.Combobox(self.master, values=self.cdes_l, width=20)
@@ -84,16 +89,16 @@ class guiCorr():
         self.expressions_text.insert(tk.END, temp)
     
     def save(self):
-        try:
-            expression = expressions_text.get("1.0", END)
-        except NameError as nm:
+        #try:
+        self.expression = self.expressions_text.get("1.0", "end-1c")
+        """except NameError as nm:
             LOGGER.info("-Empty expression text. The value stays the same...")
-            expression = None
-            pass
-        #call the MIPMAP expression parser..!
-        corParser = correspondenceParser(expression)
-        corParser.separateSourceColumnsAndFunctions()
-        self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
+            self.expression = None
+            pass"""
+        #call the correspondence parser..!
+        self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, , self.trFunctions)
+        #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace....
+        self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
         self.button.configure(state="active")
         self.master.destroy()
         LOGGER.info('*** Just created Mapping Correspondence #%d for CDE:%s ***', self.i_cor, self.corrs[self.i_cor-1])

@@ -6,7 +6,7 @@ from mipqctool.model.dcatalogue.node import *
 
 class CDEsController():
 
-    def __init__(self, filepath):
+    def __init__(self, filepath=None):
         self.cdes_l = []
         self.cdes_d = {}
         if filepath:

@@ -14,6 +14,7 @@ from mipqctool.gui.guicorr import *
 from mipqctool.model.dcatalogue.node import *
 #from prepare import produce_encounter_properties, produce_patient_properties
 #from prepare import produce_unpivot_files, produce_run_sh_script
+from mipqctool.config import LOGGER
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 path = Path(DIR_PATH)
@@ -114,7 +115,7 @@ class Preprocess(tk.Frame):
         #self.o_button2.grid(row=7, column=3, pady=2, padx=2)
 
     def __loadTrFunctions(self):
-        #read the trFunctions.csv and load the trFunctions dict
+        #read the trFunctions.csv and load the trFunctions dict (NOT TrFunction instances..!)
         #This dict will be loaded in Combobox functions_cbox in guiCorr!!
         self.trFunctions = {}
         #with open(DIR_PATH+'/mapping/trFunctions.csv', 'r') as F:
