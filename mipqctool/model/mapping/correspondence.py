@@ -1,4 +1,6 @@
 
+from xml.etree.ElementTree import Element
+
 class Correspondence(object):
     def __init__(self, source_paths, target_path, expression):
         self.source = source_paths #list of source variables

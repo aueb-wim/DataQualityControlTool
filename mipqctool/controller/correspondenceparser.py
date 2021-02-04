@@ -4,7 +4,7 @@ import re
 
 class CorrespondenceParser():
  
-    self.PARENTH_REG = '([a-zA-Z_]{1}[a-zA-Z_\d]*\s?)\(([a-zA-Z\d\_,\(\)\s]*)\)'
+    PARENTH_REG = '([a-zA-Z_]{1}[a-zA-Z_\d]*\s?)\(([a-zA-Z\d\_,\(\)\s]*)\)'
 
     #Doing a syntax check without actually running the mipmap-Engine
     @staticmethod
@@ -31,7 +31,7 @@ class CorrespondenceParser():
         if match:
             label_name=match.group(1)
             expression_name=ddlFunctions.get(label_name)
-            functions.append(TrFunction(label_name, expression_name,....... ))
+            #functions.append(TrFunction(label_name, expression_name,....... ))
 
             
         

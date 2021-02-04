@@ -8,7 +8,6 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.gui.metadataframe import MetadataFrame
-from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
 from mipqctool.controller import TableReport
 from mipqctool.exceptions import TableReportError
 from mipqctool.config import LOGGER
@@ -189,6 +188,7 @@ class CsvTab(tk.Frame):
             pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
             xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
             correctedcsvfile = os.path.join(filedir, basename + '_corrected.csv')
+            schema_type = 'qc'
 
             if self.md_frame.from_disk.get():
                 LOGGER.info('Retrieving Metadata from localdisk...')
@@ -196,8 +196,8 @@ class CsvTab(tk.Frame):
                 with open(self.md_frame.metafilepath) as json_file:
                     dict_schema = json.load(json_file)
                 if self.md_frame.json_type == 1:
-                    LOGGER.info('Transating from Data Catalogue to Frictionless json format...')
-                    dict_schema = FrictionlessFromDC(dict_schema).qcdescriptor
+                    schema_type = 'dc'
+
             elif self.md_frame.from_dc.get():
                 LOGGER.info('Retrieving Metadata from Data Catalogue...')
                 LOGGER.info('Selected pathology is {}, CDE version: {}'.format(
@@ -205,14 +205,13 @@ class CsvTab(tk.Frame):
                     self.md_frame.selected_version.get())
                 )             
                 dict_schema = self.md_frame.dc_json
-                LOGGER.info('Transating from Data Catalogue to Frictionless json format...')
-                dict_schema = FrictionlessFromDC(dict_schema).qcdescriptor
-
-            schema = QcSchema(dict_schema)
-            dataset = QcTable(self.datasetpath, schema=schema)
+                schema_type = 'dc'
 
             try:
-                self.reportcsv = TableReport(dataset, threshold=threshold)#id_column=self.d_headers_cbox.current())
+                self.reportcsv = TableReport.from_disc(self.datasetpath,
+                                                       dict_schema=dict_schema,
+                                                       schema_type=schema_type,                                                      
+                                                       threshold=threshold)#id_column=self.d_headers_cbox.current())
                 if self.reportcsv.isvalid:
                     LOGGER.info('The dataset has is valid.')
                 else:

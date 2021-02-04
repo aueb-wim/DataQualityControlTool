@@ -18,11 +18,11 @@ class guiCorr():
     :param csv_columns: A list with the headers of the dataset CSV
     :param cdes_d: 
     :param cdes_l:"""
-    def __init__(self, button, c, i, trFunctions, csv_columns, cdes_d, cdes_l):
+    def __init__(self, parent, c, i, trFunctions, csv_columns, cdes_d, cdes_l):
         if not cdes_d or not cdes_l:#if the CDE metadata has not been loaded...
             LOGGER.info("Need to load a CDEs metadata file before start defining mapping correspondences!")
             return
-        self.button = button
+        self.parent = parent
         self.corrs = c
         self.i_cor = i
         self.trFunctions = trFunctions #Dict: key:Label->Value:Expression
@@ -32,7 +32,7 @@ class guiCorr():
         self.functions = []
         self.sourceCols = []
         self.expression = None
-        self.button.configure(state="disable")
+        self.parent.newCButton.configure(state="disable")
         self.master = tk.Tk()
         self.master.geometry("750x150")
         self.master.title("Mapping #"+str(i)+"#")
@@ -96,17 +96,17 @@ class guiCorr():
             self.expression = None
             pass"""
         #call the correspondence parser..!
-        self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, , self.trFunctions)
+        #self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, , self.trFunctions)
         #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace....
         self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
-        self.button.configure(state="active")
+        self.parent.newButton.configure(state="active")
         self.master.destroy()
         LOGGER.info('*** Just created Mapping Correspondence #%d for CDE:%s ***', self.i_cor, self.corrs[self.i_cor-1])
 
     def cancel(self):
-        self.button.configure(state="active")
+        self.parent.newCButton.configure(state="active")
         self.master.destroy()
 
     def on_close(self):
-        self.button.configure(state="active")
+        self.parent.newCButton.configure(state="active")
         self.master.destroy()

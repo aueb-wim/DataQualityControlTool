@@ -21,6 +21,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils import get_column_letter
 from collections import namedtuple, Counter, defaultdict
 
+from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
 from mipqctool.exceptions import TableReportError, QCToolException
 from mipqctool.controller.columnreport import ColumnReport
 from mipqctool.model.qcfrictionless import QcTable
@@ -516,3 +517,25 @@ class TableReport(object):
         df = pd.DataFrame.from_dict(d)
         headers = ['name', 'type', 'filled %', 'invalid values'] + COLUMN_STAT_HEADERS
         return df[headers]
+
+    @classmethod
+    def from_disc(cls, csvpath, dict_schema, schema_type='qc', id_column=1, threshold=3):
+        """
+        Constucts a TableReport from a csvfile and a given schema.
+        Arguments:
+        :param csvpath: string, the csv filepath
+        :param schema: dictionary describing the csv schema
+        :param schema_type: 'qc' for frictionless type, 'dc' for Data Catalogue type json schema
+        :param id_column: column number of dataset's primary key (id)
+        :param threshold: outlier threshold - (mean - threshold * std, mean + threshold * std) 
+                          outside this length, a numerical value is considered outlier
+        """
+        if schema_type == 'qc':
+            dataset_schema = QcSchema(dict_schema)
+        elif schema_type == 'dc':
+            LOGGER.info('Transating from Data Catalogue to Frictionless json format...')
+            qcdict_schema = FrictionlessFromDC(dict_schema).qcdescriptor
+            dataset_schema = QcSchema(qcdict_schema)
+        dataset = QcTable(csvpath, schema=dataset_schema)
+        return cls(dataset, id_column=id_column, threshold=threshold)
+

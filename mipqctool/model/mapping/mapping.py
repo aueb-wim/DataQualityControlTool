@@ -1,6 +1,7 @@
+
 class Mapping(object):
     """Class for creating a mapping task xml for mipmap engine."""
-    def __init__(self):
+    def __init__(self, sourcedb, targetdb):
         self.config = None
         self.source = None
         self.target = None

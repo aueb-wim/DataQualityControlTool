@@ -7,11 +7,10 @@ from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-#from tkinter import *
-#from tkinter.ttk import *
+from mipqctool.controller import InferSchema
 from mipqctool.gui.metadataframe import MetadataFrame
-from mipqctool.gui.guicorr import *
-from mipqctool.model.dcatalogue.node import *
+from mipqctool.gui.guicorr import guiCorr
+from mipqctool.model.dcatalogue.node import Node
 #from prepare import produce_encounter_properties, produce_patient_properties
 #from prepare import produce_unpivot_files, produce_run_sh_script
 from mipqctool.config import LOGGER
@@ -27,6 +26,8 @@ class Preprocess(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.corrs = []
+        # holds a TableReport object for getting statistics for each dataset columns
+        self.inferschema = None
         self.__loadTrFunctions()
         self.__create_all_frames()
         #self.unpivotcsvs = {}
@@ -66,7 +67,7 @@ class Preprocess(tk.Frame):
     def __corr_line(self, c=None):
         if c is None:#all parameters in python are passed by reference
             self.newCButton = tk.Button(self.harm_labelframe, text="New",
-                                        command=lambda: guiCorr(self.newCButton,
+                                        command=lambda: guiCorr(self,
                                                                 c=self.corrs, 
                                                                 i=len(self.corrs)+1,
                                                                 trFunctions=self.trFunctions,
@@ -139,57 +140,15 @@ class Preprocess(tk.Frame):
             self.patientcsv = csv_name
             with open(filepath, 'r') as csvfile:
                 data = csv.DictReader(csvfile)
-                self.csv_file_label.config(text=csv_name)
-                self.csv_file_path = filepath
                 self.csv_file_headers = data.fieldnames
+            self.csv_file_label.config(text=csv_name)
+            self.csv_file_path = filepath
+            self.inferschema = InferSchema.from_disc(filepath)
                 #self.p_csv_headers_cbox.config(values=data.fieldnames)
-    def load_visit_csv(self):
-        filepath = tkfiledialog.askopenfilename(title='select visits csv file',
-                                                filetypes=(('csv files', '*.csv'),
-                                                           ('all files', '*.*')))
-        if filepath:
-            csv_name = os.path.basename(filepath)
-            self.visitscsv = csv_name
-            with open(filepath, 'r') as csvfile:
-                data = csv.DictReader(csvfile)
-                self.c_csv_label2.config(text=csv_name)
-                self.c_csv_headers_cbox1.config(values=data.fieldnames)
-                self.c_csv_headers_cbox2.config(values=data.fieldnames)
+            
 
-    def load_unpivot_csv(self):
-        filepath = tkfiledialog.askopenfilename(title='select visits csv file',
-                                                filetypes=(('csv files', '*.csv'),
-                                                           ('all files', '*.*')))
-        if filepath:
-            csv_name = os.path.basename(filepath)
-            with open(filepath, 'r') as csvfile:
-                data = csv.DictReader(csvfile)
-                unpivot_csv = UnpivotCsv(name=csv_name, headers=data.fieldnames,
-                                         selected=set(), unpivoted=set())
-                if csv_name not in self.unpivotcsvs:
-                    self.u_listbox1.insert(tk.END, csv_name)
-                self.unpivotcsvs[csv_name] = unpivot_csv
-            self.u_listbox2.delete(0, tk.END)
-            self.u_listbox3.delete(0, tk.END)
-    
-    def loadCDEs(self):
-        #Sets the filepath of the CDEs metadata file
-        filepath = tkfiledialog.askopenfilename(title='select CDEs file',
-                                                filetypes=(('json files', '*.json'),
-                                                           ('all files', '*.*')))
-        if filepath:
-            name = os.path.basename(filepath)
-            self.cde_label.config(text=name)
-            self.cde_file_path = os.path.abspath(filepath)
-            #now lets load the JSON
-            with open(self.cde_file_path) as json_file:
-                dict_schema = json.load(json_file)
-            self.rootnode = Node(dict_schema)#now rootnode has all tree hanging below it...
-            self.store_cdes_first()
-        else:
-            self.cde_file_path = None
-            self.cde_label.config(text='Not Selected')
 
+   
     #Traverses the CDE-tree and stores the CDEs in self.cdes_d & l
     def store_cdes_first(self):
         self.store_cdes(current=self.rootnode)
@@ -203,56 +162,7 @@ class Preprocess(tk.Frame):
             for child in groups:
                 self.store_cdes(current=child)
         else: return
-      
-    def unload_unpivot_csv(self):
-        sel_index = self.u_listbox1.curselection()
-        csv_name = self.u_listbox1.get(sel_index)
-        del self.unpivotcsvs[csv_name]
-        self.u_listbox1.delete(sel_index)
-        self.u_listbox2.delete(0, tk.END)
-        self.u_listbox3.delete(0, tk.END)
-        self.selected_csv_name = None
   
-    def on_select_csv(self, event):
-        sel_index = self.u_listbox1.curselection()
-        csv_name = self.u_listbox1.get(sel_index)
-        csv_item = self.unpivotcsvs[csv_name]
-        self.u_listbox2.delete(0, tk.END)
-        self.u_listbox3.delete(0, tk.END)
-        self.add_items(csv_item.headers, self.u_listbox2)
-        self.add_items(csv_item.selected, self.u_listbox3)
-        self.selected_csv_name = csv_name
-        #self.u_listbox2.insert(tk.END, csv_name)
-    
-    
-    def add_column(self):
-        # get selected csv from previous listbox selection <--Update: needs to change
-        csv_name = self.selected_csv_name
-  
-        csv_item = self.unpivotcsvs[csv_name]
-        sel_index2 = self.u_listbox2.curselection()
-        column = self.u_listbox2.get(sel_index2)
-        if column not in csv_item.selected:
-            csv_item.selected.add(column)
-            csv_item = csv_item._replace(unpivoted = set(csv_item.headers) - csv_item.selected)
-            self.u_listbox3.insert(tk.END, column)
-            self.unpivotcsvs[csv_name]=csv_item
-
-    def add_function(self):
-        ok=True
-
-    def remove_column(self):
-        # get selected csv from previous listbox selection
-        csv_name = self.selected_csv_name
-        csv_item = self.unpivotcsvs[csv_name]
-        
-        sel_index = self.u_listbox3.curselection()
-        column = self.u_listbox3.get(sel_index)
-        csv_item.selected.remove(column)
-        self.u_listbox3.delete(sel_index)
-        csv_item = csv_item._replace(unpivoted = set(csv_item.headers) - csv_item.selected)
-        self.unpivotcsvs[csv_name]=csv_item
-
     def select_output(self):
         outputfolder = tkfiledialog.askdirectory(title='Select Output Folder')
         if outputfolder:

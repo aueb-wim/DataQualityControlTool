@@ -1,5 +1,7 @@
 
-from mipqctool.model.qcfrictionless import QCtoDC, CdeDict
+import os
+
+from mipqctool.model.qcfrictionless import QCtoDC, CdeDict, QcTable
 from mipqctool.controller.tablereport import TableReport
 
 class InferSchema(object):   
@@ -21,7 +23,11 @@ class InferSchema(object):
         if cdedict:
             self.__cdedict = cdedict
             self.__tablereport = TableReport(self.__table, id_column=1)
-        
+
+    @property
+    def tablereport(self):
+        return self.__tablereport
+
     def suggest_cdes(self, threshold):
         if self.__cdedict:
             suggestions = {}
@@ -42,4 +48,25 @@ class InferSchema(object):
 
     def expoct2qcjson(self, filename):
         self.__table.schema.save(filename)
+
+    @classmethod
+    def from_disc(cls, csvpath,  sample_rows=100, maxlevels=10, cdedict=None):
+        """
+        Constructs an InferSchema from loading a csv file from local disc.
+        Arguments:
+        :param csvpath: string filepath of the csv
+        :param sample_rows: number of rows that are going to be used for dataset's schema inference
+        :param maxlevel: number of unique values in order to one infered variable to be considered as nominal(categorical)
+                         above that number the variable will be considered as a text data type.
+        :param cdedict: A CdeDict object containg info about all CDE variables
+        """
+        
+        dataset = QcTable(csvpath, schema=None)
+        csvname = os.path.basename(csvpath)
+        return cls(table=dataset, csvname=csvname,
+                   sample_rows=sample_rows,maxlevels=maxlevels,
+                   cdedict=cdedict)
+
+
+
     

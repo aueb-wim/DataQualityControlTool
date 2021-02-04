@@ -5,7 +5,7 @@ from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC, CdeDict
+from mipqctool.model.qcfrictionless import CdeDict
 from mipqctool.controller import InferSchema
 from mipqctool.exceptions import TableReportError
 from mipqctool.config import LOGGER
@@ -125,11 +125,11 @@ class InferTab(tk.Frame):
                                          'Please, select dataset file')
             max_categories = int(self.max_categories.get())
             sample_rows = int(self.sample_rows.get())
-            dataset = QcTable(self.datasetpath, schema=None)
             if self.cde_dict:
-                infer = InferSchema(dataset, self.dname, 
-                                    sample_rows=sample_rows, maxlevels=max_categories,
-                                    cdedict=self.cde_dict)
+                infer = InferSchema.from_disc(self.datasetpath, 
+                                              sample_rows=sample_rows,
+                                              maxlevels=max_categories,
+                                              cdedict=self.cde_dict)
                 if self.thresholdstring.get() == '':
                     threshold = 0.6
                 else:
@@ -144,9 +144,10 @@ class InferTab(tk.Frame):
                     )
   
             else: 
-                infer = InferSchema(dataset, self.dname, 
-                                    sample_rows=sample_rows, maxlevels=max_categories,
-                                    cdedict=None)
+                infer = InferSchema.from_disc(self.datasetpath, 
+                                              sample_rows=sample_rows,
+                                              maxlevels=max_categories,
+                                              cdedict=None)
                 if self.schema_output.get() == 1:
                     infer.export2excel(output_file)
                     LOGGER.info('Schema file has been created successully')
