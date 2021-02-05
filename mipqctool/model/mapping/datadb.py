@@ -44,11 +44,12 @@ class DataDB(object):
         :param dublication: integer, number of dublicaton of the table, 
                             if it is used in the correpondence
         """
+        basename = os.path.splitext(name)[0]
         if dublication:
             dublic = '_' + str(dublication) + '_'
-            basename = os.path.basename(name)[0]
-
             return '.'.join([self.__dbname, basename + dublic, basename + 'Tuple', column])
+        else:
+            return '.'.join([self.__dbname, basename, basename + 'Tuple', column])
 
     @classmethod
     def from_csvs(cls, dbname, filepaths):

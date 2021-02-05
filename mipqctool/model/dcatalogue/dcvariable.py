@@ -39,6 +39,10 @@ class DcVariable(object):
     def label(self):
         return self.__label
 
+    @property
+    def code(self):
+        return self.__code
+
     def createqcfield(self):
         """Returns the descriptor of the corresponding QcField."""
         constraints = {}
