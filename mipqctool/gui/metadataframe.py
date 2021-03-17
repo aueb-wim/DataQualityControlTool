@@ -167,11 +167,11 @@ class MetadataFrame(tk.Frame):
             name = os.path.basename(filepath)
             self.metaname_label.config(text=name)
             self.metafilepath = os.path.abspath(filepath)
-            self.cdescontroller = CDEsController(filepath)
+            self.cdescontroller = CDEsController.from_disc(filepath)
         else:
             self.metafilepath = None
             self.metaname_label.config(text='Not Selected')
-            self.cdescontroller = CDEsController()
+            self.cdescontroller = None
 
     def on_select_pathology(self, event):
         strpathology = self.selected_pathology.get()

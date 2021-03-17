@@ -18,13 +18,15 @@ class guiCorr():
     :param csv_columns: A list with the headers of the dataset CSV
     :param cdes_d: 
     :param cdes_l:"""
-    def __init__(self, parent, c, i, trFunctions, csv_columns, cdes_d, cdes_l):
+    def __init__(self, parent, c, i, trFunctions, tablesColsDict, cdes_d, cdes_l):
         if not cdes_d or not cdes_l:#if the CDE metadata has not been loaded...
             LOGGER.info("Need to load a CDEs metadata file before start defining mapping correspondences!")
             return
         self.parent = parent
         self.corrs = c
         self.i_cor = i
+        self.selected_table = tk.StringVar()
+        self.selected_column = tk.StringVar()
         self.trFunctions = trFunctions #Dict: key:Label->Value:Expression
         self.csv_columns = csv_columns #List
         self.cdes_d = cdes_d #Dict: 
@@ -46,7 +48,12 @@ class guiCorr():
         self.harm_label_exp = tk.Label(self.master, text='Expression')
         self.harm_label_cde = tk.Label(self.master, text='CDE')
         #
-        self.columns_cbox = ttk.Combobox(self.master, values=self.csv_columns, width=20)
+        #self.columns_cbox = ttk.Combobox(self.master, values=self.csv_columns, width=20)
+        self.tables_cbox = ttk.Combobox(self.master, textvariable=self.selected_table)
+        self.tables_cbox.bind('<<ComboboxSelected>>', self.on_select_table)
+        self.columns_cbox = ttk.Combobox(self.dc_frame,
+                                         textvariable=self.selected_column)
+
         self.functions_cbox = ttk.Combobox(self.master, values=sorted(list(self.trFunctions.keys())), width=20)
         self.expressions_text = tk.Text(self.master, width=40, height=6)
         #self.expressions_text.insert(tk.INSERT, "")#initialization
@@ -78,7 +85,10 @@ class guiCorr():
     def add_column(self):
         temp = self.expressions_text.get(1.0, tk.END)
         self.expressions_text.delete(1.0, tk.END)
-        temp = temp + self.columns_cbox.get()
+        if self.tables_cbox.current() > -1 and self.columns_cbox.current() > -1:
+            temp = temp + '.'.join(self.tables_cbox.get(), self.columns_cbox.get())
+        else:
+            LOGGER.warning("Table or header not selected.")
         self.expressions_text.insert(tk.END, temp)
 
     def add_function(self):
@@ -96,7 +106,7 @@ class guiCorr():
             self.expression = None
             pass"""
         #call the correspondence parser..!
-        #self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, , self.trFunctions)
+        self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, , self.trFunctions)
         #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace....
         self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
         self.parent.newButton.configure(state="active")
@@ -110,3 +120,6 @@ class guiCorr():
     def on_close(self):
         self.parent.newCButton.configure(state="active")
         self.master.destroy()
+
+    def on_select_table(self):
+        pass

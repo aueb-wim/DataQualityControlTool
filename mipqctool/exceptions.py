@@ -29,3 +29,10 @@ class TableReportError(QCToolException):
 
 class DockerExecError(QCToolException):
     pass
+
+class MappingValidationError(QCToolException):
+    pass
+
+class MappingError(QCToolException):
+    pass
+

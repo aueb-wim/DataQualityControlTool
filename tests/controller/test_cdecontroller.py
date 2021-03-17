@@ -9,12 +9,24 @@ import pytest
 
 from mipqctool.controller.cdescontroller import CDEsController
 
-TEST_JSON_PATH1 = 'tests/test_datasets/simple_dc_cdes.json'
-TEST_JSON_PATH2 = 'tests/test_datasets/dementia_cdes_v3.json'
+JSON_PATH1 = 'tests/test_datasets/simple_dc_cdes.json'
+JSON_PATH2 = 'tests/test_datasets/dementia_cdes_v3.json'
+
+CDES1 = ['dataset', 'av45' , 'fdg', 'pib','minimentalstate', 'montrealcognitiveassessment', 
+         'updrshy', 'updrstotal', 'agegroup', 'gender', 'handedness' , 'subjectage', 'subjectageyears']
+
 
 @pytest.mark.parametrize('jsonpath, csvpath', [
-    (TEST_JSON_PATH1, 'tests/test_datasets/')
+    (JSON_PATH1, 'tests/test_datasets/')
 ])
 def test_save_csv_headers_only(jsonpath, csvpath):
     test = CDEsController.from_disc(jsonpath)
     test.save_csv_headers_only(csvpath)
+
+
+@pytest.mark.parametrize('jsonpath, result', [
+    (JSON_PATH1, CDES1)
+])
+def test_cde_names(jsonpath, result):
+    test = CDEsController.from_disc(jsonpath)
+    assert test.cde_names == result

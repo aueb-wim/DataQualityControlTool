@@ -14,10 +14,11 @@ class CDEsController():
         :param dict_schema: dictionary from Data Catalogue spec json 
         :param pathology: the pathology name for the CDEs
         :param version: version of the pathology's CDEs
+        :param cdedict: a CdeDict object for suggesting
         """
 
         self.__cdes_l = []
-        self.cdes_d = OrderedDict()
+        self.__cdes_d = OrderedDict()
         if version and pathology:
             self.__name = '_'.join([pathology, version])
         else:
@@ -28,17 +29,22 @@ class CDEsController():
     @property
     def cde_names(self):
         return self.__cdes_l
+
+    @property
+    def cde_dcvariables(self):
+        return self.__cdes_d
     
     #Traverses the CDE-tree and stores the CDEs in self.cdes_d & l
     def __store_cdes_first(self):
         self.__store_cdes(current=self.rootnode)
+
     def __store_cdes(self, current):
         if current:
             variables = current.variables
             for var in variables:
                 self.__cdes_l.append(var.code)
                 #self.cdes_d.update({var.label : var})#this is how u add a key-value pair to a Dictionary... Oh my...
-                self.cdes_d[var.code] = var
+                self.__cdes_d[var.code] = var
             groups = current.children
             for child in groups:
                 self.__store_cdes(current=child)

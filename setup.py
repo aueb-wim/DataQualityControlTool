@@ -20,7 +20,7 @@ setup(
     lisence='Apache 2.0',
     keywords='qualitycontrol dataprofiler datacleaning',
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    include_package_data=True,
+    include_package_data=False,
     install_requires=[],
     entry_points={
         'console_scripts': [

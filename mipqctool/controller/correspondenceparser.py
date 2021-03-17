@@ -37,7 +37,7 @@ class CorrespondenceParser():
         
         countOpenP = 0  #count twn "(" pou den exoun kleisei
         
-
+    ### ADDED THIS functionality of parsing a column to model/datadb.py
     class ParsingColumn(object):
         """An auxiliary class for storing a variable's name from source and adding all the prefixes MIPMAP wants"""
         def __init__(self, v_short_name, source_table_name, source_db_name):
