@@ -5,15 +5,17 @@ from mipqctool.model.qcfrictionless import QcTable
 from mipqctool.exceptions import MappingValidationError
 
 class CsvDB(object):
-    def __init__(self, dbname, filepaths):
+    def __init__(self, dbname, filepaths, schematype='source'):
         """"
         Arguements: 
         :param dbname: tha name of the database
         :param tables: list of QcTable objects
-        :param type: 'csv' or 'relational'
+        :param schematype: 'source' or 'target'
         """
         self.__dbname = dbname
-        self.__type = 'CSV'
+        self.__dbtype = 'CSV'
+        self.__schematype = schematype
+
         tables = [QcTable(fpath, schema=None) for fpath in filepaths]
   
         # store QcTable objects in a dictionary with filename as key
@@ -34,7 +36,7 @@ class CsvDB(object):
 
     @property
     def dbtype(self):
-        return self.__type
+        return self.__dbtype
 
     @property
     def xml_elements(self):
@@ -97,13 +99,19 @@ class CsvDB(object):
         for qctable in self.__tables.values():
             table_elem = Element('csv-table')
             schema_elem = Element('schema')
-            schema_elem.text = qctable.source
+            if self.__schematype == 'source':
+                schema_elem.text = 'source/' + qctable.filename
+            else:
+                schema_elem.text = 'target/' + qctable.filename
             instances_elem = Element('instances')
             
             # build instance xml elemnent
             instance_elem = Element('instance')
             path_elem = Element('path')
-            path_elem.text = qctable.source
+            if self.__schematype == 'source':
+                path_elem.text = 'source/' + qctable.filename
+            else:
+                path_elem.text = 'target/' + qctable.filename
             column_names_elem = Element('column-names')
             column_names_elem.text = 'true'
             instance_elem.extend([path_elem, column_names_elem])

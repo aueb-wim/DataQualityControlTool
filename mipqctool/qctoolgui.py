@@ -7,7 +7,7 @@ from tkinter import ttk, N, S, E, W
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 
-from mipqctool.gui import CsvTab, DicomTab, InferTab, Preprocess
+from mipqctool.gui import CsvTab, DicomTab, InferTab, MappingTab
 from mipqctool import __version__
 from mipqctool.config import LOGGER, C_FORMAT, debug
 
@@ -102,7 +102,7 @@ class Application(tk.Frame):
         self.tabframe = CsvTab()
         self.tabframe2 = DicomTab()
         self.tabframe3 = InferTab()
-        self.tabframe4 = Preprocess()
+        self.tabframe4 = MappingTab()
 
         # add the tab for tabular quality control into the main frame
         self.tabcontrol.add(self.tabframe, text='Tabular QC')

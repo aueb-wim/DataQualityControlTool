@@ -14,7 +14,6 @@ class CDEsController():
         :param dict_schema: dictionary from Data Catalogue spec json 
         :param pathology: the pathology name for the CDEs
         :param version: version of the pathology's CDEs
-        :param cdedict: a CdeDict object for suggesting
         """
 
         self.__cdes_l = []

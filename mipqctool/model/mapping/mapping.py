@@ -43,7 +43,8 @@ class Mapping(object):
                    dublication number could be used in future development
                    if there is no duplication then use None as third element
         :target_path:  tuple with the CDE table and name variable and dublication
-        :expression:   string with expression given by the user.
+        :expression:   string with expression given by the user, the paths are given
+                       in this string as <table>.<column>
         """
         corr = Correspondence(self, source_paths, target_path, expression)
         cde_name = target_path[1]
@@ -93,6 +94,7 @@ class Mapping(object):
         source_elem.extend(self.sourcedb.xml_elements)
 
         target_elem = Element('target')
+        
         target_elem.extend(self.targetdb.xml_elements)
 
         corrspons_elem = Element('correspondences')
@@ -102,8 +104,3 @@ class Mapping(object):
         map_element.extend([config_element, source_elem, target_elem, corrspons_elem])
         return map_element
    
-
-
-
-
-

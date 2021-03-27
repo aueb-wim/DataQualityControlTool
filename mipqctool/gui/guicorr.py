@@ -106,7 +106,7 @@ class guiCorr():
             self.expression = None
             pass"""
         #call the correspondence parser..!
-        self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, , self.trFunctions)
+        self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, self.trFunctions)
         #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace....
         self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
         self.parent.newButton.configure(state="active")
