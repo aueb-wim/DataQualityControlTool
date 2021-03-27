@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <mappingtask>
    <config>
       <rewriteSubsumptions>true</rewriteSubsumptions>
@@ -38,10 +38,10 @@
          <csv-db-name>cdedb</csv-db-name>
          <csv-tables>
             <csv-table>
-               <schema>source/simple.csv</schema>
+               <schema>target/simple.csv</schema>
                <instances>
                   <instance>
-                     <path>source/simple.csv</path>
+                     <path>target/simple.csv</path>
                      <column-names>true</column-names>
                   </instance>
                </instances>
