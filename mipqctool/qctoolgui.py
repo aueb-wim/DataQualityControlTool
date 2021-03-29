@@ -128,7 +128,7 @@ def main():
     app = Application(master=root, logger=LOGGER)
     app.master.title('HBP-MIP Data Quality Control Tool  version %s'
                      % __version__)
-    app.master.resizable(False, False)
+    app.master.resizable(0, 0)
     app.mainloop()
 
 

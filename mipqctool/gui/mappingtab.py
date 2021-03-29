@@ -81,14 +81,17 @@ class MappingTab(tk.Frame):
         self.corr_edit_bth = tk.Button(self.corr_frame, text='Edit', width=10)
         self.corr_remove_btn = tk.Button(self.corr_frame, text='Remove', width=10)
 
+        self.map_save_btn = tk.Button(self.corr_frame, text='Save mapping', width=10, state='disabled')
+        self.map_load_btn =tk.Button(self.corr_frame, text='Load mapping', width=10, state='disabled')
+
 
         #Output frame
         self.out_frame = tk.Frame(self.harm_labelframe)
-        self.out_folder_lbl = tk.Label(self.out_frame, text='Not Selected', bg='white', width=40)       
+        self.out_folder_lbl = tk.Label(self.out_frame, text='Output Folder Not Selected', bg='white', width=40)       
         self.out_folder_btn = tk.Button(self.out_frame, text='Open', command=self.select_output)
-        self.out_mapping_btn = tk.Button(self.out_frame, text='Save map xml')
         
-        self.exec_mapping_btn = tk.Button(self, text= 'Run Mapping Task')
+        self.exec_mapping_btn = tk.Button(self.out_frame, text= 'Run Mapping Task')
+        
 
 
     def __packing(self):
@@ -115,7 +118,7 @@ class MappingTab(tk.Frame):
         # Mapping Frame
         self.harm_labelframe.pack(fill='both', padx=4)
         # csv subframe
-        self.csv_frame.pack(fill='both')
+        self.csv_frame.pack(fill='y')
         #self.harm_label_csv.pack(side='left')
         self.csv_file_label.pack(side='left', padx=2)
         self.csv_load_btn.pack(side='left')
@@ -124,7 +127,7 @@ class MappingTab(tk.Frame):
         self.corr_label1.pack()
 
         # correspondances subframe
-        self.corr_frame.pack(fill='both')
+        self.corr_frame.pack(fill='y')
         self.corr_listbox1.pack(side='left', fill='y', padx=2)
         self.corr_listbox2.pack(side='left', fill='y')
         self.corr_scollbar.pack(side='left', fill='y')
@@ -132,11 +135,14 @@ class MappingTab(tk.Frame):
         self.corr_add_btn.pack()
         self.corr_edit_bth.pack()
         self.corr_remove_btn.pack()
+        self.map_load_btn.pack(pady=(17, 1))
+        self.map_save_btn.pack()
+
         # Output Frame
-        self.out_frame.pack(fill='both', padx=4)
+        self.out_frame.pack(fill='x', padx=4)
         self.out_folder_lbl.grid(row=0, column=1, pady=2)
-        self.out_folder_btn.grid(row=0, column=2)
-        self.out_mapping_btn.grid(row=0, column=3)
+        self.out_folder_btn.grid(row=0, column=2, padx=2)
+        self.exec_mapping_btn.grid(row=0, column=3, sticky='e', padx=(75, 1))
 
     def __loadTrFunctions(self):
         #read the trFunctions.csv and load the trFunctions dict (NOT TrFunction instances..!)
