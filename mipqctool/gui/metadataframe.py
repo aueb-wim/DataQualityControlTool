@@ -8,7 +8,6 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.controller import DcConnector
-from mipqctool.controller import CDEsController
 from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
 from mipqctool.config import LOGGER, DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES
 
@@ -31,7 +30,6 @@ class MetadataFrame(tk.Frame):
         self.selected_pathology = tk.StringVar()
         self.selected_version = tk.StringVar()
         self.dc_json = None
-        self.cdescontroller = None
 
         self.__init()
         self.__packing()
@@ -167,11 +165,9 @@ class MetadataFrame(tk.Frame):
             name = os.path.basename(filepath)
             self.metaname_label.config(text=name)
             self.metafilepath = os.path.abspath(filepath)
-            self.cdescontroller = CDEsController.from_disc(filepath)
         else:
             self.metafilepath = None
             self.metaname_label.config(text='Not Selected')
-            self.cdescontroller = None
 
     def on_select_pathology(self, event):
         strpathology = self.selected_pathology.get()
@@ -185,6 +181,21 @@ class MetadataFrame(tk.Frame):
         if self.dc and self.dc.status_code == 200:
             self.dc_json = self.dc.getjson(self.selected_pathology.get(),
                                            self.selected_version.get())
+
+    def get_from_disk_json(self):
+        # check if we get the metadata schema from disc
+        if self.from_disk.get():
+            if self.metafilepath:
+                with open(self.metafilepath) as json_file:
+                    dict_schema = json.load(json_file)
+                return dict_schema
+            else:
+                return None
+        else:
+            return None
+
+        
+
 
     def get_all_cdes(self):
         LOGGER.info('Trying to retrive cde metadata from Data Cataloge. Using DC url: {}'.format(DC_DOMAIN))

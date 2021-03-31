@@ -29,9 +29,11 @@ class InferSchema(object):
         return self.__tablereport
 
     def suggest_cdes(self, threshold):
+        """Arguments:
+        :param threshold: 0-1 similarity threshold, below that not a cde is suggested """
         if self.__cdedict:
             suggestions = {}
-            for columnreport in self.__tablereport.columnreports:
+            for name, columnreport in self.__tablereport.columnreports.items():
                 var_name = columnreport.name
                 cde = self.__cdedict.suggest_cde(columnreport, threshold=threshold)
                 if cde:

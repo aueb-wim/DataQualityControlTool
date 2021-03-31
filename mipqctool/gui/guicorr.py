@@ -18,52 +18,56 @@ class guiCorr():
     :param csv_columns: A list with the headers of the dataset CSV
     :param cdes_d: 
     :param cdes_l:"""
-    def __init__(self, parent, c, i, trFunctions, tablesColsDict, cdes_d, cdes_l):
-        if not cdes_d or not cdes_l:#if the CDE metadata has not been loaded...
-            LOGGER.info("Need to load a CDEs metadata file before start defining mapping correspondences!")
-            return
+    def __init__(self, parent):
+        #if not cdes_d or not cdes_l:#if the CDE metadata has not been loaded...
+        #    LOGGER.info("Need to load a CDEs metadata file before start defining mapping correspondences!")
+        #    return
         self.parent = parent
-        self.corrs = c
-        self.i_cor = i
+        #self.corrs = c
+        #self.i_cor = i
         self.selected_table = tk.StringVar()
         self.selected_column = tk.StringVar()
-        self.trFunctions = trFunctions #Dict: key:Label->Value:Expression
-        self.csv_columns = csv_columns #List
-        self.cdes_d = cdes_d #Dict: 
-        self.cdes_l = cdes_l
+        self.trFunctions = parent.trFunctions #Dict: key:Label->Value:Expression
+        #self.csv_columns = csv_columns #List
+        #self.cdes_d = cdes_d #Dict: 
+        #self.cdes_l = cdes_l
         self.functions = []
         self.sourceCols = []
         self.expression = None
-        self.parent.newCButton.configure(state="disable")
         self.master = tk.Tk()
         self.master.geometry("750x150")
-        self.master.title("Mapping #"+str(i)+"#")
+        self.master.title("Mapping #"+"#")
         self.master.resizable(False, False)
         self.master.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.corr_win()
-
-    def corr_win(self):
-        self.harm_label_col = tk.Label(self.master, text='Column')
-        self.harm_label_fun = tk.Label(self.master, text='Function')
-        self.harm_label_exp = tk.Label(self.master, text='Expression')
-        self.harm_label_cde = tk.Label(self.master, text='CDE')
+        self.__init()
+        self.__packing()
+        
+    def __init(self):
+        self.main_frame = tk.Frame(master=self.master)
+        self.harm_label_col = tk.Label(self.main_frame, text='Column')
+        self.harm_label_fun = tk.Label(self.main_frame, text='Function')
+        self.harm_label_exp = tk.Label(self.main_frame, text='Expression')
+        self.harm_label_cde = tk.Label(self.main_frame, text='CDE')
         #
         #self.columns_cbox = ttk.Combobox(self.master, values=self.csv_columns, width=20)
-        self.tables_cbox = ttk.Combobox(self.master, textvariable=self.selected_table)
+        self.tables_cbox = ttk.Combobox(self.main_frame, textvariable=self.selected_table)
         self.tables_cbox.bind('<<ComboboxSelected>>', self.on_select_table)
-        self.columns_cbox = ttk.Combobox(self.dc_frame,
+        self.columns_cbox = ttk.Combobox(self.main_frame, values=['1','2'],
                                          textvariable=self.selected_column)
 
-        self.functions_cbox = ttk.Combobox(self.master, values=sorted(list(self.trFunctions.keys())), width=20)
-        self.expressions_text = tk.Text(self.master, width=40, height=6)
+        self.functions_cbox = ttk.Combobox(self.main_frame, values=sorted(list(self.trFunctions.keys())), width=20)
+        self.expressions_text = tk.Text(self.main_frame, width=40, height=6)
         #self.expressions_text.insert(tk.INSERT, "")#initialization
-        self.harm_plusCol_btn = tk.Button(self.master, text='+', command=self.add_column)
-        self.harm_plusFun_btn = tk.Button(self.master, text='+', command=self.add_function)
-        self.cdes_cbox = ttk.Combobox(self.master, values=self.cdes_l, width=20)
-        self.harm_save_btn = tk.Button(self.master, text='Save', command=self.save)#save correrspondence
-        self.harm_cancel_btn = tk.Button(self.master, text='Cancel', command=self.cancel)#cancel correspondence
+        self.harm_plusCol_btn = tk.Button(self.main_frame, text='+', command=self.add_column)
+        self.harm_plusFun_btn = tk.Button(self.main_frame, text='+', command=self.add_function)
+        self.cdes_cbox = ttk.Combobox(self.main_frame, values=['1'], width=20)
+        self.harm_save_btn = tk.Button(self.main_frame, text='Save', command=self.save)#save correrspondence
+        self.harm_cancel_btn = tk.Button(self.main_frame, text='Cancel', command=self.cancel)#cancel correspondence
         #ok now start packing...
-        #
+    
+    
+    def __packing(self):
+        self.main_frame.pack()
         self.harm_label_col.grid(row=2, column=0)
         self.columns_cbox.grid(row=3, column=0)
         self.harm_plusCol_btn.grid(row=3, column=4)
@@ -118,7 +122,7 @@ class guiCorr():
         self.master.destroy()
 
     def on_close(self):
-        self.parent.newCButton.configure(state="active")
+        self.parent.deiconfy()
         self.master.destroy()
 
     def on_select_table(self):

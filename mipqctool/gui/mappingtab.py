@@ -7,7 +7,7 @@ from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from mipqctool.controller import InferSchema
+from mipqctool.controller import MipCDEMapper, CDEsController
 from mipqctool.gui.metadataframe import MetadataFrame
 from mipqctool.gui.guicorr import guiCorr
 from mipqctool.gui.inferoptionsframe import InferOptionsFrame
@@ -26,10 +26,8 @@ class MappingTab(tk.Frame):
 
     def __init__(self, master=None):
         super().__init__(master)
-        self.corrs = []
-        # holds a TableReport object for getting statistics for each dataset columns
-        self.inferschema = None
-        self.__loadTrFunctions()
+        self.cdemapper = None
+        self.__loadtrfunctions()
 
         #self.__create_all_frames()
         #self.unpivotcsvs = {}
@@ -67,7 +65,8 @@ class MappingTab(tk.Frame):
         #self.harm_label_csv = tk.Label(self.csv_frame, text='CSV File:')
         self.csv_file_label = tk.Label(self.csv_frame, text='Source CSV file Not selected', bg='white', pady=4, width=40)
         self.csv_load_btn = tk.Button(self.csv_frame, text='Select', command=self.load_data_csv)
-        self.suggest_btn = tk.Button(self.csv_frame, text='Suggest CDE correspondences', state='disabled')
+        self.suggest_btn = tk.Button(self.csv_frame, text='Suggest CDE correspondences',
+                                     state='disabled', command=self.suggest_corresponances)
 
         self.corr_label1 = tk.Label(self.harm_labelframe, text='Correspondances')
  
@@ -77,7 +76,7 @@ class MappingTab(tk.Frame):
         self.corr_listbox1 = tk.Listbox(self.corr_frame, yscrollcommand=self.corr_scollbar.set, width=35)
         self.corr_listbox2 = tk.Listbox(self.corr_frame, yscrollcommand=self.corr_scollbar.set)
         self.corr_btn_frame = tk.Frame(self.corr_frame)
-        self.corr_add_btn = tk.Button(self.corr_frame, text='Add', width=10)
+        self.corr_add_btn = tk.Button(self.corr_frame, text='Add', width=10, command=self.add_correspondance)
         self.corr_edit_bth = tk.Button(self.corr_frame, text='Edit', width=10)
         self.corr_remove_btn = tk.Button(self.corr_frame, text='Remove', width=10)
 
@@ -144,7 +143,7 @@ class MappingTab(tk.Frame):
         self.out_folder_btn.grid(row=0, column=2, padx=2)
         self.exec_mapping_btn.grid(row=0, column=3, sticky='e', padx=(75, 1))
 
-    def __loadTrFunctions(self):
+    def __loadtrfunctions(self):
         #read the trFunctions.csv and load the trFunctions dict (NOT TrFunction instances..!)
         #This dict will be loaded in Combobox functions_cbox in guiCorr!!
         self.trFunctions = {}
@@ -166,17 +165,25 @@ class MappingTab(tk.Frame):
                                                            ('all files', '*.*')))
         if filepath:
             csv_name = os.path.basename(filepath)
-            self.patientcsv = csv_name
+            self.cdemapper = MipCDEMapper()
             with open(filepath, 'r') as csvfile:
                 data = csv.DictReader(csvfile)
                 self.csv_file_headers = data.fieldnames
             self.csv_file_label.config(text=csv_name)
             self.csv_file_path = filepath
-            self.inferschema = InferSchema.from_disc(filepath)
                 #self.p_csv_headers_cbox.config(values=data.fieldnames)
             
+    def suggest_corresponances(self):
+        pass
+    
+    def add_correspondance(self):
+        cor_gui = guiCorr(self)
 
+    def edit_correspodance(self):
+        pass
 
+    def delete_correspodance(self):
+        pass
    
     #Traverses the CDE-tree and stores the CDEs in self.cdes_d & l
     def store_cdes_first(self):
@@ -200,4 +207,6 @@ class MappingTab(tk.Frame):
             self.outputfolder = outputfolder
             self.out_folder_lbl.config(text=outputfolder)
 
+    def run_mapping(self):
+        pass
  

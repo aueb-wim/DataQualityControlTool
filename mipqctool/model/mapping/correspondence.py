@@ -32,6 +32,15 @@ class Correspondence(object):
         return self.__source_paths
 
     @property
+    def sourcepaths_str(self) -> str:
+        return ','.join(['.'.join([os.path.splitext(srcpath[0])[0], srcpath[1]]) for srcpath in self.source_paths])
+        
+    @property
+    def targetpath_str(self) -> str:
+        return '.'.join(self.__target_path)
+        
+
+    @property
     def target_path(self) -> tuple:
         return self.__target_path
 

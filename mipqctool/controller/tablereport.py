@@ -10,6 +10,7 @@ import os
 import csv
 from datetime import datetime
 from pathlib import Path
+from collections import OrderedDict
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
@@ -75,7 +76,7 @@ class TableReport(object):
         # Calc which column number corresponds to which quantile
         self.__calc_columns_quantiles()
         # list to hold ColumnReport objects
-        self.__columnreports = []
+        self.__columnreports = OrderedDict()
 
         self.__total_rows = None
         self.__rows_only_id = None
@@ -144,14 +145,14 @@ class TableReport(object):
 
     def apply_corrections(self):
         """Applies the suggestions of invalid values to the dataset."""
-        for columnreport in self.__columnreports:
+        for name, columnreport in self.__columnreports.items():
             columnreport.apply_corrections()
         self.__collect_row_stats()
         self.__corrected = True
 
     def save_corrected(self, path):
         if self.__corrected:
-            list_new_values = (col.corrected_values for col in self.__columnreports)
+            list_new_values = (col.corrected_values for name, col in self.__columnreports.items())
             new_values = zip(*list_new_values)
             with open(path, 'w') as out:
                 csv_out = csv.writer(out, quoting=csv.QUOTE_ALL)
@@ -175,7 +176,7 @@ class TableReport(object):
         template = env.get_template(template_file)
         html_out = template.render(template_vars)
         docs.append(HTML(string=html_out).render(stylesheets=[css_path]))
-        for columnreport in self.__columnreports:
+        for name, columnreport in self.__columnreports.items():
             docs.append(HTML(string=columnreport.to_html()).render(stylesheets=[css_path]))
 
         all_pages = [p for doc in docs for p in doc.pages]
@@ -277,7 +278,7 @@ class TableReport(object):
         header_border = Border(left=Side(style='thick'), right=Side(style='thick'))
         center_alignment = Alignment(horizontal='center')                     
         start_col = 1
-        for colreport in self.__columnreports:
+        for name, colreport in self.__columnreports.items():
             end_col = start_col + 1
             ws4.column_dimensions[get_column_letter(start_col)].width = 15
             ws4.column_dimensions[get_column_letter(end_col)].width = 15
@@ -321,14 +322,14 @@ class TableReport(object):
                 raw_values = self.__table.column_values(qcfield.name)
                 column_report = ColumnReport(raw_values, qcfield, threshold=self.__threshold)
                 column_report.validate()
-                self.__columnreports.append(column_report)
+                self.__columnreports[qcfield.name] = column_report
             except QCToolException:
                 pass
 
     def __collect_row_stats(self):
         # get the rows with no id
         # get the report of id column
-        id_column_report = self.__columnreports[self.__id_index]
+        id_column_report = self.__columnreports.get(self.__id_column)
         rows_with_no_id = id_column_report.null_row_numbers
 
         # find rows with only id filled in and the total row number
@@ -339,7 +340,7 @@ class TableReport(object):
         rows_invalid = []
         rows_nulls = []
         # for each column
-        for report in self.__columnreports:
+        for name, report in self.__columnreports.items():
             rows_invalid.extend(list(report.invalid_rows))
             rows_nulls.extend(list(report.null_row_numbers))
             if report.qcfield.name == self.__id_column:
@@ -499,7 +500,7 @@ class TableReport(object):
 
     def __column_stats_2_df(self) -> pd.DataFrame:
         d = defaultdict(list)
-        for column in self.__columnreports:
+        for name, column in self.__columnreports.items():
             d['name'].append(column.qcfield.name)
             d['type'].append(column.miptype)
             d['filled %'].append(column.filledpercentage)

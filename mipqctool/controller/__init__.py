@@ -6,3 +6,4 @@ from .dcconnector import DcConnector
 from .cdescontroller import CDEsController
 from .correspondenceparser import CorrespondenceParser
 from .dockermipmap import DockerMipmap
+from .mipcdemapper import MipCDEMapper

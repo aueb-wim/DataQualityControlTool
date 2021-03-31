@@ -1,4 +1,4 @@
-
+from collections import OrderedDict
 from xml.etree.ElementTree import Element
 import xml.etree.ElementTree
 from xml.dom import minidom
@@ -19,7 +19,7 @@ class Mapping(object):
     def __init__(self, sourcedb, targetdb):
         self.__source = sourcedb
         self.__target = targetdb
-        self.__correspondences = {} # Dict: key:CDE code ->Value: correspondence
+        self.__correspondences = OrderedDict() # Dict: key:CDE code ->Value: correspondence
 
     @property
     def sourcedb(self):
