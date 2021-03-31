@@ -8,6 +8,7 @@ import json
 from mipqctool.model.mapping import Correspondence
 from mipqctool.config import LOGGER
 from mipqctool.controller import CorrespondenceParser as CP
+from mipqctool.exceptions import ExpressionError
 
 class guiCorr():
     """Whenever the New Button in prepro_guiNEW is pushed, a guiCorr object is created.
@@ -39,6 +40,9 @@ class guiCorr():
         self.master.title("Mapping #"+"#")
         self.master.resizable(False, False)
         self.master.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.parent.corr_add_btn.configure(state='disabled')
+        self.parent.corr_edit_bth.configure(state='disabled')
+        self.parent.corr_remove_btn.configure(state='disabled')
         self.__init()
         self.__packing()
         
@@ -52,7 +56,7 @@ class guiCorr():
         #self.columns_cbox = ttk.Combobox(self.master, values=self.csv_columns, width=20)
         self.tables_cbox = ttk.Combobox(self.main_frame, textvariable=self.selected_table)
         self.tables_cbox.bind('<<ComboboxSelected>>', self.on_select_table)
-        self.columns_cbox = ttk.Combobox(self.main_frame, values=['1','2'],
+        self.columns_cbox = ttk.Combobox(self.main_frame, values=self.parent.csv_file_headers ,
                                          textvariable=self.selected_column)
 
         self.functions_cbox = ttk.Combobox(self.main_frame, values=sorted(list(self.trFunctions.keys())), width=20)
@@ -89,8 +93,8 @@ class guiCorr():
     def add_column(self):
         temp = self.expressions_text.get(1.0, tk.END)
         self.expressions_text.delete(1.0, tk.END)
-        if self.tables_cbox.current() > -1 and self.columns_cbox.current() > -1:
-            temp = temp + '.'.join(self.tables_cbox.get(), self.columns_cbox.get())
+        if self.columns_cbox.current() > -1:
+            temp = temp + '.'.join([self.parent.csv_name.replace(".csv",""), self.columns_cbox.get()])
         else:
             LOGGER.warning("Table or header not selected.")
         self.expressions_text.insert(tk.END, temp)
@@ -110,19 +114,29 @@ class guiCorr():
             self.expression = None
             pass"""
         #call the correspondence parser..!
-        self.sourceCols, self.functions = CP.separateSColumnsFunctions(self.expression, self.trFunctions)
-        #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace....
-        self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
-        self.parent.newButton.configure(state="active")
+        try:
+            CP.extractSColumnsFunctions(self.expression, self.trFunctions)#
+        except ExpressionError:
+            LOGGER.info("Need to provide a valid correspondence inorder to save.")
+            return
+        #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace.... <-- UPDATE: exei hdh ginei to miso
+        #self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
+        self.parent.corr_add_btn.configure(state="active")
+        self.parent.corr_edit_bth.configure(state="active")
+        self.parent.corr_remove_btn.configure(state="active")
         self.master.destroy()
-        LOGGER.info('*** Just created Mapping Correspondence #%d for CDE:%s ***', self.i_cor, self.corrs[self.i_cor-1])
+        #LOGGER.info('*** Just created Mapping Correspondence #%d for CDE:%s ***', self.i_cor, self.corrs[self.i_cor-1])
 
     def cancel(self):
-        self.parent.newCButton.configure(state="active")
+        self.parent.corr_add_btn.configure(state="active")
+        self.parent.corr_edit_bth.configure(state="active")
+        self.parent.corr_remove_btn.configure(state="active")
         self.master.destroy()
 
     def on_close(self):
-        self.parent.deiconfy()
+        self.parent.corr_add_btn.configure(state="active")
+        self.parent.corr_edit_bth.configure(state="active")
+        self.parent.corr_remove_btn.configure(state="active")
         self.master.destroy()
 
     def on_select_table(self):

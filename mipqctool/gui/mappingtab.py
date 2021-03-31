@@ -165,13 +165,14 @@ class MappingTab(tk.Frame):
                                                            ('all files', '*.*')))
         if filepath:
             csv_name = os.path.basename(filepath)
-            self.cdemapper = MipCDEMapper()
+            #self.cdemapper = MipCDEMapper()
             with open(filepath, 'r') as csvfile:
                 data = csv.DictReader(csvfile)
                 self.csv_file_headers = data.fieldnames
+                self.csv_name = csv_name
             self.csv_file_label.config(text=csv_name)
             self.csv_file_path = filepath
-                #self.p_csv_headers_cbox.config(values=data.fieldnames)
+                
             
     def suggest_corresponances(self):
         pass

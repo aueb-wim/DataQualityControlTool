@@ -8,7 +8,7 @@ from mipqctool.exceptions import MappingError
 class Mapping(object):
     """Class for creating a mapping task xml for mipmap engine.
     This Class works for the case we have just one csv file as target db. 
-    The corrispondences are stored in a dict with the target column (cde in this case)
+    The correspondences are stored in a dict with the target column (cde in this case)
     as a key. Cases that we have multiple files in target or dublications, or joined tables 
     are not covered. 
     

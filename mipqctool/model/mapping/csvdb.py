@@ -3,11 +3,12 @@ import os
 from xml.etree.ElementTree import Element
 from mipqctool.model.qcfrictionless import QcTable
 from mipqctool.exceptions import MappingValidationError
+from .datadb import DataDB
 
-class CsvDB(object):
+class CsvDB(DataDB):
     def __init__(self, dbname, filepaths, schematype='source'):
         """"
-        Arguements: 
+        Arguments:
         :param dbname: tha name of the database
         :param tables: list of QcTable objects
         :param schematype: 'source' or 'target'

@@ -36,3 +36,11 @@ class MappingValidationError(QCToolException):
 class MappingError(QCToolException):
     pass
 
+class FunctionNameError(QCToolException):
+    pass
+
+class ArgsFunctionError(QCToolException):
+    pass
+
+class ExpressionError(QCToolException):
+    pass
