@@ -10,11 +10,11 @@ from mipqctool.config import LOGGER, DEFAULT_MISSING_VALUES
 
 
 class FrictionlessFromDC(object):
-    """This class is made for parsing a DC JSON metadata file and creating
+    """This class is made for parsing a DC JSON metadata schema and creating
     its corresponding Frictionless descriptor dictionary.
     
     Arguments:
-    :param json_path: (str) the path of a datacatalue produced json file
+    :param dcjson: (dictionary) Data Catalogue specs schema 
 
     """
     __qcdescriptor = None

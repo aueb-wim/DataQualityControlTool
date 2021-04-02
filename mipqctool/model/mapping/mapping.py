@@ -30,14 +30,17 @@ class Mapping(object):
         return self.__target
 
     @property
+    def correspondences(self):
+        return self.__correspondences
+
+    @property
     def xml_string(self):
         data = self.__create_xml()
         initial_str = xml.etree.ElementTree.tostring(data)
         return minidom.parseString(initial_str).toprettyxml(indent="   ")
 
-
-    def add_correspondence(self, source_paths, target_path, expression):
-        """
+    def add_corr(self, source_paths, target_path, expression):
+        """Add a new mapping correspondence.
         Arguments:
         :source_paths: list of tuples (table_name, column_name, dublication)
                    dublication number could be used in future development
@@ -54,7 +57,27 @@ class Mapping(object):
         else:
             self.__correspondences[cde_name] = corr
 
-    def del_correspondence(self, cde_name):
+    def update_corr(self, source_paths, target_path, expression):
+        """Updates a current corresponance. 
+        Arguments:
+        :source_paths: list of tuples (table_name, column_name, dublication)
+                   dublication number could be used in future development
+                   if there is no duplication then use None as third element
+        :target_path:  tuple with the CDE table and name variable and dublication
+        :expression:   string with expression given by the user, the paths are given
+                       in this string as <table>.<column>
+        """
+        corr = Correspondence(self, source_paths, target_path, expression)
+        cde_name = target_path[1]
+        if cde_name not in self.__correspondences.keys():
+            msg = 'There is no a mapping correspondance for {} cde.'
+            raise MappingError(msg)
+        else:
+            self.__correspondences[cde_name] = corr
+
+
+
+    def remove_corr(self, cde_name):
         self.__correspondences.pop(cde_name, None) #throughs KeyError exception
 
     # examines if there already exists a correspondence for this CDE

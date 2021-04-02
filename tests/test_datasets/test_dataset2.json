@@ -5,6 +5,7 @@
     "fields": [
         {
             "format": "default",
+<<<<<<< Updated upstream
             "name": "subjectcode",
             "type": "string",
             "MIPType": "text"
@@ -17,6 +18,24 @@
             "MIPType": "integer"
         },
         {
+=======
+            "MIPType": "text",
+            "type": "string",
+            "name": "subjectcode"
+        },
+        {
+            "format": "default",
+            "MIPType": "integer",
+            "bareNumber": true,
+            "type": "integer",
+            "name": "subjectageyears"
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "gender",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "F",
@@ -29,6 +48,7 @@
             "MIPType": "nominal"
         },
         {
+<<<<<<< Updated upstream
             "decimalChar": ".",
             "bareNumber": true,
             "format": "default",
@@ -146,16 +166,148 @@
             "format": "default",
             "MIPType": "numerical",
             "type": "number",
+=======
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "_3rdventricle"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "_4thventricle"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "rightaccumbensarea"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "leftaccumbensarea"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "rightamygdala"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "leftamygdala"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "brainstem"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "rightstgsuperiortemporalgyrus"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "leftstgsuperiortemporalgyrus"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "righttmptemporalpole"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "lefttmptemporalpole"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "righttrifgtriangularpartoftheinferiorfrontalgyrus"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "lefttrifgtriangularpartoftheinferiorfrontalgyrus"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+            "name": "rightttgtransversetemporalgyrus"
+        },
+        {
+            "format": "default",
+            "type": "number",
+            "decimalChar": ".",
+            "MIPType": "numerical",
+            "bareNumber": true,
+>>>>>>> Stashed changes
             "name": "leftttgtransversetemporalgyrus"
         },
         {
             "format": "default",
+<<<<<<< Updated upstream
             "name": "minimentalstate",
             "bareNumber": true,
             "type": "integer",
             "MIPType": "integer"
         },
         {
+=======
+            "MIPType": "integer",
+            "bareNumber": true,
+            "type": "integer",
+            "name": "minimentalstate"
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "agegroup",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "+80y",
@@ -164,6 +316,7 @@
                     "60-69y",
                     "70-79y"
                 ]
+<<<<<<< Updated upstream
             },
             "format": "default",
             "name": "agegroup",
@@ -171,12 +324,22 @@
             "MIPType": "nominal"
         },
         {
+=======
+            }
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "edsdcategory",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "AD",
                     "CN",
                     "MCI"
                 ]
+<<<<<<< Updated upstream
             },
             "format": "default",
             "name": "edsdcategory",
@@ -184,12 +347,22 @@
             "MIPType": "nominal"
         },
         {
+=======
+            }
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "alzheimerbroadcategory",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "AD",
                     "CN",
                     "MCI"
                 ]
+<<<<<<< Updated upstream
             },
             "format": "default",
             "name": "alzheimerbroadcategory",
@@ -197,11 +370,21 @@
             "MIPType": "nominal"
         },
         {
+=======
+            }
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "parkinsonbroadcategory",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "CN",
                     "Other"
                 ]
+<<<<<<< Updated upstream
             },
             "format": "default",
             "name": "parkinsonbroadcategory",
@@ -209,12 +392,22 @@
             "MIPType": "nominal"
         },
         {
+=======
+            }
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "neurodegenerativescategories",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "AD",
                     "CN",
                     "MCI"
                 ]
+<<<<<<< Updated upstream
             },
             "format": "default",
             "name": "neurodegenerativescategories",
@@ -222,6 +415,15 @@
             "MIPType": "nominal"
         },
         {
+=======
+            }
+        },
+        {
+            "format": "default",
+            "MIPType": "nominal",
+            "type": "string",
+            "name": "dataset",
+>>>>>>> Stashed changes
             "constraints": {
                 "enum": [
                     "edsd"
@@ -234,9 +436,15 @@
         },
         {
             "format": "default",
+<<<<<<< Updated upstream
             "name": "empty",
             "type": "string",
             "MIPType": "text"
+=======
+            "MIPType": "text",
+            "type": "string",
+            "name": "empty"
+>>>>>>> Stashed changes
         }
     ]
 }

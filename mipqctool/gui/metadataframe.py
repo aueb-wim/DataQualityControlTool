@@ -182,21 +182,6 @@ class MetadataFrame(tk.Frame):
             self.dc_json = self.dc.getjson(self.selected_pathology.get(),
                                            self.selected_version.get())
 
-    def get_from_disk_json(self):
-        # check if we get the metadata schema from disc
-        if self.from_disk.get():
-            if self.metafilepath:
-                with open(self.metafilepath) as json_file:
-                    dict_schema = json.load(json_file)
-                return dict_schema
-            else:
-                return None
-        else:
-            return None
-
-        
-
-
     def get_all_cdes(self):
         LOGGER.info('Trying to retrive cde metadata from Data Cataloge. Using DC url: {}'.format(DC_DOMAIN))
         all_pathologies_url = ''.join([DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES])
