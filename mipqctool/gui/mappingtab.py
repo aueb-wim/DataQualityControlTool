@@ -215,9 +215,7 @@ class MappingTab(tk.Frame):
                                      'Could not find the CDE dictionary file')
 
     def add_corr(self):
-        #cor_gui = guiCorr(self)
-
-        pass
+        cor_gui = guiCorr(self)
 
     def edit_corr(self):
         pass
