@@ -56,7 +56,7 @@ class MipCDEMapper(object):
         self.__srctbl.infer(limit=sample_rows, maxlevels=maxlevels)
         # create table report for the source file
         self.__tblreport = TableReport(self.__srctbl)
-        self.__src_headers = self.__srctbl.headers
+        self.__src_headers = self.__srctbl.headers4mipmap
         # get the cde headers
         self.__cde_headers = cdescontroller.cde_headers
         self.__cde_mapped = self.__mapping.correspondences.keys()
@@ -93,10 +93,12 @@ class MipCDEMapper(object):
         cde_sugg_dict = {}
         source_table = self.__srctbl.filename
         target_table = self.__target_filename
+        source_raw_headers = self.__mapping.sourcedb.get_raw_table_headers(source_table)
         for name, columnreport in self.__tblreport.columnreports.items():
             cde = cdedict.suggest_cde(columnreport, threshold=threshold)
+            # check if a cde mapping already exist
             if cde and cde.code not in cde_sugg_dict.keys():
-                cde_sugg_dict[cde.code] = columnreport.name
+                cde_sugg_dict[cde.code] = source_raw_headers[columnreport.name]
         for cde, source_var in cde_sugg_dict.items():
             source_paths = [(source_table, source_var, None)]
             target_path = (target_table, cde, None)
@@ -134,6 +136,6 @@ class MipCDEMapper(object):
             source_paths = self.__mapping.correspondences[cde].source_paths
             pathstring = ','.join([path[1] for path in source_paths])
             cde_corrs_sources[cde] = pathstring
-        
+
         self.__cde_corrs_sources = cde_corrs_sources
         self.__cde_not_mapped = cde_not_mapped

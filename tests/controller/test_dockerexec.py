@@ -14,10 +14,10 @@ FILE_PATH = os.path.abspath(os.path.dirname(__file__))
 THISPATH = Path(FILE_PATH)
 PARENTPATH = str(THISPATH.parent)
 
-MAPPING1 = os.path.join(PARENTPATH, 'test_mapping', 'mapping')
-SOURCE1 = os.path.join(PARENTPATH, 'test_mapping', 'source')
-OUTPUT1 = os.path.join(PARENTPATH, 'test_mapping', 'output')
-TARGET1 = os.path.join(PARENTPATH, 'test_mapping', 'target')
+MAPPING1 = os.path.join(PARENTPATH, 'test_mappings', 'mapping')
+SOURCE1 = os.path.join(PARENTPATH, 'test_mappings', 'source')
+OUTPUT1 = os.path.join(PARENTPATH, 'test_mappings', 'output')
+TARGET1 = os.path.join(PARENTPATH, 'test_mappings', 'target')
 
 
 @pytest.mark.parametrize('name, port, password, mapping, source, target, output', [

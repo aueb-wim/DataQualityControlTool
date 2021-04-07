@@ -18,7 +18,7 @@ class CsvDB(DataDB):
         self.__schematype = schematype
 
         tables = [QcTable(fpath, schema=None) for fpath in filepaths]
-  
+
         # store QcTable objects in a dictionary with filename as key
         self.__tables = {table.filename: table for table in tables}
         # dublications
@@ -49,7 +49,9 @@ class CsvDB(DataDB):
 
     def get_table_headers(self, name) -> list:
         """
-        Returns the headers of table given its name.
+        Returns the headers of the given table 
+        in mipmap aproprieate format. In this format spaces and 
+        the special characters like #$( etc are replaces by underscore.
         Arguments:
         :param name: string with the filename of the table
                      in the case where the table corresponds to 
@@ -57,9 +59,24 @@ class CsvDB(DataDB):
         """
         table = self.__tables.get(name)
         if table:
-            return table.actual_headers
+            return table.headers4mipmap
         else:
             return None
+
+    def get_raw_table_headers(self, name) -> dict:
+        """Returns an dictionary with the original name as key
+        and the mipmap-transformed header as value.
+        Arguments:
+        :param name: string with the filename of the table
+                     in the case where the table corresponds to 
+                     a csv file
+        """
+        table = self.__tables.get(name)
+        if table:
+            raw_headers = table.actual_headers
+            mipmap_headers = table.headers4mipmap
+            return dict(zip(raw_headers, mipmap_headers))
+
 
     def columnforxml(self, name, column, dublication=None) -> str:
         """

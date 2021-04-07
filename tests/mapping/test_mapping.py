@@ -21,8 +21,6 @@ def test_xml_creation():
     sourcepaths= [('nominal.csv', 'Patient_id', None), ('nominal.csv', 'Variable_1', None)]
     target_path = ('simple.csv', 'id', None)
     expression = '(nominal.Patient_id + nominal.Variable_1)/2'
-    test.add_correspondence(sourcepaths, target_path, expression)
+    test.add_corr(sourcepaths, target_path, expression)
     with open('tests/test_xml_files/testmapping.xml', 'w') as xmlfile:
         xmlfile.write(test.xml_string)
-
-

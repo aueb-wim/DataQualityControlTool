@@ -13,11 +13,11 @@ JSON_PATH1 = 'tests/test_datasets/simple_dc_cdes.json'
 JSON_PATH2 = 'tests/test_datasets/dementia_cdes_v3.json'
 
 CDES1 = ['dataset', 'av45' , 'fdg', 'pib','minimentalstate', 'montrealcognitiveassessment', 
-         'updrshy', 'updrstotal', 'agegroup', 'gender', 'handedness' , 'subjectage', 'subjectageyears']
+         'updrshy', 'updrstotal', 'agegroup', 'gender', 'handedness', 'subjectage', 'subjectageyears']
 
 
 @pytest.mark.parametrize('jsonpath, csvpath', [
-    (JSON_PATH1, 'tests/test_datasets/')
+    (JSON_PATH1, 'tests/test_datasets/cde_headers_only.csv')
 ])
 def test_save_csv_headers_only(jsonpath, csvpath):
     test = CDEsController.from_disc(jsonpath)
@@ -29,4 +29,4 @@ def test_save_csv_headers_only(jsonpath, csvpath):
 ])
 def test_cde_names(jsonpath, result):
     test = CDEsController.from_disc(jsonpath)
-    assert test.cde_names == result
+    assert set(test.cde_headers) == set(result)

@@ -3,12 +3,19 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
 import pytest
 import csv
+from pathlib import Path
 from unittest.mock import Mock, patch
 from mipqctool.model.qcfrictionless import QcTable
 from mipqctool.exceptions import QCToolException
 
+TESTS_BASE_DIR = Path(__file__).resolve().parent.parent
+
+EMPTY_FILEPATH = os.path.join(str(TESTS_BASE_DIR), 'test_datasets', 'empty.csv')
+SIMPLE_FILEPATH = os.path.join(str(TESTS_BASE_DIR), 'test_datasets', 'simple.csv')
+TEST_DATASET_FILEPATH = os.path.join(str(TESTS_BASE_DIR), 'test_datasets', 'test_dataset.csv')
 
 DATA_MIN = [('key', 'value'), ('one', '1'), ('two', '2')]
 SCHEMA_MIN = {'fields': [{'name': 'key', },
@@ -32,7 +39,7 @@ SCHEMA_SIMPLE = {'fields': [
 
 
 def test_infer_schema_empty_file():
-    s = QcTable('tests/test_datasets/empty.csv', schema=None)
+    s = QcTable(EMPTY_FILEPATH, schema=None)
     d = s.infer()
     assert d == {
         'fields': [],
@@ -41,7 +48,7 @@ def test_infer_schema_empty_file():
 
 
 @pytest.mark.parametrize('path, schema', [
-    ('tests/test_datasets/simple.csv', SCHEMA_SIMPLE),
+    (SIMPLE_FILEPATH, SCHEMA_SIMPLE),
     ])
 def test_schema_infer_tabulator(path, schema):
     table = QcTable(path, schema=None)
@@ -63,13 +70,13 @@ def test_schema_infer_storage(import_module, apply_defaults):
 
 
 @pytest.mark.parametrize('path, column_name', [
-    ('tests/test_datasets/simple.csv', 'name'),
-    ('tests/test_datasets/simple.csv', 'id')
+    (SIMPLE_FILEPATH, 'name'),
+    (SIMPLE_FILEPATH, 'id')
 ])
 def test_column_values(path, column_name):
     with open(path) as csvfile:
         reader = csv.reader(csvfile)
-        #read header
+        # read header
         headers = next(reader)
         index = headers.index(column_name)
         result = [row[index] for row in reader]
@@ -79,8 +86,8 @@ def test_column_values(path, column_name):
 
 
 @pytest.mark.parametrize('path, column_name', [
-    ('tests/test_datasets/simple.csv', 'non_exist_column'),
-    ('tests/test_datasets/simple.csv', 'on exist column with spaces')
+    (SIMPLE_FILEPATH, 'non_exist_column'),
+    (SIMPLE_FILEPATH, 'on exist column with spaces')
 ])
 def test_column_values_exception(path, column_name):
     table = QcTable(path, schema=None)
@@ -90,11 +97,11 @@ def test_column_values_exception(path, column_name):
 
 @pytest.mark.parametrize('path, result', [
     (
-        'tests/test_datasets/simple.csv',
+        SIMPLE_FILEPATH,
         ['id', 'name', 'diagnosis']
     ),
     (
-        'tests/test_datasets/test_dataset.csv',
+        TEST_DATASET_FILEPATH,
         ['Patient_id', 'Diagnosis Categories', 'Gender_num', 'Date_visit']
     ),
 
@@ -102,3 +109,22 @@ def test_column_values_exception(path, column_name):
 def test_actual_headers(path, result):
     table = QcTable(path, schema=None)
     assert table.actual_headers == result
+
+
+MIPMAPCOLUMNS1 = [
+    'col_1', 'col2_', 'col_3',
+    'col4_', 'col5_', 'col6_', 'col7_',
+    'col8_', 'col9_',  'col10_',
+    'col11_', 'col12_', 'col13_32_',
+    'col14_cd_', 'col15_', 'col16_',
+    'col17_23_', 'col18_', 'col19_',
+    'col20_', 'col21_', 'col_22'
+]
+SPECIAL_CHAR_FILEPATH = os.path.join(str(TESTS_BASE_DIR), 'test_datasets', 'columns_with_special_char.csv')
+
+@pytest.mark.parametrize('filepath, result', [
+    (SPECIAL_CHAR_FILEPATH, MIPMAPCOLUMNS1)
+])
+def test_mipmapheaders(filepath, result):
+    test = QcTable(filepath, schema=None)
+    assert test.headers4mipmap == result

@@ -7,7 +7,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import re
 from csv import DictReader
+from collections import OrderedDict
 
 from tableschema import Table
 
@@ -22,6 +24,7 @@ class QcTable(Table):
         super().__init__(source, **kargs)
         self.__source = source
         self.__filename = os.path.basename(source)
+        self.__headers_4_mipmap = OrderedDict()
         # if csv file get headers (tabulator aka csv file)
         if not self._Table__storage:
             with open(source, 'r') as csv_file:
@@ -29,6 +32,9 @@ class QcTable(Table):
                 self.__actual_headers = reader.fieldnames
         else:
             self.__actual_headers = None
+
+        if self.__actual_headers:
+            self.__create_headers_4_mipmap()
 
         # QcSchema
         if isinstance(schema, QcSchema):
@@ -62,6 +68,11 @@ class QcTable(Table):
     @property
     def actual_headers(self):
         return self.__actual_headers
+
+    @property
+    def headers4mipmap(self) -> list:
+        """Returns an ordered dict {original header: mipmap header}."""
+        return list(self.__headers_4_mipmap.values())
 
     def infer(self, limit=100, maxlevels=10, confidence=0.75):
         """Tries to infer the table schema only for csv file.
@@ -102,3 +113,8 @@ class QcTable(Table):
             raise QCToolException('"{}" is not a column name among headers.'.format(name))
 
         return [row[column_index] for row in self.raw_rows]
+
+    def __create_headers_4_mipmap(self):
+        regexp = r'[`~!@#$%^*&\-+=\s\{\}\[\]\<\>\./\\:;?\(\)\']'
+        for header in self.actual_headers:
+            self.__headers_4_mipmap[header] = re.sub(regexp, '_', header)

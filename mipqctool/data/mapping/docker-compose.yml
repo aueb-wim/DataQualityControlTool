@@ -34,11 +34,11 @@ services:
     image: "hbpmip/mipmap"
     container_name: "mipmap"
     volumes:
-      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mapping/mapping2:/opt/map:rw
+      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mappings/mapping3:/opt/map:rw
       - /home/iosif/Documents/Github_repos/DataQualityControlTool/mipqctool/data/mapping/script:/opt/script:rw
-      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mapping/source2:/opt/source:rw
-      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mapping/output2:/output:rw
-      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mapping/target2:/opt/target:rw
+      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mappings/source3:/opt/source:rw
+      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mappings/output3:/output:rw
+      - /home/iosif/Documents/Github_repos/DataQualityControlTool/tests/test_mappings/target3:/opt/target:rw
       - /home/iosif/Documents/Github_repos/DataQualityControlTool/mipqctool/data/mapping/dbproperties:/opt/postgresdb.properties:rw
 
     external_links:
