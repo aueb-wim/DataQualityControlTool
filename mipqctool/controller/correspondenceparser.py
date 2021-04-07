@@ -78,8 +78,8 @@ class CorrespondenceParser():
     def findInDict(expression, functionsDict):
         for key, value in functionsDict.items():
             if expression == value.split("(")[0]:
-                return key;
-        return None;
+                return key
+        return None
 
    
     ### ADDED THIS functionality of parsing a column to model/datadb.py

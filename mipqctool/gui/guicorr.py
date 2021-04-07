@@ -19,13 +19,9 @@ class guiCorr():
     :param csv_columns: A list with the headers of the dataset CSV
     :param cdes_d: 
     :param cdes_l:"""
-    def __init__(self, parent):
-        #if not cdes_d or not cdes_l:#if the CDE metadata has not been loaded...
-        #    LOGGER.info("Need to load a CDEs metadata file before start defining mapping correspondences!")
-        #    return
+    def __init__(self, parent, corr=None):
         self.parent = parent
-        #self.corrs = c
-        #self.i_cor = i
+
         self.selected_table = tk.StringVar()
         self.selected_column = tk.StringVar()
         self.trFunctions = parent.trFunctions #Dict: key:Label->Value:Expression
@@ -115,16 +111,15 @@ class guiCorr():
             pass"""
         #call the correspondence parser..!
         try:
+            # check the expression
             CP.extractSColumnsFunctions(self.expression, self.trFunctions)#
+            self.parent.cdemapper.add_corr()
         except ExpressionError:
-            LOGGER.info("Need to provide a valid correspondence inorder to save.")
+            LOGGER.info("Need to provide a valid correspondence in order to save.")
             return
         #gia ka8e column sto self.sourceCols pou synantatai sto self.expression, kane replace.... <-- UPDATE: exei hdh ginei to miso
         #self.corrs.append(Correspondence(corParser.sourceCols, self.cdes_cbox.get(), self.expression))#self.corrs is a reference to the original prepro_guiNEW's corrs list
-        self.parent.corr_add_btn.configure(state="active")
-        self.parent.corr_edit_bth.configure(state="active")
-        self.parent.corr_remove_btn.configure(state="active")
-        self.master.destroy()
+        self.on_close()
         #LOGGER.info('*** Just created Mapping Correspondence #%d for CDE:%s ***', self.i_cor, self.corrs[self.i_cor-1])
 
     def cancel(self):

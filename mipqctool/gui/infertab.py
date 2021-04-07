@@ -5,7 +5,6 @@ from tkinter import ttk
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from mipqctool.model.qcfrictionless import CdeDict
 from mipqctool.controller import InferSchema
 from mipqctool.gui.inferoptionsframe import InferOptionsFrame
 from mipqctool.exceptions import TableReportError

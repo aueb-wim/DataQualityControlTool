@@ -15,7 +15,7 @@ QC_FROM_CDE_DATE = ['date']
 class CdeDict(object):
     """Class to store information about cde variables"""
     def __init__(self, filepath):
-        self.__cdes = []
+        self.__cdes = {}
         wb = load_workbook(filepath)
         ws = wb.active
         for row in ws.iter_rows(min_row=1, max_row=1):
@@ -32,7 +32,7 @@ class CdeDict(object):
             cdevar = CdeVariable(code=code, cdetype=mip_type, conceptpath=conceptpath,
                                  mipvalues=mip_values, variable_lookup=variable_lookup,
                                  enum_lookup=enum_lookup)
-            self.__cdes.append(cdevar)
+            self.__cdes[cdevar.code] = cdevar
 
     @property
     def total_cdes(self):
@@ -49,7 +49,7 @@ class CdeDict(object):
         mip_type = columnreport.miptype
         LOGGER.debug('The incoming column name is: {}'.format(name))
         # select cdes with tha same type and calculate similarity
-        canditates = [cde for cde in self.__cdes if cde.miptype == mip_type]
+        canditates = [cde for cde in self.__cdes.values() if cde.miptype == mip_type]
         LOGGER.debug('Number of cdes with miptype {} is: {}'.format(mip_type, len(canditates)))
         if canditates:
             canditates.sort(key=lambda x: x.similarity(name, val_range), reverse=True)

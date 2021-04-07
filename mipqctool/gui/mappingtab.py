@@ -31,6 +31,7 @@ class MappingTab(tk.Frame):
         self.__loadtrfunctions()
         self.csv_file_path = None
         self.csv_file_headers = []#List of the CSV headers
+        self.csv_name = None
         self.outputfolder = None
         self.__init()
         self.__packing()
@@ -192,6 +193,7 @@ class MappingTab(tk.Frame):
                 self.csv_file_headers = self.cdemapper.source_headers
                 self.csv_file_label.config(text=csv_name)
                 self.csv_file_path = filepath
+                self.csv_name = csv_name
                 if self.infer_opt_frame.cde_dict:
                     self.suggest_btn.config(state='active')
 
