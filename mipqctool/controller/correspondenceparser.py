@@ -2,7 +2,7 @@
 import os
 import re
 from mipqctool.config import LOGGER
-from mipqctool.exceptions import ExpressionError, FunctionNameError, ArgsFunctionError
+from mipqctool.exceptions import ExpressionError, FunctionNameError, ArgsFunctionError, ColumnNameError
 
 class CorrespondenceParser():
  
@@ -34,18 +34,21 @@ class CorrespondenceParser():
             raise SyntaxError("Syntax error in the given expression: Parentheses issue. Not all parantheses have been closed.")
 
     #Separates Source Columns and Functions. Returns a tuple with the Source Columns list and the Functions list
-    #parameters: the expression, the dict with the functions from the drop down list
+    #parameters: the expression, the dict with the functions from the drop down list and (NEW, Apri-21) the dict with the columns from the drop down list
     @staticmethod
-    def extractSColumnsFunctions(expr, ddlFunctions):
+    def extractSColumnsFunctions(expr, ddlFunctions, ddlColumns):
         try:
             CorrespondenceParser.firstCheckParentheses(expr)#If it fails it will raise an Exception
         except SyntaxError as se:
             LOGGER.info(str(se))
             raise ExpressionError(str(se))
-        columns = []
-        functions = []
         try:
-            CorrespondenceParser.extractSColumnsFunctionsR(expr, columns, functions, ddlFunctions, expr)
+            columns = CorrespondenceParser.extractColumnsList(expr, ddlColumns)
+        except ColumnNameError as cne:
+            LOGGER.info(str(cne))
+            raise ExpressionError(str(cne))
+        try:
+            CorrespondenceParser.extractSColumnsFunctionsR(expr, ddlFunctions, expr)
         except FunctionNameError as fne:
             LOGGER.info(str(fne))
             raise ExpressionError(str(fne))
@@ -53,9 +56,31 @@ class CorrespondenceParser():
             LOGGER.info(str(afe))
             raise ExpressionError(str(afe))
         #return columns, functions
+        return columns
+
+    # Checks whether the columns written in the expression actually exist.
+    # If so, returns a list with the columns used in the expression. The actual code (expressions) of the columns.
+    @staticmethod
+    def extractColumnsList(expr, ddlColumns):
+        columns = []
+        matches = re.findall(CorrespondenceParser.TABLE_DOT_COL_REG, expr, flags=re.UNICODE)
+        for match in matches:
+            col = match[1]
+            if not CorrespondenceParser.findInList(col, ddlColumns):
+                raise ColumnNameError("There is no column named '"+col+"'...")
+            columns.append(col)
+        return list(set(columns))#return distinct values via turning it into a set...
 
     @staticmethod
-    def extractSColumnsFunctionsR(expr, columns, functions, ddlFunctions, wholeExpr):
+    def findInList(expression, columnsList):
+        for col in columnsList:
+            if expression == col:
+                return True
+        return False
+
+    #Checks the syntax as far as the functions are concerned
+    @staticmethod
+    def extractSColumnsFunctionsR(expr, ddlFunctions, wholeExpr):    
         match = re.match(CorrespondenceParser.PARENTH_REG, expr, flags=re.UNICODE)
         if match:
             label_name = match.group(1)
@@ -68,10 +93,10 @@ class CorrespondenceParser():
             if args.count(',') < countCommasFromDDL:
                 raise ArgsFunctionError("Function '"+label_name+"' does not have enough arguments..!")
             #expression_name = ddlFunctions.get(label_name)
-            functions.add(label_name)
+            #functions.add(label_name)
             for arg in args:
-                self.extractSColumnsFunctionsR(arg, columns, functions, ddlFunctions, wholeExpr)
-            self.extractSColumnsFunctionsR(wholeExpr.split(arg,1)[1], columns, functions, ddlFunctions, wholeExpr)
+                CorrespondenceParser.extractSColumnsFunctionsR(arg, ddlFunctions, wholeExpr)
+            CorrespondenceParser.extractSColumnsFunctionsR(wholeExpr.split(arg,1)[1], ddlFunctions, wholeExpr)
 
     #Auxiliary function that searches in the Functions Dict to see if there is a function with that expression or not...
     @staticmethod

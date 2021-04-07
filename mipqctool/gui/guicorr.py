@@ -87,20 +87,18 @@ class guiCorr():
         #self.harm_subframe_exp.grid(row=2, column=6)
 
     def add_column(self):
-        temp = self.expressions_text.get(1.0, tk.END)
-        self.expressions_text.delete(1.0, tk.END)
+        temp = ''
         if self.columns_cbox.current() > -1:
-            temp = temp + '.'.join([self.parent.csv_name.replace(".csv",""), self.columns_cbox.get()])
+            temp = self.parent.csv_name.replace(".csv","")+ '.' + self.columns_cbox.get()
         else:
             LOGGER.warning("Table or header not selected.")
-        self.expressions_text.insert(tk.END, temp)
+        self.expressions_text.insert(tk.INSERT, temp)
 
     def add_function(self):
-        temp = self.expressions_text.get(1.0, tk.END)
-        self.expressions_text.delete(1.0, tk.END)
+        temp = ''
         #print('Add in Text Box: ', self.functions_cbox.get())
-        temp = temp + self.trFunctions[self.functions_cbox.get()]
-        self.expressions_text.insert(tk.END, temp)
+        temp = self.trFunctions[self.functions_cbox.get()]
+        self.expressions_text.insert(tk.INSERT, temp)
     
     def save(self):
         #try:
@@ -112,8 +110,8 @@ class guiCorr():
         #call the correspondence parser..!
         try:
             # check the expression
-            CP.extractSColumnsFunctions(self.expression, self.trFunctions)#
-            self.parent.cdemapper.add_corr()
+            columnsUsed = CP.extractSColumnsFunctions(self.expression, self.trFunctions, self.parent.csv_file_headers)#
+            print('[%s]' % ', '.join(map(str, columnsUsed)))
         except ExpressionError:
             LOGGER.info("Need to provide a valid correspondence in order to save.")
             return

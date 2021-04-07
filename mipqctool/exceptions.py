@@ -44,3 +44,6 @@ class ArgsFunctionError(QCToolException):
 
 class ExpressionError(QCToolException):
     pass
+
+class ColumnNameError(QCToolException):
+    pass
