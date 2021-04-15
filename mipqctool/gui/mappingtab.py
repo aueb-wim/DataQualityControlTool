@@ -61,31 +61,39 @@ class MappingTab(tk.Frame):
         self.suggest_btn = tk.Button(self.csv_frame, text='Suggest CDE correspondences',
                                      state='disabled', command=self.suggest_corrs)
 
-        self.corr_label1 = tk.Label(self.harm_labelframe, text='Correspondences')
+        self.corr_label = tk.Label(self.harm_labelframe, text='Correspondences')
 
         # correspondances subframe
         self.corr_frame = tk.Frame(self.harm_labelframe)
-        self.corr_scollbar = tk.Scrollbar(self.corr_frame)
+        self.corr_scrollbar = tk.Scrollbar(self.corr_frame)
         self.corr_subframe1 = tk.Frame(self.corr_frame)
         self.corr_subframe2 = tk.Frame(self.corr_frame)
+        self.corr_label1 = tk.Label(self.corr_subframe1, text='Source Columns')
+        self.corr_label2 = tk.Label(self.corr_subframe2, text='CDE')
         self.corr_horiz_scrollbar1 = tk.Scrollbar(self.corr_subframe1, orient='horizontal')
         self.corr_horiz_scrollbar2 = tk.Scrollbar(self.corr_subframe2, orient='horizontal')
         self.corr_listbox1 = tk.Listbox(self.corr_subframe1,
                                         xscrollcommand=self.corr_horiz_scrollbar1.set,
-                                        yscrollcommand=self.corr_scollbar.set,
+                                        yscrollcommand=self.corr_scrollbar.set,
                                         width=35)
         self.corr_listbox1.bind('<<ListboxSelect>>', self.on_select_corr1)
         self.corr_listbox2 = tk.Listbox(self.corr_subframe2,
-                                        xscrollcommand=self.corr_horiz_scrollbar2,
-                                        yscrollcommand=self.corr_scollbar.set)
+                                        xscrollcommand=self.corr_horiz_scrollbar2.set,
+                                        yscrollcommand=self.corr_scrollbar.set)
+        self.corr_listbox2.bind('<<ListboxSelect>>', self.on_select_corr2)
 
+        self.corr_horiz_scrollbar1.config(command=self.corr_listbox1.xview)
+        self.corr_horiz_scrollbar2.config(command=self.corr_listbox2.xview)
+        self.corr_horiz_scrollbar1.bind('<MouseWheel>', self.onmousewheel)
+        self.corr_horiz_scrollbar2.bind('<MouseWheel>', self.onmousewheel)
+        self.corr_scrollbar.config(command=self.yview)
         self.corr_btn_frame = tk.Frame(self.corr_frame)
         self.corr_add_btn = tk.Button(self.corr_frame, text='Add', width=10, command=self.add_corr)
-        self.corr_edit_bth = tk.Button(self.corr_frame, text='Edit', width=10)
+        self.corr_edit_bth = tk.Button(self.corr_frame, text='Edit', width=10, command=self.edit_corr)
         self.corr_remove_btn = tk.Button(self.corr_frame, text='Remove', width=10, command=self.remove_corr)
 
-        self.map_save_btn = tk.Button(self.corr_frame, text='Save mapping', width=10, state='disabled')
-        self.map_load_btn = tk.Button(self.corr_frame, text='Load mapping', width=10, state='disabled')
+        #self.map_save_btn = tk.Button(self.corr_frame, text='Save mapping', width=10, state='disabled')
+        #self.map_load_btn = tk.Button(self.corr_frame, text='Load mapping', width=10, state='disabled')
 
 
         #Output frame
@@ -93,7 +101,7 @@ class MappingTab(tk.Frame):
         self.out_folder_lbl = tk.Label(self.out_frame, text='Output Folder Not Selected', bg='white', width=40)       
         self.out_folder_btn = tk.Button(self.out_frame, text='Open', command=self.select_output)
         
-        self.exec_mapping_btn = tk.Button(self.out_frame, text= 'Run Mapping Task')
+        self.exec_mapping_btn = tk.Button(self.out_frame, text= 'Run Mapping Task', command=self.run_mapping)
 
     def __packing(self):
         # Hospital name Frame
@@ -125,17 +133,19 @@ class MappingTab(tk.Frame):
         self.csv_load_btn.pack(side='left')
         self.suggest_btn.pack(side='left')
         
-        self.corr_label1.pack()
+        self.corr_label.pack()
 
         # correspondances subframe
         self.corr_frame.pack(fill='y')
         self.corr_subframe1.pack(side='left', fill='y', padx=2)
         self.corr_subframe2.pack(side='left', fill='y', padx=2)
-        self.corr_scollbar.pack(side='left', fill='y')
+        self.corr_scrollbar.pack(side='left', fill='y')
         
+        self.corr_label1.pack()
         self.corr_listbox1.pack()
         self.corr_horiz_scrollbar1.pack(fill='x')
         
+        self.corr_label2.pack()
         self.corr_listbox2.pack()
         self.corr_horiz_scrollbar2.pack(fill='x')
 
@@ -143,24 +153,14 @@ class MappingTab(tk.Frame):
         self.corr_add_btn.pack()
         self.corr_edit_bth.pack()
         self.corr_remove_btn.pack()
-        self.map_load_btn.pack(pady=(17, 1))
-        self.map_save_btn.pack()
+        #self.map_load_btn.pack(pady=(17, 1))
+        #self.map_save_btn.pack()
 
         # Output Frame
         self.out_frame.pack(fill='x', padx=4)
         self.out_folder_lbl.grid(row=0, column=1, pady=2)
         self.out_folder_btn.grid(row=0, column=2, padx=2)
         self.exec_mapping_btn.grid(row=0, column=3, sticky='e', padx=(75, 1))
-
-    def __loadtrfunctions(self):
-        #read the trFunctions.csv and load the trFunctions dict (NOT TrFunction instances..!)
-        #This dict will be loaded in Combobox functions_cbox in guiCorr!!
-        self.trFunctions = {}
-        #with open(DIR_PATH+'/mapping/trFunctions.csv', 'r') as F:
-        with open(os.path.join(str(PARENTPATH) ,'data', 'trFunctions.csv'), 'r') as F:
-            functionsFile = csv.DictReader(F)
-            for row in functionsFile:
-                self.trFunctions[row["label"]]=row["expression"]
 
     def add_items(self, headers, listbox):
         index = 1
@@ -170,7 +170,7 @@ class MappingTab(tk.Frame):
 
     def load_data_csv(self):
         warningtitle = 'Could create Mapping'
-        filepath = tkfiledialog.askopenfilename(title='select patient csv file',
+        filepath = tkfiledialog.askopenfilename(title='select source csv file',
                                                 filetypes=(('csv files', '*.csv'),
                                                            ('all files', '*.*')))
         if filepath:
@@ -196,8 +196,9 @@ class MappingTab(tk.Frame):
                 self.csv_name = csv_name
                 if self.infer_opt_frame.cde_dict:
                     self.suggest_btn.config(state='active')
+            self.corr_listbox1.delete(0, tk.END)
+            self.corr_listbox2.delete(0, tk.END)
 
-                #self.p_csv_headers_cbox.config(values=data.fieldnames)
         else:
             tkmessagebox.showwarning(warningtitle,
                                      'Please, select source csv file first!')
@@ -211,7 +212,7 @@ class MappingTab(tk.Frame):
                 threshold = float(self.infer_opt_frame.thresholdstring.get())
             self.cdemapper.suggest_corr(self.infer_opt_frame.cde_dict,
                                         threshold=threshold)
-            self.__update_listbox_corr()
+            self.update_listbox_corr()
         else:
             tkmessagebox.showwarning(warningtitle,
                                      'Could not find the CDE dictionary file')
@@ -220,15 +221,14 @@ class MappingTab(tk.Frame):
         cor_gui = guiCorr(self)
 
     def edit_corr(self):
-        pass
+        cde = self.corr_listbox2.get(self.corr_listbox2.curselection())
+        cor_gui = guiCorr(self, cde)
 
     def remove_corr(self):
          selection = self.corr_listbox2.curselection()
          cde = self.corr_listbox2.get(selection)
-         LOGGER.info(str(cde))
          self.cdemapper.remove_corr(str(cde))
-         self.__update_listbox_corr()
-         LOGGER.info(str(cde))
+         self.update_listbox_corr()
   
     def select_output(self):
         outputfolder = tkfiledialog.askdirectory(title='Select Output Folder')
@@ -239,8 +239,46 @@ class MappingTab(tk.Frame):
             self.out_folder_lbl.config(text=outputfolder)
 
     def run_mapping(self):
-        pass
+        "TODO: ADD control if the fields are filled and are corrs in mapping"
+        self.cdemapper.run_mapping(self.outputfolder)
 
+    def update_listbox_corr(self):
+        self.corr_listbox1.delete(0, tk.END)
+        self.corr_listbox2.delete(0, tk.END)
+        i = 1
+        for cde, sources in self.cdemapper.corr_sources.items():
+            self.corr_listbox1.insert(i, sources)
+            self.corr_listbox2.insert(i, cde)
+            i += 1
+
+    def on_select_corr1(self, event):
+        w = event.widget
+        selection = w.curselection()
+        if selection:
+            index = selection[0]
+            self.corr_listbox1.select_set(index)
+            self.corr_listbox2.select_set(index)
+
+
+    def on_select_corr2(self, event):
+        w = event.widget
+        selection = w.curselection()
+        if selection:
+            index = selection[0]
+            self.corr_listbox1.select_set(index)
+            self.corr_listbox2.select_set(index)
+
+    def yview(self, *args):
+        self.corr_listbox1.yview(*args)
+        self.corr_listbox2.yview(*args)
+
+    def onmousewheel(self, event):
+        self.corr_listbox1.yview("scroll", event.delta,"units")
+        self.corr_listbox2.yview("scroll",event.delta,"units")
+        # this prevents default bindings from firing, which
+        # would end up scrolling the widget twice
+        return "break"
+    
     def __get_cdecontroller(self):
         warningtitle = 'Can not retrieve CDE metadata!'
         dict_schema = None
@@ -271,20 +309,12 @@ class MappingTab(tk.Frame):
         else:
             return None
 
-
-    def __update_listbox_corr(self):
-        self.corr_listbox1.delete(0, tk.END)
-        self.corr_listbox2.delete(0, tk.END)
-        i = 1
-        for cde, sources in self.cdemapper.corr_sources.items():
-            self.corr_listbox1.insert(i, sources)
-            self.corr_listbox2.insert(i, cde)
-            i += 1
-
-    def on_select_corr1(self, event):
-        w = event.widget
-        selection = w.curselection()
-        if selection:
-            index = selection[0]
-            self.corr_listbox1.select_set(index)
-            self.corr_listbox2.select_set(index)
+    def __loadtrfunctions(self):
+        #read the trFunctions.csv and load the trFunctions dict (NOT TrFunction instances..!)
+        #This dict will be loaded in Combobox functions_cbox in guiCorr!!
+        self.trFunctions = {}
+        #with open(DIR_PATH+'/mapping/trFunctions.csv', 'r') as F:
+        with open(os.path.join(str(PARENTPATH) ,'data', 'trFunctions.csv'), 'r') as F:
+            functionsFile = csv.DictReader(F)
+            for row in functionsFile:
+                self.trFunctions[row["label"]]=row["expression"]

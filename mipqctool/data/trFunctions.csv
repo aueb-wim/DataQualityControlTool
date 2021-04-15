@@ -18,7 +18,6 @@ Is Numeric,isNumeric(str)
 Length,len(str)
 Log,log(x)
 Ln,ln(x)
-MD5,md5(x)
 Modulus,"mod(x,y)"
 New Id,newId()
 Null,null()

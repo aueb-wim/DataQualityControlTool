@@ -43,6 +43,17 @@ class CsvDB(DataDB):
     def xml_elements(self):
         return self.__xml_elements
 
+    @property
+    def tables(self):
+        return self.__tables.keys()
+
+    def get_table_schema(self, name):
+        qctable = self.__tables.get(name)
+        if qctable:
+            return qctable.schema
+        else:
+            return None
+
     def get_table_dublicates(self, name) -> int:
         "Returns how many dublicates a given table has."
         return self.__dublications.get(name)
@@ -75,7 +86,20 @@ class CsvDB(DataDB):
         if table:
             raw_headers = table.actual_headers
             mipmap_headers = table.headers4mipmap
-            return dict(zip(raw_headers, mipmap_headers))
+            return dict(zip(mipmap_headers, raw_headers))
+
+    def raw_2_mipmap_header(self, name, header):
+        """Returns the mipmap header of a table.
+        Arguments:
+        :param name: (str) name of the table
+        :param header: (str) the raw (initial) header
+        """
+        table = self.__tables.get(name)
+        if table:
+            raw_headers = table.actual_headers
+            mipmap_headers = table.headers4mipmap
+            raw2mip = dict(zip(raw_headers, mipmap_headers))
+            return raw2mip[header]
 
 
     def columnforxml(self, name, column, dublication=None) -> str:

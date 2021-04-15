@@ -108,6 +108,8 @@ class ColumnReport(object):
             return self.stats['categories']
         elif self.miptype in ['integer', 'numerical']:
             return [self.stats['min'], self.stats['max']]
+        else:
+            return None
 
 
     @property

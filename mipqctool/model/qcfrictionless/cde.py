@@ -4,6 +4,8 @@ import re
 from openpyxl import load_workbook
 
 from mipqctool.helpers import edit_distance_f1
+from mipqctool.exceptions import CdeDictError
+from mipqctool.model.mapping.functions import Replacement
 from mipqctool.config import LOGGER
 
 QC_FROM_CDE_NUMERICAL = ['numerical', 'numeric', 'real']
@@ -64,6 +66,23 @@ class CdeDict(object):
         else:
             LOGGER.info('No cde match found for incoming column "{}"'. format(name))
             return None
+
+    # def suggest_replecements(self, cde, columnreport):
+    #     """Suggest value replecements for a column for a given cde.
+    #     cde and column must have nominal miptype.
+    #     Arguments:
+    #     :param cde: cde code (str)
+    #     :param columnreport: ColumnReport object with info of a datset column
+    #     """
+    #     # get cdevariable object for the given cde code
+    #     cdevar = self.__cdes.get(cde)
+    #     if cdevar:
+    #         if cdevar.miptype == 'nominal' and columnreport.miptype == 'nominal':
+    #             src_cat = columnreport.value_range
+    #             cde_enums = cdevar.mip_values.keys()
+    #             cde_enums_lookup = cdevar.enum_lookup
+    #     else:
+    #         raise CdeDictError('Cde not found in the CdeDictionary')
 
 
 class CdeVariable(object):

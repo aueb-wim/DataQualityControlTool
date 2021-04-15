@@ -95,7 +95,7 @@ class TableReport(object):
     
     @property
     def columnreports(self):
-        """A list of ColumnReport objects."""
+        """Ordered dict of ColumnReport objects."""
         return self.__columnreports
     
     @property
