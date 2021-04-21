@@ -39,17 +39,20 @@ class Mapping(object):
         initial_str = xml.etree.ElementTree.tostring(data)
         return minidom.parseString(initial_str).toprettyxml(indent="   ")
 
-    def add_corr(self, source_paths, target_path, expression):
+    def add_corr(self, source_paths, target_path, expression, replacements=None):
         """Add a new mapping correspondence.
         Arguments:
-        :source_paths: list of tuples (table_name, column_name, dublication)
-                   dublication number could be used in future development
-                   if there is no duplication then use None as third element
-        :target_path:  tuple with the CDE table and name variable and dublication
-        :expression:   string with expression given by the user, the paths are given
-                       in this string as <table>.<column>
+        :param source_paths: list of tuples (table_name, column_name, dublication)
+                             dublication number could be used in future development
+                              if there is no duplication then use None as third element
+        :param target_path:  tuple with the CDE table and name variable and dublication
+        :param expression:   string with expression given by the user, the paths are given
+                             in this string as <table>.<column>
+        :param replacements: list with Replacement named tupples for the case here we have a nominal
+                             values.This doesn't play any role in tha mapping xml, stores info about the
+                             replacements for GUI display perposes. 
         """
-        corr = Correspondence(self, source_paths, target_path, expression)
+        corr = Correspondence(self, source_paths, target_path, expression, replacements=replacements)
         cde_name = target_path[1]
         if cde_name in self.__correspondences.keys():
             msg = 'There is a mapping correspondance for {} cde. Delete it first to proceed.'

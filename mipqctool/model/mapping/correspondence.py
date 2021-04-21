@@ -1,24 +1,29 @@
 import os
 from xml.etree.ElementTree import Element
 from mipqctool.exceptions import MappingValidationError
+from mipqctool.config import LOGGER
 
 class Correspondence(object):
     """Class for storing and processing a mapping correpondence.
     Arguments:
     :param mapping: A Mapping object
-    :source_paths: list of tuples (table_name, column_name, dublication)
-                   dublication number could be used in future development
-                   if there is no duplication then use None as third element
-    :target_path:  tuple with the CDE table and name variable and dublication
-    :expression:   string with expression given by the user, the paths are given
-                   in this string as <table>.<column>
+    :param source_paths: list of tuples (table_name, column_name, dublication)
+                         dublication number could be used in future development
+                         if there is no duplication then use None as third element
+    :param target_path:  tuple with the CDE table and name variable and dublication
+    :param expression:   string with expression given by the user, the paths are given
+                         in this string as <table>.<column>
+    :param replacements: list with Replacement named tupples for the case here we have a nominal
+                         values.This doesn't play any role in tha mapping xml, stores info about the
+                         replacements for GUI display perposes. 
     """
-    def __init__(self, mapping, source_paths, target_path, expression):
+    def __init__(self, mapping, source_paths, target_path, expression, replacements=None):
         self.__mapping = mapping
         self.__source_paths = source_paths  # list of source variables
         self.__target_path = target_path  # the target CDE
 
         self.__expression = expression
+        self.__replacements = replacements
         self.__validate_tables()
         self.__xml_element = None
         self.__create_xml_element()
@@ -46,7 +51,13 @@ class Correspondence(object):
 
     @property
     def expression(self) -> str:
+        """The """
         return self.__expression
+
+    @property
+    def replacements(self) -> list:
+        """List with Replacement named tupples"""
+        return self.__replacements
 
     @property
     def xml_element(self):

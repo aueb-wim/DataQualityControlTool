@@ -6,11 +6,13 @@ from __future__ import unicode_literals
 import os
 import pytest
 from unittest.mock import Mock, PropertyMock, patch
-from mipqctool.model.qcfrictionless.cde import CdeDict
+from mipqctool.model.qcfrictionless.cde import CdeDict, CdeVariable
+from mipqctool.model.mapping.functions import Replacement
 from mipqctool.controller.columnreport import ColumnReport
 from mipqctool.config import ERROR
 
 DICT_PATH1 = 'tests/test_datasets/extract_mip_dictionary.xlsx'
+
 
 VARIABLE_1 = ['gendreww', 'nominal', ['άνδρας', 'γυναίκα']]
 VARIABLE_2 = ['handedness', 'nominal', None]
@@ -21,6 +23,7 @@ VARIABLE_6 = ['MADRS test', 'integer', [4, 44]]
 VARIABLE_7 = ['MADRS testee', 'integer', [-12, 86]]
 VARIABLE_8 = ['MADRS tewecew', 'integer', [44, 86]]
 VARIABLE_9 = ['md nonsenese', 'integer', [-12, -2]]
+VARIABLE_10 = ['gendre', 'nominal', ['femme', 'homme']]
 
 
 @pytest.mark.parametrize('filename, result', [
@@ -54,4 +57,19 @@ def test_suggest(filename, variable, result):
         totest = suggested_cde.code
     else:
         totest = None
+    assert totest == result
+
+@pytest.mark.parametrize('filename, variable, cdecode, result', [
+    (DICT_PATH1, VARIABLE_10, 'gender_type', [Replacement('femme', 'F'), Replacement('homme', 'M')])
+])
+
+def test_suggest_replacements(filename, variable, cdecode, result):
+    test = CdeDict(filename)
+    mockreport = Mock()
+    type(mockreport).name = PropertyMock(return_value=variable[0])
+    type(mockreport).miptype = PropertyMock(return_value=variable[1])
+    type(mockreport).value_range = PropertyMock(return_value=variable[2])
+
+    totest = test.suggest_replecements(cdecode, mockreport, threshold=0.6)   
+    
     assert totest == result

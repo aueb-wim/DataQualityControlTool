@@ -7,7 +7,7 @@ from mipqctool.model.mapping import Mapping, CsvDB
 from mipqctool.model.mapping.functions import ifstr
 from mipqctool.model.qcfrictionless import QcTable
 from mipqctool.controller import CDEsController, TableReport, DockerMipmap
-from mipqctool.exceptions import MappingError
+from mipqctool.exceptions import MappingError, CdeDictError
 from mipqctool.config import LOGGER
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -102,28 +102,45 @@ class MipCDEMapper(object):
         :param cdedict: CdeDict object
         :param threshold: 0-1 similarity threshold, below that not a cde is suggested
         """
-        cde_sugg_dict = {}
+        cde_sugg_dict = {}  # {cdecode:sourcecolumn}
         source_table = self.__srctbl.filename
         target_table = self.__target_filename
+        sugg_replacemnts = {}  # here will be stored the suggestions replacments {cdecode:[Replacemsnts]}
         #source_raw_headers = self.__mapping.sourcedb.get_raw_table_headers(source_table)
+
+        # for each source column 
         for name, columnreport in self.__tblreport.columnreports.items():
+            
             cde = cdedict.suggest_cde(columnreport, threshold=threshold)
             # check if a cde mapping already exist
-            if cde and cde.code not in cde_sugg_dict.keys():
+            if cde and (cde.code not in cde_sugg_dict.keys()):
                 cde_sugg_dict[cde.code] = self.__mapping.sourcedb.raw_2_mipmap_header(
                     self.__src_filename,
                     columnreport.name
                 )
-        for cde, source_var in cde_sugg_dict.items():
+                # suggest category replacements for cases where source col and cde are nominal
+                sugg_reps = cdedict.suggest_replecements(cde.code, columnreport, threshold=threshold)
+                if sugg_reps:
+                    sugg_replacemnts[cde.code] = sugg_reps
+        for cdecode, source_var in cde_sugg_dict.items():
             source_paths = [(source_table, source_var, None)]
-            target_path = (target_table, cde, None)
-            expression = '.'.join([os.path.splitext(source_table)[0], source_var])
+            target_path = (target_table, cdecode, None)
+            filename_column = '.'.join([os.path.splitext(source_table)[0], source_var])
+            # lets see if this cde have value replacements suggestions, if so create the if statment
+            if cdecode in sugg_replacemnts.keys():
+                expression = ifstr(filename_column, sugg_replacemnts[cdecode])
+            else:
+                expression = filename_column
+
+            # let's try to create the correspondence now
             try:
                 self.__mapping.add_corr(source_paths=source_paths, target_path=target_path,
-                                        expression=expression)
+                                        expression=expression, replacements=sugg_replacemnts.get(cdecode))
             # If a cde correspondance already exists then pass
             except MappingError:
-                pass
+                LOGGER.warning('found cde macth for source column "{}" but cde "{}" \
+                               is not included in the selected cde pathology.' .format(source_var, cdecode))
+
         self.__update_cde_mapped()
 
     def add_corr(self, cde, source_cols, expression):
@@ -145,6 +162,9 @@ class MipCDEMapper(object):
     def get_corr_expression(self, cde):
         return self.__mapping.correspondences[cde].expression
 
+    def get_corr_replacements(self, cde):
+        return self.__mapping.correspondences[cde].replacements
+
     def get_col_stats(self, mipmap_column) -> dict:
         """returns source columns stats.
         Arguments:
@@ -158,6 +178,9 @@ class MipCDEMapper(object):
         if col_report:
             stats['miptype'] = col_report.miptype
             stats['value_range'] = col_report.value_range
+            if col_report.miptype in ['numerical', 'integer']:
+                stats['mean'] = col_report.stats['mean']
+                stats['std'] = col_report.stats['std']
             return stats
         else:
             return None
@@ -228,7 +251,7 @@ class MipCDEMapper(object):
         for cde in self.__cde_mapped:
             cde_not_mapped.remove(cde)
             source_paths = self.__mapping.correspondences[cde].source_paths
-            pathstring = ','.join([path[1] for path in source_paths])
+            pathstring = ', '.join([path[1] for path in source_paths])
             cde_corrs_sources[cde] = pathstring
 
         self.__cde_corrs_sources = cde_corrs_sources

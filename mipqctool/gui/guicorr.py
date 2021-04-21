@@ -42,6 +42,7 @@ class guiCorr():
         if self.target_cde:
             self.master.title("Editing Mapping for '{}' CDE".format(cde))
             self.__update_cde_info(self.target_cde)
+            self.__update_replacements(self.target_cde)
             self.cdes_cbox.configure(state='disabled')
             expr = self.parent.cdemapper.get_corr_expression(self.target_cde)
             self.expressions_text.insert(tk.END, expr)
@@ -201,12 +202,9 @@ class guiCorr():
     def add_replacement(self):
         targetvalue = self.func_replace_entry.get()
         sourcevalue = self.func_replace_src_listbox.get(self.func_replace_src_listbox.curselection())
-        LOGGER.debug('Target value is: {} and the source value is: {}'.format(targetvalue, sourcevalue))
         if targetvalue != '' and sourcevalue:
-            stringforbox = '->'.join([sourcevalue, targetvalue])
-            self.func_replace_trg_listbox.insert(tk.END, stringforbox)
-        else:
-            pass
+            self.__add_replacement(sourcevalue, targetvalue)
+        
 
     def del_replacement(self):
         self.func_replace_trg_listbox.delete(self.func_replace_trg_listbox.curselection())
@@ -254,6 +252,8 @@ class guiCorr():
                 # are we editing and existing correspondence? 
                 if self.target_cde:
                     self.parent.cdemapper.update_corr(self.target_cde, columnsused, self.expression)
+                    self.parent.update_listbox_corr()
+                    self.on_close()
                 # if not create new 
                 else:
                     if self.cdes_cbox.current() > -1:
@@ -280,37 +280,43 @@ class guiCorr():
         self.master.destroy()
 
     def on_select_column(self, event):
-        self.col_info_listbox.delete(0, tk.END)
-        self.func_replace_src_listbox.delete(0, tk.END)
-        self.selected_cde_miptype = None
-        self.selected_column = None
         if self.columns_cbox.current() > -1:
-            info = []
             sel_col = self.columns_cbox.get()
-            col_stats = self.parent.cdemapper.get_col_stats(sel_col)
-            dtype = col_stats['miptype']
-            value_range = col_stats['value_range']
-            info.append('Data type: ' + dtype)
-            if dtype in ['numerical', 'integer'] :
-                info.append('Min:' + str(value_range[0]))
-                info.append('Max:' + str(value_range[1]))
-            elif dtype == 'nominal':
-                info.append('Categories:')
-                categories = []
-                for cat in value_range:
-                    info.append(str(cat))
-                    categories.append(str(cat))
-                for item in categories:
-                    self.func_replace_src_listbox.insert(categories.index(item), item)
-            for item in info:
-                self.col_info_listbox.insert(info.index(item), item)
-            self.selected_cde_miptype = dtype
-            self.selected_column = sel_col
+            self.__update_column_info(sel_col)
 
     def on_select_cde(self, event):        
         if self.cdes_cbox.current() > -1:
             sel_cde = self.cdes_cbox.get()
             self.__update_cde_info(sel_cde)
+
+    def __update_column_info(self, column_name):
+        self.col_info_listbox.delete(0, tk.END)
+        self.func_replace_src_listbox.delete(0, tk.END)
+        self.selected_column_miptype = None
+        self.selected_column = None
+        info = []
+        col_stats = self.parent.cdemapper.get_col_stats(column_name)
+        dtype = col_stats['miptype']
+        value_range = col_stats['value_range']
+        info.append('Data type: ' + dtype)
+        if dtype in ['numerical', 'integer'] :
+            info.append('Min:' + str(value_range[0]))
+            info.append('Max:' + str(value_range[1]))
+            info.append('Mean: ' + str(round(col_stats['mean'], 4)))
+            info.append('Standard Deviation: ' + str(round(col_stats['std'], 4)))
+        elif dtype == 'nominal':
+            info.append('Categories:')
+            categories = []
+            for cat in value_range:
+                info.append(str(cat))
+                categories.append(str(cat))
+            for item in categories:
+                self.func_replace_src_listbox.insert(categories.index(item), item)
+        for item in info:
+            self.col_info_listbox.insert(info.index(item), item)
+        self.selected_column_miptype = dtype
+        self.selected_column = column_name
+
 
 
     def __update_cde_info(self, cdecode, is_raw_header=False):
@@ -330,13 +336,29 @@ class guiCorr():
             for cat in constraints:
                 info.append(str(cat))
         elif dtype in ['numerical', 'integer'] and constraints:
-            info.append('min: ' + constraints[0])
-            info.append('max: ' + constraints[1])
+            info.append('min: ' + str(constraints[0]))
+            info.append('max: ' + str(constraints[1]))
         else:
             info.append('No Constraints found')
         for item in info:
             self.cde_info_listbox.insert(info.index(item), item)
         self.selected_cde_miptype=dtype
+
+    def __update_replacements(self, cdecode, is_raw_header=False):
+        self.func_replace_trg_listbox.delete(0,tk.END)
+        if is_raw_header:
+            cdename = self.parent.cdemapper.get_cde_mipmap_header(cdecode)
+        else:
+            cdename = cdecode
+        current_replacements = self.parent.cdemapper.get_corr_replacements(cdename)
+        LOGGER.debug('Replacements found for cde "{}": {}'.format(cdecode, len(current_replacements)))
+        for rep in current_replacements:
+            self.__add_replacement(rep.source, rep.target)
+
+    def __add_replacement(self, sourcevalue, targetvalue):
+        LOGGER.debug('Target value is: {} and the source value is: {}'.format(targetvalue, sourcevalue))
+        stringforbox = '->'.join([sourcevalue, targetvalue])
+        self.func_replace_trg_listbox.insert(tk.END, stringforbox)
 
 
 

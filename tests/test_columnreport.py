@@ -5,9 +5,13 @@ from __future__ import unicode_literals
 
 import pytest
 import os
+from pathlib import Path
 from mipqctool.controller.columnreport import ColumnReport
 from mipqctool.model.qcfrictionless import QcField
 from mipqctool.config import ERROR
+
+# Tests
+TESTS_BASE_DIR = str(Path(__file__).resolve().parent)
 
 
 MISSING_VALUES = ['']
@@ -266,14 +270,14 @@ def test_dnulls(descriptor, values, resnulls, rescorr):
 
 @pytest.mark.parametrize('descriptor, values, resnulls, rescorr, path', [
     (INTEGER_DESC, INTEGER_VALUES,
-     set(['1', '2', '20191212']), set(), 'test_datasets/int_report.pdf'),
+     set(['1', '2', '20191212']), set(), os.path.join(TESTS_BASE_DIR,'test_datasets', 'int_report.pdf')),
     (NUMERICAL_DESC, NUMERICAL_VALUES,
-     set(['-0.12']), set(), 'test_datasets/num_report.pdf'),
+     set(['-0.12']), set(), os.path.join(TESTS_BASE_DIR, 'test_datasets', 'num_report.pdf')),
     (NOMINAL_DESC, NOMINAL_VALUES,
      set(['not_value']),
      set([('cAtegory1', 'Category1'),
           ('anoter1', 'Another3'),
-          ('CATEGOR2', 'Category2')]), 'test_datasets/nom_report.pdf')
+          ('CATEGOR2', 'Category2')]), os.path.join(TESTS_BASE_DIR,'test_datasets', 'nom_report.pdf'))
 
 ])
 def test_cnulls(descriptor, values, resnulls, rescorr, path):

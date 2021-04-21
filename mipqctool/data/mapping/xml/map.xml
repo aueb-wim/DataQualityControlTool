@@ -15,10 +15,10 @@
          <csv-db-name>hospitaldb</csv-db-name>
          <csv-tables>
             <csv-table>
-               <schema>source/test_brain_features.csv</schema>
+               <schema>source/nominal.csv</schema>
                <instances>
                   <instance>
-                     <path>source/test_brain_features.csv</path>
+                     <path>source/nominal.csv</path>
                      <column-names>true</column-names>
                   </instance>
                </instances>
@@ -55,14 +55,5 @@
       <selectionConditions/>
       <joinConditions/>
    </target>
-   <correspondences>
-      <correspondence>
-         <source-paths>
-            <source-path>hospitaldb.test_brain_features.test_brain_featuresTuple.Right_Accumbens_Area_Volume_cm3_</source-path>
-         </source-paths>
-         <target-path>dementia_v4.dementia_v4.dementia_v4Tuple.cerebellarvermallobulesiv</target-path>
-         <transformation-function>hospitaldb.test_brain_features.test_brain_featuresTuple.Right_Accumbens_Area_Volume_cm3_</transformation-function>
-         <confidence>1.0</confidence>
-      </correspondence>
-   </correspondences>
+   <correspondences/>
 </mappingtask>

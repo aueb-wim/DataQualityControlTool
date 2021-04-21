@@ -32,10 +32,9 @@ class CdeDictError(QCToolException):
 class DockerExecError(QCToolException):
     pass
 
-class MappingValidationError(QCToolException):
-    pass
-
 class MappingError(QCToolException):
+    pass
+class MappingValidationError(MappingError):
     pass
 
 class FunctionNameError(QCToolException):

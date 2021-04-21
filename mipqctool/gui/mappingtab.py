@@ -30,17 +30,15 @@ class MappingTab(tk.Frame):
         self.cdemapper = None
         self.__loadtrfunctions()
         self.csv_file_path = None
-        self.csv_file_headers = []#List of the CSV headers
+        self.csv_file_headers = [] #List of the CSV headers
         self.csv_name = None
+        self.cde_name = None # cde csv filename from cdecontroller
+
         self.outputfolder = None
         self.__init()
         self.__packing()
 
     def __init(self):
-        # Hospital name frame
-        self.hosp_labelframe = tk.LabelFrame(self, text='Hospital')
-        self.hospital_label = tk.Label(self.hosp_labelframe, text='Hospital Code:')
-        self.hospital_entry = tk.Entry(self.hosp_labelframe)
 
         # cde metadata frame
         self.cde_md_frame = MetadataFrame(self)
@@ -56,8 +54,8 @@ class MappingTab(tk.Frame):
         # csv subframe
         self.csv_frame = tk.Frame(self.harm_labelframe)
         #self.harm_label_csv = tk.Label(self.csv_frame, text='CSV File:')
-        self.csv_file_label = tk.Label(self.csv_frame, text='Source CSV file Not selected', bg='white', pady=4, width=40)
-        self.csv_load_btn = tk.Button(self.csv_frame, text='Select', command=self.load_data_csv)
+        self.csv_file_label = tk.Label(self.csv_frame, text='Source CSV file Not selected', bg='white', pady=4, width=30)
+        self.csv_load_btn = tk.Button(self.csv_frame, text='Select and Create', command=self.load_data_csv)
         self.suggest_btn = tk.Button(self.csv_frame, text='Suggest CDE correspondences',
                                      state='disabled', command=self.suggest_corrs)
 
@@ -84,8 +82,8 @@ class MappingTab(tk.Frame):
 
         self.corr_horiz_scrollbar1.config(command=self.corr_listbox1.xview)
         self.corr_horiz_scrollbar2.config(command=self.corr_listbox2.xview)
-        self.corr_horiz_scrollbar1.bind('<MouseWheel>', self.onmousewheel)
-        self.corr_horiz_scrollbar2.bind('<MouseWheel>', self.onmousewheel)
+        self.corr_horiz_scrollbar1.bind('<<MouseWheel>>', self.onmousewheel)
+        self.corr_horiz_scrollbar2.bind('<<MouseWheel>>', self.onmousewheel)
         self.corr_scrollbar.config(command=self.yview)
         self.corr_btn_frame = tk.Frame(self.corr_frame)
         self.corr_add_btn = tk.Button(self.corr_frame, text='Add', width=10, command=self.add_corr)
@@ -104,10 +102,6 @@ class MappingTab(tk.Frame):
         self.exec_mapping_btn = tk.Button(self.out_frame, text= 'Run Mapping Task', command=self.run_mapping)
 
     def __packing(self):
-        # Hospital name Frame
-        #self.hosp_labelframe.pack()
-        self.hospital_label.grid(row=0, column=0, sticky='w')
-        self.hospital_entry.grid(row=0, column=1, columnspan=2, sticky='w')
 
         # metadata Frame
         self.cde_md_frame.pack(fill='both')
@@ -240,6 +234,13 @@ class MappingTab(tk.Frame):
 
     def run_mapping(self):
         "TODO: ADD control if the fields are filled and are corrs in mapping"
+        msg = "Mapping task error"
+        if not self.cdemapper:
+            tkmessagebox.showerror(msg, 'No source file selected!')
+        if len(self.cdemapper.cde_mapped) == 0:
+            tkmessagebox.showerror(msg, 'There are no correspondences to map.')
+        if not self.outputfolder:
+            tkmessagebox.showerror(msg, 'No output folder selected.')
         self.cdemapper.run_mapping(self.outputfolder)
 
     def update_listbox_corr(self):

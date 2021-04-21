@@ -44,7 +44,8 @@ class CdeDict(object):
         """Suggests the most similar CDE for the column.
         Arguments:
         :param columnreport: ColumnReport object with info of a datset column
-        :param threshold: 0-1 similarity threshold, below that not a cde is suggested 
+        :param threshold: 0-1 similarity threshold, below that not a cde is suggested
+        :returns: a CdeVariable object
         """
         name = columnreport.name
         val_range = columnreport.value_range
@@ -67,22 +68,33 @@ class CdeDict(object):
             LOGGER.info('No cde match found for incoming column "{}"'. format(name))
             return None
 
-    # def suggest_replecements(self, cde, columnreport):
-    #     """Suggest value replecements for a column for a given cde.
-    #     cde and column must have nominal miptype.
-    #     Arguments:
-    #     :param cde: cde code (str)
-    #     :param columnreport: ColumnReport object with info of a datset column
-    #     """
-    #     # get cdevariable object for the given cde code
-    #     cdevar = self.__cdes.get(cde)
-    #     if cdevar:
-    #         if cdevar.miptype == 'nominal' and columnreport.miptype == 'nominal':
-    #             src_cat = columnreport.value_range
-    #             cde_enums = cdevar.mip_values.keys()
-    #             cde_enums_lookup = cdevar.enum_lookup
-    #     else:
-    #         raise CdeDictError('Cde not found in the CdeDictionary')
+    def suggest_replecements(self, cdecode, columnreport, threshold=0.6) -> list:
+        """Suggest value replecements for a column for a given cde.
+        cde and column must have nominal miptype.
+        Arguments:
+        :param cdecode: cde code (str)
+        :param columnreport: ColumnReport object with info of a datset column
+        :returns: List of named Replacement named tupples.
+        """
+        # get cdevariable object for the given cde code
+        cdevar = self.__cdes.get(cdecode)
+        replacements = []
+        if cdevar:
+            # make suggestions only for cases where cde and source col are nominal and also
+            # the cdedictionary has values for mipvalues and enumeration lookup columns
+            if cdevar.miptype == 'nominal' and columnreport.miptype == 'nominal' and cdevar.mipvalues and cdevar.enum_lookup:
+                src_cat = columnreport.value_range
+                for enum in src_cat:
+                    sug_val = cdevar.suggest_value(enum, threshold)
+                    if sug_val:
+                        replacements.append(Replacement(enum, sug_val))
+                return replacements
+            else:
+                return None
+        else:
+            msg = 'Cde "{}" not found in the CdeDictionary'.format(cdecode)
+            LOGGER.error(msg)
+            raise CdeDictError(msg)
 
 
 class CdeVariable(object):
@@ -132,18 +144,22 @@ class CdeVariable(object):
             self.__variable_lookup.sort()
         else:
             self.__variable_lookup = None
-       
-        if enum_lookup:
-            #convert enum look up to list
-            self.__enum_lookup = self.__tolist_enum_lookups(enum_lookup)
-        else:
-            self.__enum_lookup = None
 
         if mipvalues:
             #conver mipvalues to list
             self.__mipvalues = self.__tolist_mipvalues(mipvalues)
         else:
             self.__mipvalues = None
+       
+        if enum_lookup and mipvalues:
+            #convert enum look up to list
+            self.__enum_lookup = self.__tolist_enum_lookups(enum_lookup)
+            self.__enum_dict = self.__to_dict_enums(enum_lookup)
+        else:
+            self.__enum_lookup = None
+            self.__enum_dict = None
+
+        
 
     @property
     def code(self):
@@ -164,7 +180,7 @@ class CdeVariable(object):
     @property
     def mipvalues(self):
         return self.__mipvalues
-    
+
     @property
     def variable_lookup(self):
         return self.__variable_lookup
@@ -183,6 +199,24 @@ class CdeVariable(object):
     
         else:
             return namescore
+
+    def suggest_value(self, value, threshold):
+        """Returns the mipmap value if there is match on enum lookups.
+        Arguments:
+        :param value: (str) incoming categorical value
+        :param threshold: 0-1 similarity threshold, below that not a cde is suggested
+        """
+        if self.__enum_dict and self.__mipvalues:
+            lower = value.lower()
+            l = {cdeval: max([edit_distance_f1(enum, lower) for enum in enums]) for cdeval, enums in self.__enum_dict.items()}
+            suggestion = max(l, key=l.get)
+            if l[suggestion] >= threshold:
+                return suggestion
+            else:
+                return None
+        else:
+            return None
+        
     
     def __calc_name_f1_score(self, name) -> float:
         """Returns the best f1 score among lookups for the given name.
@@ -190,8 +224,7 @@ class CdeVariable(object):
         low_name = name.lower()
         from_code = edit_distance_f1(low_name, self.code.lower())
         if self.__variable_lookup:
-            low_lookups = [x.lower() for x in self.__variable_lookup]
-            dists = [edit_distance_f1(low_name, x) for x in low_lookups]
+            dists = [edit_distance_f1(low_name, x.lower()) for x in self.__variable_lookup]
             dists.sort(reverse=True)
             #LOGGER.debug('The edit_distances for cde "{}" and incoming "{}" are: {}'.format(self.code, name, dists))
             from_lookup = dists[0]
@@ -210,11 +243,11 @@ class CdeVariable(object):
             #LOGGER.debug('The cde "{}" in the dictionary has {} enums.'.format(self.code, total_enum))
             # check if there are any enum lookups, otherwise use the enums in mipvalues
             if self.__enum_lookup:
-                enums = self.__enum_lookup
+                enums = [x.lower() for x in self.__enum_lookup]
             else:
-                enums = self.__mipvalues
+                enums = [x.lower() for x in self.__mipvalues]
             # convert to lowercase and put all enums lookups in a single list 
-            found = sum([elem in enums for elem in valrange])
+            found = sum([str(elem).lower() in enums for elem in valrange])
             incomming_total = len(valrange)
             precision = found / total_enum
             recall = found / incomming_total
@@ -270,6 +303,20 @@ class CdeVariable(object):
         unique_enums.sort()
         return unique_enums
 
+    def __to_dict_enums(self, enumstr) -> dict:
+        all_enum_lookups = []
+        matches = re.findall(self.__enum_regx, enumstr)
+        for m in matches:
+            # remove double quates
+            without_quotes = m.replace('\"','')
+            enums = without_quotes.split(',')
+            # remove left and right spaces from each enum and convert to lowercase
+            enums = [x.strip() for x in enums]
+            all_enum_lookups.append(enums)
+        result = dict(zip(self.mipvalues, all_enum_lookups))
+        return result
+
+
     def __tolist_mipvalues(self, valuesstr) -> list:
         if self.__datatype == 'arithmetic':
             mipvalues = valuesstr.split('-')
@@ -289,10 +336,10 @@ class CdeVariable(object):
                 items = clean_m.split(',')
                 # take the fist item from {code, desc}
                 enum = items[0]
-                mipvalues.append(enum.strip().lower())
+                mipvalues.append(enum.strip())
             # clean dublicates and sort
-            mipvalues = list(set(mipvalues))
-            mipvalues.sort()
+            #mipvalues = list(set(mipvalues))
+            #mipvalues.sort()
         else:
             mipvalues = None
             

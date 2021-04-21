@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import os
+from pathlib import Path
 import json
 from unittest.mock import Mock, PropertyMock
 
@@ -11,13 +12,13 @@ import pytest
 
 from mipqctool.controller import DcConnector
 
-THISFILEDIR = os.path.dirname(os.path.realpath(__file__))
+TESTS_BASE_DIR = str(Path(__file__).resolve().parent)
 
-DCALLJSONPATH = os.path.join(THISFILEDIR,
+DCALLJSONPATH = os.path.join(TESTS_BASE_DIR,
                              'test_datasets',
                              'all_pathologies.json')
 
-DCPATHOLOGYPATH1 = os.path.join(THISFILEDIR,
+DCPATHOLOGYPATH1 = os.path.join(TESTS_BASE_DIR,
                                 'test_datasets',
                                 'dementia_cdes_v3.json')
 

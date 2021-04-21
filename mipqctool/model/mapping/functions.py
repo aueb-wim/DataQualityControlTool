@@ -13,12 +13,12 @@ def ifstr(columnname, repls):
     :param repls: list with Replacement namedtuples
                   Replacement('source', 'target')   
     """
-    
+    local_repls = repls.copy()
     if len(repls) == 1:
         return 'if({} == \"{}\", \"{}\", null())'.format(columnname, repls[0].source, repls[0].target)
     elif len(repls) > 1:
-        current = repls.pop(0)
+        current = local_repls.pop(0)
         return 'if({} == \"{}\", \"{}\", {})'.format(columnname,
                                                      current.source,
                                                      current.target,
-                                                     ifstr(columnname, repls))
+                                                     ifstr(columnname, local_repls))
