@@ -46,8 +46,17 @@ debug(True)
 # Global constants
 DC_DOMAIN = 'http://dc.hbp.link:8086'
 DC_SUBDOMAIN_ALLPATHOLOGIES = '/pathology/allPathologies'
+
+MIPMAP_DB_CONTAINER = 'mipmap_postgres'
+MIPMAP_DB_NAME = 'mipmap'
+MIPMAP_DB_PORT = 5433
+MIPMAP_DB_USER = 'postgres'
+MIPMAP_DB_PASSWORD = 'mipmap'
+
 ERROR = 'qctool.error'
 REMOTE_SCHEMES = ['http', 'https', 'ftp', 'ftps']
+
+
 DEFAULT_MISSING_VALUES = ['']
 DEFAULT_QCFIELD_MIPTYPE = 'text'
 DEFAULT_QCFIELD_CONCEPTPATH = ''

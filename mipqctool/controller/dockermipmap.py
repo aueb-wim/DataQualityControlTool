@@ -3,7 +3,8 @@ import os
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
-from mipqctool.config import LOGGER
+from mipqctool.controller import DockerDB
+from mipqctool.config import LOGGER, MIPMAP_DB_PORT, MIPMAP_DB_PASSWORD, MIPMAP_DB_CONTAINER
 from mipqctool.exceptions import DockerExecError
 
 class DockerMipmap(object):    
@@ -17,10 +18,16 @@ class DockerMipmap(object):
         """
         self.__image = 'hbpmip/mipmap'
         self.__name = 'mipmap'
+        xmlpath = Path(mapping)
+        self.__mappingpath = str(xmlpath.parent)
         self.__mapping = mapping
         self.__source = source
         self.__target = target
         self.__output = output
+        
+        # create the mipmap db container
+        db = DockerDB(MIPMAP_DB_CONTAINER, MIPMAP_DB_PORT, MIPMAP_DB_PASSWORD)
+
 
         lib_path = os.path.abspath(os.path.dirname(__file__))
         thispath = Path(lib_path)
@@ -31,8 +38,8 @@ class DockerMipmap(object):
         self.__template = env.get_template(template_file)
 
         self.__scriptpath  = os.path.join(parentpath, 'data', 'mapping', 'script')
-        self.__dbprop = os.path.join(parentpath, 'data', 'mapping', 'dbproperties')
-        self.__dcompose = os.path.join(parentpath, 'data', 'mapping', 'docker-compose.yml')
+        self.__dbprop = os.path.join(self.__mappingpath, 'dbproperties')
+        self.__dcompose = os.path.join(self.__mappingpath, 'docker-compose.yml')
         self.__run_mapping()
 
     def __run_mapping(self):
@@ -43,6 +50,7 @@ class DockerMipmap(object):
         env['mipmap_pgproperties'] = self.__dbprop
         env['mipmap_script'] = self.__scriptpath
         env['mipmap_target'] = self.__target
+        env['mipmap_db'] = MIPMAP_DB_CONTAINER
         #LOGGER.debug(os.getenv('mipmap_pgproperties'))
         self.__template.stream(env).dump(self.__dcompose)
         if self.__is_mipmap_container_exist:

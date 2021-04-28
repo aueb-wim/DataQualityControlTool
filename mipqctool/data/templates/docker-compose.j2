@@ -42,6 +42,6 @@ services:
       - {{mipmap_pgproperties}}:/opt/postgresdb.properties:rw
 
     external_links:
-      - "demo_postgres:test_postgres"
+      - "{{mipmap_db}}:test_postgres"
     command: ['sh', '/opt/script/run.sh']
     network_mode: bridge

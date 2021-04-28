@@ -31,14 +31,24 @@ class MipCDEMapper(object):
     def __init__(self, source_path, cdescontroller, sample_rows, maxlevels):
 
         sourcedb = CsvDB('hospitaldb', [source_path], schematype='source')
+        # get user home directory
+        self.__homepath = os.getenv('HOME')
+        # create mapping folder
+        self.__mappingpath = os.path.join(self.__homepath, '.mipqctool', 'mapping')
+        if not os.path.isdir(self.__mappingpath):
+            os.makedirs(self.__mappingpath)
+        # create the target mapping folder and xml folder
+        if not os.path.isdir(os.path.join(self.__mappingpath, 'target')):
+            os.mkdir(os.path.join(self.__mappingpath, 'target'))
+        if not os.path.isdir(os.path.join(self.__mappingpath, 'xml')):
+            os.mkdir(os.path.join(self.__mappingpath, 'xml'))
         # get the cde dataset name
         self.__target_dbname = cdescontroller.cdedataset_name
         # use it also as filename by adding .csv extension
         self.__target_filename = self.__target_dbname + '.csv'
         # use as target folder the mipqctool/data/mapping/target
         # this will be used in the mapping execution by mipmap engine
-        self.__target_folder = os.path.join(str(PARENTPATH), 'data',
-                                            'mapping', 'target')
+        self.__target_folder = os.path.join(self.__mappingpath, 'target')
         self.__target_path = os.path.join(self.__target_folder,
                                           self.__target_filename)
         # create a csv file with the cde headers only
@@ -222,8 +232,7 @@ class MipCDEMapper(object):
         return mipmap_headers[raw_cde_header]
 
     def run_mapping(self, output):
-        xml_folder = os.path.join(str(PARENTPATH), 'data',
-                                  'mapping', 'xml')
+        xml_folder = os.path.join(self.__mappingpath, 'xml')
         xml_path = os.path.join(xml_folder, 'map.xml')
         with open(xml_path, 'w') as mapxml:
             mapxml.write(self.__mapping.xml_string)

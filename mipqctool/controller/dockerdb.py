@@ -5,7 +5,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from mipqctool.config import LOGGER
+from mipqctool.config import LOGGER, MIPMAP_DB_NAME, MIPMAP_DB_USER
 from mipqctool.exceptions import DockerExecError
 
 
@@ -24,11 +24,11 @@ class DockerDB(object):
         self.__db_image = 'postgres:9.6'
         self.__dbname = name
         self.__dbport = port
-        self.__dbuser = 'postgres'
+        self.__dbuser = MIPMAP_DB_USER
         self.__dbpassword = password
         self.__is_db_exist = False
         self.__is_db_running = False
-        self.__mipmapname = 'mipmap'
+        self.__mipmapname = MIPMAP_DB_NAME
 
         lib_path = os.path.abspath(os.path.dirname(__file__))
         thispath = Path(lib_path)
