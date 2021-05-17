@@ -24,22 +24,33 @@ class DockerMipmap(object):
         self.__source = source
         self.__target = target
         self.__output = output
-        
-        # create the mipmap db container
-        db = DockerDB(MIPMAP_DB_CONTAINER, MIPMAP_DB_PORT, MIPMAP_DB_PASSWORD)
 
-
+        # set the folder where the run.sh script is located
         lib_path = os.path.abspath(os.path.dirname(__file__))
         thispath = Path(lib_path)
         parentpath = str(thispath.parent)
+        self.__scriptpath  = os.path.join(parentpath, 'data', 'mapping', 'script')
+
+        # set the folder where the dbproperties file will be located
+        self.__dbprop = os.path.join(self.__mappingpath, 'dbproperties')
+        if not os.path.isdir(self.__dbprop):
+            os.mkdir(self.__dbprop)
+        
+        # create the mipmap db container
+        db = DockerDB(MIPMAP_DB_CONTAINER, MIPMAP_DB_PORT, MIPMAP_DB_PASSWORD)
+        db.render_dbproperties(self.__dbprop)
+
+
+
+        
         env_path = os.path.join(parentpath, 'data', 'templates')
         env = Environment(loader=FileSystemLoader(env_path))
         template_file = 'docker-compose.j2'
         self.__template = env.get_template(template_file)
 
-        self.__scriptpath  = os.path.join(parentpath, 'data', 'mapping', 'script')
-        self.__dbprop = os.path.join(self.__mappingpath, 'dbproperties')
+        
         self.__dcompose = os.path.join(self.__mappingpath, 'docker-compose.yml')
+
         self.__run_mapping()
 
     def __run_mapping(self):

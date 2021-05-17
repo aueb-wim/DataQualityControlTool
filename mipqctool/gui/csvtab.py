@@ -8,6 +8,7 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.gui.metadataframe import MetadataFrame
+from mipqctool.gui.cleanwindow import CleanWindow
 from mipqctool.controller import TableReport
 from mipqctool.exceptions import TableReportError
 from mipqctool.config import LOGGER
@@ -24,8 +25,6 @@ class CsvTab(tk.Frame):
         self.__datasetpath = None
         self.dname = None
         self.reportcsv = None
-        self.cleaning = tk.BooleanVar()
-        self.cleaning.set(False)
         # set default option for json metadata type to Frictionless
         self.report_type = tk.IntVar()
         self.report_type.set(1)
@@ -82,10 +81,7 @@ class CsvTab(tk.Frame):
                                               command=self.setexportdir)
         #  Execution interface
         self.frame_exec = tk.Frame(self)
-        # Checkbox readable columns in csv
-        self.checkclean = tk.Checkbutton(self.frame_exec,
-                                         text='Perform Data Cleaning?',
-                                         variable=self.cleaning)
+        
         # Checkbox for producing a Latex instead a pdf file
         # self.checklatex = tk.Checkbutton(self.frame_exec,
         #                                 text='No pdf',
@@ -94,6 +90,12 @@ class CsvTab(tk.Frame):
         self.button_exec = tk.Button(self.frame_exec,
                                      text='Create Report',
                                      command=self.createreport)
+
+        self.show_sugg_button = tk.Button(self.frame_exec,
+                                          text='Show cleaning suggestions',
+                                          command=self.showsugg, state='disabled')
+        self.clean_button = tk.Button(self.frame_exec, text='Perform Cleaning',
+                                      command=self.cleandata, state='disabled')
 
     def __packing(self):
         # Input dataset frame
@@ -124,8 +126,9 @@ class CsvTab(tk.Frame):
         self.frame_exec.pack(fill='both', expand='yes',
                              padx=4, pady=4)
         self.frame_exec.grid_columnconfigure(0, weight=1)
-        self.checkclean.grid(row=0, column=1, sticky='w')
         self.button_exec.grid(row=0, column=2, pady=4)
+        self.show_sugg_button.grid(row=1, column=1, pady=4)
+        self.clean_button.grid(row=1, column=2, pady=4)
 
     def loaddatasetfile(self):
         """Loads the dataset csv"""
@@ -154,6 +157,23 @@ class CsvTab(tk.Frame):
         else:
             self.__exportfiledir = None
             self.label_export2.config(text='Not Selected')
+
+    def showsugg(self):
+        CleanWindow(self)
+
+    def cleandata(self):
+        correctedcsvfile = tkfiledialog.asksaveasfilename(
+            filetypes=(
+                ("CSV files", "*.csv"), 
+                ("All files", "*.*")
+            )
+        )
+        if correctedcsvfile:
+            self.reportcsv.apply_corrections()
+            self.reportcsv.save_corrected(correctedcsvfile)
+        else:
+            tkmessagebox.showwarning('Warning!',
+                                     'Please, select file location!')
 
     def createreport(self):
         LOGGER.info('Checking if the necessary fields are filled in...')
@@ -187,7 +207,6 @@ class CsvTab(tk.Frame):
             basename = os.path.splitext(self.dname)[0]
             pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
             xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
-            correctedcsvfile = os.path.join(filedir, basename + '_corrected.csv')
             schema_type = 'qc'
 
             if self.md_frame.from_disk.get():
@@ -218,10 +237,10 @@ class CsvTab(tk.Frame):
                     LOGGER.info('CAUTION! The dataset is invalid!')
 
                 # Perform Data Cleaning?
-                if self.cleaning.get():
-                    self.reportcsv.apply_corrections()
+                #if self.cleaning.get():
+                 #   self.reportcsv.apply_corrections()
 
-                    self.reportcsv.save_corrected(correctedcsvfile)
+                    #self.reportcsv.save_corrected(correctedcsvfile)
 
                 # Create the  report
                 if self.report_type.get() == 1:
@@ -234,6 +253,9 @@ class CsvTab(tk.Frame):
                     title='Status info',
                     message='Reports have been created successully'
                 )
+
+                self.show_sugg_button.config(state='normal')
+                self.clean_button.config(state='normal')
 
             except TableReportError:
                 errortitle = 'Something went wrong!'

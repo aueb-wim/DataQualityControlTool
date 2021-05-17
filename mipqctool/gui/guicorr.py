@@ -359,6 +359,3 @@ class guiCorr():
         LOGGER.debug('Target value is: {} and the source value is: {}'.format(targetvalue, sourcevalue))
         stringforbox = '->'.join([sourcevalue, targetvalue])
         self.func_replace_trg_listbox.insert(tk.END, stringforbox)
-
-
-

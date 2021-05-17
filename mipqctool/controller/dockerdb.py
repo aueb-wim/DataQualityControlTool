@@ -1,6 +1,7 @@
 import subprocess
 
 import os
+import time
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -22,13 +23,15 @@ class DockerDB(object):
         :param password: password for the postgres user
         """
         self.__db_image = 'postgres:9.6'
-        self.__dbname = name
+        # contain name
+        self.__db_cont_name = name
         self.__dbport = port
         self.__dbuser = MIPMAP_DB_USER
         self.__dbpassword = password
         self.__is_db_exist = False
         self.__is_db_running = False
-        self.__mipmapname = MIPMAP_DB_NAME
+        # the data base name
+        self.__mipmapdb = MIPMAP_DB_NAME
 
         lib_path = os.path.abspath(os.path.dirname(__file__))
         thispath = Path(lib_path)
@@ -37,22 +40,17 @@ class DockerDB(object):
         env = Environment(loader=FileSystemLoader(env_path))
         template_file = 'mipmap-db.properties.j2'
         self.__template = env.get_template(template_file)
-        self.__dbproperties = os.path.join(parentpath,
-                                           'data',
-                                           'mapping', 
-                                           'dbproperties',
-                                           'mipmap-db.properties'
-                                           )
+
 
         self.__create_db_container()
-        self.__render_dbproperties()
 
-    def __render_dbproperties(self):
+    def render_dbproperties(self, folderpath):
         env = {}
         env['dbusername'] = self.__dbuser
         env['dbpassword'] = self.__dbpassword
-        env['dbmipmap'] = self.__mipmapname
-        self.__template.stream(env).dump(self.__dbproperties)
+        env['dbmipmap'] = self.__mipmapdb
+        propertiespath = os.path.join(folderpath, 'mipmap-db.properties')
+        self.__template.stream(env).dump(propertiespath)
 
     def __create_db_container(self):
         """Creates a postgres 9.6 container.
@@ -62,25 +60,41 @@ class DockerDB(object):
 
         if self.__is_db_running:
             LOGGER.info('db container ({}) is already up and'
-                        ' running. Skipping creation step...'.format(self.__dbname))
+                        ' running. Skipping creation step...'.format(self.__db_cont_name))
+            self.__remove_create_db()
             pass
         elif self.__is_db_exist and not self.__is_db_running:
             LOGGER.info('db container({}) already exists. '
-                        'Restarting db container'.format(self.__dbname))
-            subprocess.run(['docker', 'restart', self.__dbname])
+                        'Restarting db container'.format(self.__db_cont_name))
+            subprocess.run(['docker', 'restart', self.__db_cont_name])
+            time.sleep(10)
+            self.__remove_create_db()
+
         else:
             # create the db container
-            LOGGER.debug('Creating db container with name {}'.format(self.__dbname))
+            LOGGER.debug('Creating db container with name {}'.format(self.__db_cont_name))
             arg_port = ['-p', '{}:5432'.format(self.__dbport)]
-            arg_name = ['--name', self.__dbname]
-            arg_env = ['-e', 'POSTGRES_PASSWORD="{}"'.format(self.__dbpassword)]
+            arg_name = ['--name', self.__db_cont_name]
+            arg_env1 = ['-e', 'POSTGRES_PASSWORD={}'.format(self.__dbpassword)]
+            arg_env2 = ['-e', 'POSTGRES_USER={}'.format(self.__dbuser)]
             arg_img = ['-d', self.__db_image]
-            command2 = ['docker', 'run'] + arg_port + arg_name + arg_env + arg_img
+            command2 = ['docker', 'run'] + arg_port + arg_name + arg_env1 + arg_env2 + arg_img
             try:
                 createproc = subprocess.run(command2)
+                time.sleep(50)
+                self.__remove_create_db()
             except subprocess.CalledProcessError:
                 LOGGER.warning('There was an error while attempting creating the db container.')
                 raise DockerExecError('There was an error while attempting creating the db container.')
+
+    def __remove_create_db(self):
+        command1 = ['docker', 'exec', '-it', self.__db_cont_name, 'psql']
+        arg_1 = ['-U', self.__dbuser, '-d', 'postgres']
+        arg_c_remove = ['-c', '"DROP DATABASE IF EXISTS {};"'.format(self.__mipmapdb)]
+
+        arg_c_create = ['-c', '"CREATE DATABASE {};"'.format(self.__mipmapdb)]
+        removeproc = subprocess.run(command1 + arg_1 + arg_c_remove)
+        createproc = subprocess.run(command1 + arg_1 + arg_c_create)
 
     def __check_db_container(self, mode='running'):
         """Checks if the db container already running or exist.
@@ -98,7 +112,7 @@ class DockerDB(object):
 
         proc_docker = subprocess.Popen(cmd_docker,
                                        stdout=subprocess.PIPE)
-        proc_grep = subprocess.Popen(['grep', self.__dbname],
+        proc_grep = subprocess.Popen(['grep', self.__db_cont_name],
                                        stdin=proc_docker.stdout,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
@@ -119,7 +133,7 @@ class DockerDB(object):
             
         LOGGER.debug('Found that there is an existing container with the name: {}'.format(container_name))
 
-        if container_name == self.__dbname:
+        if container_name == self.__db_cont_name:
             if container_image == self.__db_image:
                 if mode == 'running':
                     self.__is_db_running = True
@@ -131,7 +145,7 @@ class DockerDB(object):
             else:
                 msg = ('The name \"{}\" is used by another container.'
                        'Could not create postgres database container.' 
-                       'Please use other db container name.').format(self.__dbname)
+                       'Please use other db container name.').format(self.__db_cont_name)
                 raise DockerExecError(msg)
 
 

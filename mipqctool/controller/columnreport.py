@@ -193,6 +193,26 @@ class ColumnReport(object):
         return set(values)
 
     @property
+    def all_corrections(self):
+        """Returns all types of corrections in printabple format."""
+        all_sugg = []
+        for corrpair in self.dcorrections:
+            corstr = ' -> '.join(corrpair)
+            all_sugg.append(corstr)
+        for corrpair in self.ccorrections:
+            corstr = ' -> '.join(corrpair)
+            all_sugg.append(corstr)
+        for invalidval in self.dnulls:
+            corstr = ' -> '.join([invalidval, 'NULL'])
+            all_sugg.append(corstr)
+        for invalidval in self.cnulls:
+            corstr = ' -> '.join([invalidval, 'NULL'])
+            all_sugg.append(corstr)
+
+        return all_sugg
+
+
+    @property
     def corrected_values(self):
         if self.__corrected:
             pairs = sorted(self.__validated_pairs + self.__corrected_pairs,

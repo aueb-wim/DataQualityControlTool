@@ -50,7 +50,7 @@ DC_SUBDOMAIN_ALLPATHOLOGIES = '/pathology/allPathologies'
 MIPMAP_DB_CONTAINER = 'mipmap_postgres'
 MIPMAP_DB_NAME = 'mipmap'
 MIPMAP_DB_PORT = 5433
-MIPMAP_DB_USER = 'postgres'
+MIPMAP_DB_USER = 'mipmap'
 MIPMAP_DB_PASSWORD = 'mipmap'
 
 ERROR = 'qctool.error'
