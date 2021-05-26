@@ -14,8 +14,13 @@ from mipqctool.config import ERROR, LOGGER, PANDAS_NANS, DEFAULT_MISSING_VALUES
 def infer_text(value, **options):
     """Find if the given string value it represents a date or NaN.
     """
+    na_empty_strings_only=options.get('na_empty_strings_only')
+    if na_empty_strings_only:
+        missing_values = DEFAULT_MISSING_VALUES
+    else:
+        missing_values = PANDAS_NANS
     if isinstance(value, str):
-        if value in PANDAS_NANS:
+        if value in missing_values:
             return 'nan'
         else:
             return 'text'

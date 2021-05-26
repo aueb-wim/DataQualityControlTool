@@ -21,7 +21,7 @@ class CsvTab(tk.Frame):
         self.float_validation = self.register(is_number)
         # outlier threshold 
         self.outlier_threshold = tk.StringVar()
-        self.__exportfiledir = None
+        self.__reportfilepath = None
         self.__datasetpath = None
         self.dname = None
         self.reportcsv = None
@@ -77,8 +77,8 @@ class CsvTab(tk.Frame):
                                       text='Not Selected')
         # Button Select export folder
         self.button_export_folder = tk.Button(self.tblabelframe_output,
-                                              text='Select Folder',
-                                              command=self.setexportdir)
+                                              text='Select Report File',
+                                              command=self.setreportfile)
         #  Execution interface
         self.frame_exec = tk.Frame(self)
         
@@ -148,14 +148,23 @@ class CsvTab(tk.Frame):
             self.d_datasetpath_label.config(text='Not Selected')
             #self.d_headers_cbox.delete(0, "end")
 
-    def setexportdir(self):
+    def setreportfile(self):
         """Folder path where the reports are stored"""
-        filedir = tkfiledialog.askdirectory(title='Select folder to save report')
-        if filedir:
-            self.__exportfiledir = filedir
-            self.label_export2.config(text=filedir)
+        if self.report_type.get() == 1:
+            reporttype = ('excel files', "*.xlsx")
         else:
-            self.__exportfiledir = None
+            reporttype = ('pdf files', '*.pdf')
+        reportfilepath = tkfiledialog.asksaveasfilename(
+            filetypes=(
+                reporttype, 
+                ("All files", "*.*")
+            )
+        )
+        if reportfilepath:
+            self.__reportfilepath = reportfilepath
+            self.label_export2.config(text=reportfilepath)
+        else:
+            self.__reportfilepath = None
             self.label_export2.config(text='Not Selected')
 
     def showsugg(self):
@@ -191,9 +200,9 @@ class CsvTab(tk.Frame):
             tkmessagebox.showwarning(warningtitle,
                                      'Could not get metadata from Data Cataloge')
 
-        elif not self.__exportfiledir:
+        elif not self.__reportfilepath:
             tkmessagebox.showwarning(warningtitle,
-                                     'Please, select export folder first')
+                                     'Please, select report file first')
         else:
             try:
                 threshold = float(self.outlier_threshold.get())
@@ -203,10 +212,10 @@ class CsvTab(tk.Frame):
                                 Setting it to default value: 3')
                 threshold = 3
             LOGGER.info('Everything looks ok...')
-            filedir = self.__exportfiledir
-            basename = os.path.splitext(self.dname)[0]
-            pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
-            xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
+            #filedir = self.__exportfiledir
+            #basename = os.path.splitext(self.dname)[0]
+            #pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
+            #xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
             schema_type = 'qc'
 
             if self.md_frame.from_disk.get():
@@ -244,11 +253,11 @@ class CsvTab(tk.Frame):
 
                 # Create the  report
                 if self.report_type.get() == 1:
-                    self.reportcsv.printexcel(xlsxreportfile)
+                    self.reportcsv.printexcel(self.__reportfilepath)
                 else:
-                    self.reportcsv.printpdf(pdfreportfile)
+                    self.reportcsv.printpdf(self.__reportfilepath)
 
-                self.label_export2.config(text=filedir)
+                #self.label_export2.config(text=filedir)
                 tkmessagebox.showinfo(
                     title='Status info',
                     message='Reports have been created successully'

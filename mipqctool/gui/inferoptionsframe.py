@@ -11,6 +11,7 @@ class InferOptionsFrame(tk.Frame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.thresholdstring = tk.StringVar()
+        self.na_empty_strings_only=tk.BooleanVar()
         self.threshold_validation = self.register(valid_threshold)
         self.cde_dict = None
         # validation callback function for entering integer numbers
@@ -36,6 +37,9 @@ class InferOptionsFrame(tk.Frame):
                                           validatecommand=(self.int_validation, '%S'))
         self.sample_rows_entry.insert(0, '100')
 
+        self.na_option_chbutton = tk.Checkbutton(self.opts_lbframe, text='Only infer empty strings as NAs',
+                                                 var=self.na_empty_strings_only)
+
         self.cde_dict_separator = ttk.Separator(self.opts_lbframe, orient='vertical')
         self.cde_dict_label2 = tk.Label(self.opts_lbframe, text='CDE suggestion (Optional)')
         self.cde_threshold_label = tk.Label(self.opts_lbframe, text='Similarity Threshold (0.0 - 1.0)')
@@ -56,6 +60,7 @@ class InferOptionsFrame(tk.Frame):
         self.categories_entry.grid(row=0, column=1, sticky='w')
         self.sample_rows_label.grid(row=1, column=0, sticky='e')
         self.sample_rows_entry.grid(row=1, column=1, sticky='w')
+        self.na_option_chbutton.grid(row=2, column=0, sticky='e')
         self.cde_dict_separator.grid(row=0, column=2, rowspan=3, padx= 4, sticky="ns")
         self.cde_dict_label2.grid(row=0, column=3, columnspan=2, pady=4, padx=4)
         self.cde_threshold_label.grid(row=1, column=3, pady=4, sticky='e')

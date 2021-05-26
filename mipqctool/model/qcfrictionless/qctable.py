@@ -74,13 +74,14 @@ class QcTable(Table):
         """Returns an ordered dict {original header: mipmap header}."""
         return list(self.__headers_4_mipmap.values())
 
-    def infer(self, limit=100, maxlevels=10, confidence=0.75):
+    def infer(self, limit=100, maxlevels=10, confidence=0.75, na_empty_strings_only=False):
         """Tries to infer the table schema only for csv file.
         Arguments:
         :param limit: number of rows to be used for infer
         :param maxlevels: number of levels or enumeration for nominal qctypes
         :param confidence: float how many casting errors are allowed
                            (as a ratio, between 0 and 1)
+        :param na_empty_strings_only: boolean to infer only empty strings as NAs
 
         :returns: dict Table Schema descriptor
         """
@@ -94,7 +95,8 @@ class QcTable(Table):
                         self._Table__schema.infer(stream.read(limit=limit),
                                                   headers=stream.headers,
                                                   maxlevels=maxlevels,
-                                                  confidence=confidence)
+                                                  confidence=confidence,
+                                                  na_empty_strings_only=na_empty_strings_only)
                     if self._Table__headers is None:
                         self._Table__headers = stream.headers
 

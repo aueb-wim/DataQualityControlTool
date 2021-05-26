@@ -155,3 +155,36 @@ def test_resolver(resolver, counts, result):
 def test_infer(qcshema, data, result):
     qcshema.infer(data, maxlevels=3)
     assert qcshema.descriptor == result
+
+@pytest.mark.parametrize('data, result', [
+        ([
+          ['id', 'age', 'name', 'birthdate', 'iq', 'gender'],
+          ['1', '39y', 'Paul', '12/1/1945', '32.2', '1'],
+          ['2', '23y', 'Jimmy', '11/5/2001', '0.5', '0'],
+          ['3', '36y', 'Jane', '15/11/1955', '2.55', '1'],
+          ['4', 'NA', 'Judy', '25/7/1961', '55.23', '1'],
+          ['5', '41y', 'NA', '11/12/1951', '3.1', '0'],
+         ], {
+            'fields': [
+                {'format': 'default', 'name': 'id', 'type': 'integer',
+                 'MIPType': 'integer', 'bareNumber': True},
+                {'format': 'default', 'name': 'age', 'type': 'integer',
+                 'MIPType': 'integer', 'bareNumber': False,
+                 'suffix': 'y'},
+                {'format': 'default', 'name': 'name', 'type': 'string',
+                 'MIPType': 'text'},
+                {'format': '%d/%m/%Y', 'name': 'birthdate', 'type': 'date',
+                 'MIPType': 'date'},
+                {'format': 'default', 'name': 'iq', 'type': 'number',
+                 'MIPType': 'numerical', 'decimalChar': '.',
+                 'bareNumber': True},
+                {'format': 'default', 'name': 'gender', 'type': 'boolean',
+                 'MIPType': 'nominal', 'trueValues': ['1'],
+                 'falseValues': ['0']},
+            ],
+            'missingValues': ['']
+        })
+])
+def test_infer_na(qcshema, data, result):
+    qcshema.infer(data, maxlevels=3, na_empty_strings_only=True)
+    assert qcshema.descriptor == result

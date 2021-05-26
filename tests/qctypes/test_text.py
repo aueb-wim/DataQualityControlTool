@@ -29,6 +29,21 @@ def test_infer_text(value, result):
         assert qctypes.infer_text(value) == result
         assert recorded.list == []
 
+@pytest.mark.parametrize('value, result', [
+    ('NaN', 'text'),
+    ('NAN', 'text'),
+    ('NA', 'text'),
+    ('43', 'text'),
+    ('34.34', 'text'),
+    ('', 'nan'),
+    (43, ERROR),
+])
+def test_infer_text_empty_strings_only(value, result):
+    with pytest.warns(None) as recorded:
+        options= {'na_empty_strings_only': True}
+        assert qctypes.infer_text(value, **options) == result
+        assert recorded.list == []
+
 
 @pytest.mark.parametrize('pattern, uniques, result', [
     ('text', set(['t', 'e', 's', 'd']), {'type': 'string',

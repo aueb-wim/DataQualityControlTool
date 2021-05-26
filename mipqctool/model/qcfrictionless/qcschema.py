@@ -44,7 +44,8 @@ class QcSchema(Schema):
         return [field.name for field in self.fields]
 
     def infer(self, rows, headers=1,
-              confidence=0.75, maxlevels=10):
+              confidence=0.75, maxlevels=10,
+              na_empty_strings_only=False):
         # Get headers
         if isinstance(headers, int):
             headers_row = headers
@@ -80,7 +81,7 @@ class QcSchema(Schema):
             for index, value in enumerate(row):
                 # remove leading and trailing whitespacing
                 value = value.strip()
-                rv = guesser.infer(value)
+                rv = guesser.infer(value, na_empty_strings_only=na_empty_strings_only)
                 name = rv[0]
                 pattern = rv[1]
                 # collect unique values for possible nominal variable
@@ -170,10 +171,11 @@ _INFER_PRIORITY = [
 class _QcTypeGuesser(object):
     """Guess the type for a value returning a tuple of ('type', 'pattern', priority)
     """
-    def infer(self, value):
+    def infer(self, value, na_empty_strings_only=False):
         for priority, name in enumerate(_INFER_PRIORITY):
             infer = getattr(qctypes, 'infer_%s' % name)
-            pattern = infer(value)
+            options={'na_empty_strings_only': na_empty_strings_only}
+            pattern = infer(value, **options)
             if pattern != config.ERROR:
                 return (name, pattern, priority)
 

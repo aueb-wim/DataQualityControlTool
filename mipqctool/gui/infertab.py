@@ -86,11 +86,13 @@ class InferTab(tk.Frame):
                                          'Please, select dataset file')
             max_categories = int(self.inf_opt_frame.max_categories.get())
             sample_rows = int(self.inf_opt_frame.sample_rows.get())
+            na_empty_strings_only = self.inf_opt_frame.na_empty_strings_only.get()
             if self.inf_opt_frame.cde_dict:
                 infer = InferSchema.from_disc(self.datasetpath, 
                                               sample_rows=sample_rows,
                                               maxlevels=max_categories,
-                                              cdedict=self.inf_opt_frame.cde_dict)
+                                              cdedict=self.inf_opt_frame.cde_dict,
+                                              na_empty_strings_only=na_empty_strings_only)
                 if self.inf_opt_frame.thresholdstring.get() == '':
                     threshold = 0.6
                 else:
@@ -108,7 +110,8 @@ class InferTab(tk.Frame):
                 infer = InferSchema.from_disc(self.datasetpath, 
                                               sample_rows=sample_rows,
                                               maxlevels=max_categories,
-                                              cdedict=None)
+                                              cdedict=None,
+                                              na_empty_strings_only=na_empty_strings_only)
                 if self.schema_output.get() == 1:
                     infer.export2excel(output_file)
                     LOGGER.info('Schema file has been created successully')

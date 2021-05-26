@@ -6,7 +6,7 @@ from mipqctool.controller.tablereport import TableReport
 
 class InferSchema(object):   
 
-    def __init__(self, table, csvname, sample_rows=100, maxlevels=10, cdedict=None):
+    def __init__(self, table, csvname, sample_rows=100, maxlevels=10, cdedict=None, na_empty_strings_only=False):
         """Class for infering a dataset's schema which comes in csv file.
          Arguments:
          :param table: a QcTable holding the dataset csv data.
@@ -18,7 +18,7 @@ class InferSchema(object):
         """
         self.__table = table
         self.__csvname = csvname
-        self.__table.infer(limit=sample_rows, maxlevels=maxlevels)
+        self.__table.infer(limit=sample_rows, maxlevels=maxlevels, na_empty_strings_only=na_empty_strings_only)
         self.__suggestions = None
         if cdedict:
             self.__cdedict = cdedict
@@ -52,7 +52,7 @@ class InferSchema(object):
         self.__table.schema.save(filename)
 
     @classmethod
-    def from_disc(cls, csvpath,  sample_rows=100, maxlevels=10, cdedict=None):
+    def from_disc(cls, csvpath,  sample_rows=100, maxlevels=10, cdedict=None, na_empty_strings_only=False):
         """
         Constructs an InferSchema from loading a csv file from local disc.
         Arguments:
@@ -67,7 +67,7 @@ class InferSchema(object):
         csvname = os.path.basename(csvpath)
         return cls(table=dataset, csvname=csvname,
                    sample_rows=sample_rows,maxlevels=maxlevels,
-                   cdedict=cdedict)
+                   cdedict=cdedict, na_empty_strings_only=na_empty_strings_only)
 
 
 
