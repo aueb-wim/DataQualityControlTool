@@ -153,6 +153,21 @@ class MetadataFrame(tk.Frame):
             except tk.TclError:
                 self._enable(child)
 
+    def global_disable(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state='disabled')
+            except tk.TclError:
+                self._enable(child)
+
+    def global_enable(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state='normal')
+            except tk.TclError:
+                self._enable(child)
+
+
     def setmetadatafile(self):
         """Sets the filepath of the  metadata file """
         filepath = tkfiledialog.askopenfilename(title='select metadata file',

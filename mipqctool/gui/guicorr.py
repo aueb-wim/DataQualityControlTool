@@ -268,15 +268,15 @@ class guiCorr():
                 tkmessagebox.showwarning('Mapping Warning', str(e))
 
     def cancel(self):
-        self.parent.corr_add_btn.configure(state="active")
-        self.parent.corr_edit_bth.configure(state="active")
-        self.parent.corr_remove_btn.configure(state="active")
+        self.parent.corr_add_btn.configure(state="normal")
+        self.parent.corr_edit_bth.configure(state="normal")
+        self.parent.corr_remove_btn.configure(state="normal")
         self.master.destroy()
 
     def on_close(self):
-        self.parent.corr_add_btn.configure(state="active")
-        self.parent.corr_edit_bth.configure(state="active")
-        self.parent.corr_remove_btn.configure(state="active")
+        self.parent.corr_add_btn.configure(state="normal")
+        self.parent.corr_edit_bth.configure(state="normal")
+        self.parent.corr_remove_btn.configure(state="normal")
         self.master.destroy()
 
     def on_select_column(self, event):
@@ -351,9 +351,10 @@ class guiCorr():
         else:
             cdename = cdecode
         current_replacements = self.parent.cdemapper.get_corr_replacements(cdename)
-        LOGGER.debug('Replacements found for cde "{}": {}'.format(cdecode, len(current_replacements)))
-        for rep in current_replacements:
-            self.__add_replacement(rep.source, rep.target)
+        if current_replacements:
+            LOGGER.debug('Replacements found for cde "{}": {}'.format(cdecode, len(current_replacements)))
+            for rep in current_replacements:
+                self.__add_replacement(rep.source, rep.target)
 
     def __add_replacement(self, sourcevalue, targetvalue):
         LOGGER.debug('Target value is: {} and the source value is: {}'.format(targetvalue, sourcevalue))

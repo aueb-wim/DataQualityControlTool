@@ -1,6 +1,6 @@
 import os
-import csv
 import json
+from threading import Thread
 
 from tkinter import ttk
 import tkinter as tk
@@ -10,7 +10,7 @@ import tkinter.messagebox as tkmessagebox
 from mipqctool.gui.metadataframe import MetadataFrame
 from mipqctool.gui.cleanwindow import CleanWindow
 from mipqctool.controller import TableReport
-from mipqctool.exceptions import TableReportError
+from mipqctool.exceptions import QCToolException
 from mipqctool.config import LOGGER
 
 # TODO: make the selection of columnID optional
@@ -89,13 +89,13 @@ class CsvTab(tk.Frame):
         # Button execution
         self.button_exec = tk.Button(self.frame_exec,
                                      text='Create Report',
-                                     command=self.createreport)
+                                     command=self.threaded_createreport)
 
         self.show_sugg_button = tk.Button(self.frame_exec,
                                           text='Show cleaning suggestions',
                                           command=self.showsugg, state='disabled')
         self.clean_button = tk.Button(self.frame_exec, text='Perform Cleaning',
-                                      command=self.cleandata, state='disabled')
+                                      command=self.threaded_cleandata, state='disabled')
 
     def __packing(self):
         # Input dataset frame
@@ -135,6 +135,8 @@ class CsvTab(tk.Frame):
         filepath = tkfiledialog.askopenfilename(title='select dataset file',
                                                 filetypes=(('csv files', '*.csv'),
                                                            ('all files', '*.*')))
+        self.clean_button.config(state='disabled')
+        self.show_sugg_button.config(state='disabled')
         if filepath:
             self.dname = os.path.basename(filepath)
             self.d_datasetpath_label.config(text=self.dname)
@@ -170,7 +172,12 @@ class CsvTab(tk.Frame):
     def showsugg(self):
         CleanWindow(self)
 
+    def threaded_cleandata(self):
+        t1 = Thread(target=self.cleandata)
+        t1.start()
+
     def cleandata(self):
+        self.clean_button.config(state='disabled')
         correctedcsvfile = tkfiledialog.asksaveasfilename(
             filetypes=(
                 ("CSV files", "*.csv"), 
@@ -180,11 +187,21 @@ class CsvTab(tk.Frame):
         if correctedcsvfile:
             self.reportcsv.apply_corrections()
             self.reportcsv.save_corrected(correctedcsvfile)
+            tkmessagebox.showinfo(
+                    title='Status info',
+                    message='Cleaned dataset has saved successully'
+                )
         else:
             tkmessagebox.showwarning('Warning!',
                                      'Please, select file location!')
+        self.clean_button.config(state='normal')
+
+    def threaded_createreport(self):
+        t1 = Thread(target=self.createreport)
+        t1.start()
 
     def createreport(self):
+        self.button_exec.config(state='disabled')
         LOGGER.info('Checking if the necessary fields are filled in...')
         warningtitle = 'Cannot create report'
         if not self.dname:
@@ -199,7 +216,6 @@ class CsvTab(tk.Frame):
         elif self.md_frame.from_dc.get() and not self.md_frame.dc_json:
             tkmessagebox.showwarning(warningtitle,
                                      'Could not get metadata from Data Cataloge')
-
         elif not self.__reportfilepath:
             tkmessagebox.showwarning(warningtitle,
                                      'Please, select report file first')
@@ -266,9 +282,10 @@ class CsvTab(tk.Frame):
                 self.show_sugg_button.config(state='normal')
                 self.clean_button.config(state='normal')
 
-            except TableReportError:
+            except QCToolException as e:
                 errortitle = 'Something went wrong!'
-                tkmessagebox.showerror(errortitle, 'Please check metadata json')
+                tkmessagebox.showerror(errortitle, e)
+        self.button_exec.config(state='normal')
 	
 def is_number(s):
     if s == '':

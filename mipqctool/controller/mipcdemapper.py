@@ -10,9 +10,9 @@ from mipqctool.controller import CDEsController, TableReport, DockerMipmap
 from mipqctool.exceptions import MappingError, CdeDictError
 from mipqctool.config import LOGGER
 
-DIR_PATH = os.path.dirname(os.path.abspath(__file__))
-PATH = Path(DIR_PATH)
-PARENTPATH= PATH.parent
+# DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+# PATH = Path(DIR_PATH)
+# PARENTPATH= PATH.parent
 
 class MipCDEMapper(object):
     """Class for handling a simple (one to one) mapping task 
@@ -26,9 +26,11 @@ class MipCDEMapper(object):
     :param maxlevels: total unique string values in a column to be 
                       considered as categorical type in schema inference 
                       of the source csv file. 
+    :param na_empty_strings_only: (boolean) If True, only the empty strings
+                                  will be infered as NAs
 
     """
-    def __init__(self, source_path, cdescontroller, sample_rows, maxlevels):
+    def __init__(self, source_path, cdescontroller, sample_rows, maxlevels, na_empty_strings_only=False):
 
         sourcedb = CsvDB('hospitaldb', [source_path], schematype='source')
         # get user home directory
@@ -46,13 +48,14 @@ class MipCDEMapper(object):
         self.__target_dbname = cdescontroller.cdedataset_name
         # use it also as filename by adding .csv extension
         self.__target_filename = self.__target_dbname + '.csv'
-        # use as target folder the mipqctool/data/mapping/target
+        # 
         # this will be used in the mapping execution by mipmap engine
         self.__target_folder = os.path.join(self.__mappingpath, 'target')
         self.__target_path = os.path.join(self.__target_folder,
                                           self.__target_filename)
         # create a csv file with the cde headers only
         cdescontroller.save_csv_headers_only(self.__target_path)
+        self.__cdecontroller = cdescontroller
         # now we can create the CsvDB for the target schema
         targetdb = CsvDB(self.__target_dbname,
                          [self.__target_path],
@@ -64,13 +67,17 @@ class MipCDEMapper(object):
         # With QcTable we can access medata about the source csv
         self.__srctbl = QcTable(source_path, schema=None)
         # inder the table schema
-        self.__srctbl.infer(limit=sample_rows, maxlevels=maxlevels)
+        self.__srctbl.infer(limit=sample_rows, maxlevels=maxlevels,
+                            na_empty_strings_only=na_empty_strings_only)
         self.__src_path = source_path
         self.__src_folder = os.path.dirname(source_path)
         # create table report for the source file
         self.__tblreport = TableReport(self.__srctbl)
         self.__src_filename = self.__srctbl.filename
         self.__src_headers = self.__srctbl.headers4mipmap
+        srcname_no_ext = os.path.splitext(self.__src_path)[0]
+        reportfilepath = srcname_no_ext + '_report.xlsx'
+        self.__tblreport.printexcel(reportfilepath)
         # get the cde headers
         self.__cde_headers = cdescontroller.cde_headers
         self.__cde_mapped = self.__mapping.correspondences.keys()
@@ -92,6 +99,7 @@ class MipCDEMapper(object):
 
     @property
     def corr_sources(self):
+        """source vars for each cde correspondence"""
         return self.__cde_corrs_sources
 
     @property
@@ -105,6 +113,10 @@ class MipCDEMapper(object):
     @property
     def cde_not_mapped(self):
         return self.__cde_not_mapped
+
+    @property
+    def cdecontroller(self):
+        return self.__cdecontroller
 
     def suggest_corr(self, cdedict, threshold):
         """
@@ -237,6 +249,10 @@ class MipCDEMapper(object):
         with open(xml_path, 'w') as mapxml:
             mapxml.write(self.__mapping.xml_string)
         DockerMipmap(xml_folder, self.__src_folder, self.__target_folder, output)
+
+    def save_mapping(self, filepath):
+        with open(filepath, 'w') as mapxml:
+            mapxml.write(self.__mapping.xml_string)
 
     def replace_function(self, column, replacments):
         """Returns a mipmap function string with encapsulated if statements 

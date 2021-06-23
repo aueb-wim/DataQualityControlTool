@@ -31,7 +31,6 @@ from mipqctool import config, __version__
 from mipqctool.config import LOGGER, COLUMN_STAT_HEADERS
 
 
-config.debug(True)
 
 
 class TableReport(object):
@@ -72,6 +71,10 @@ class TableReport(object):
         self.__total_columns = len(self.__table.schema.field_names)
         if self.__table.with_metadata:
             self.__validate_headers()
+            # if there are none valid headers there is no point of creating a report
+            if not self.__valid_headers:
+                raise QCToolException("No valid column names have found in the dataset according to the given schema.")
+
         self.__columns_quantiles = None
         # Calc which column number corresponds to which quantile
         self.__calc_columns_quantiles()
@@ -223,17 +226,17 @@ class TableReport(object):
         col2.font = Font(bold=True)
         #ws2.append(['rows with only id column filled', len(self.__rows_only_id)])
         #ws2.append(['rows with no id column filled', len(self.__rows_no_id)])
-        ws2.append(['rows with 0-24% of the columns filled', self.filled_rows_stats['filled_0_24']])
-        ws2.append(['rows with 25-49% of the columns filled', self.filled_rows_stats['filled_25_49']])
-        ws2.append(['rows with 50-74% of the columns filled', self.filled_rows_stats['filled_50_74']])
-        ws2.append(['rows with 75-99% of the columns filled', self.filled_rows_stats['filled_75_99']])
-        ws2.append(['rows with 100% of the columns filled', self.filled_rows_stats['filled_100']])
+        ws2.append(['rows with 0-24% of the columns filled', self.filled_rows_stats.get('filled_0_24')])
+        ws2.append(['rows with 25-49% of the columns filled', self.filled_rows_stats.get('filled_25_49')])
+        ws2.append(['rows with 50-74% of the columns filled', self.filled_rows_stats.get('filled_50_74')])
+        ws2.append(['rows with 75-99% of the columns filled', self.filled_rows_stats.get('filled_75_99')])
+        ws2.append(['rows with 100% of the columns filled', self.filled_rows_stats.get('filled_100')])
 
-        ws2.append(['rows with 0-24% of the columns valid', self.valid_rows_stats['valid_0_24']])
-        ws2.append(['rows with 25-49% of the columns valid', self.valid_rows_stats['valid_25_49']])
-        ws2.append(['rows with 50-74% of the columns valid', self.valid_rows_stats['valid_50_74']])
-        ws2.append(['rows with 75-99% of the columns valid', self.valid_rows_stats['valid_75_99']])
-        ws2.append(['rows with 100% of the columns valid', self.valid_rows_stats['valid_100']])
+        ws2.append(['rows with 0-24% of the columns valid', self.valid_rows_stats.get('valid_0_24')])
+        ws2.append(['rows with 25-49% of the columns valid', self.valid_rows_stats.get('valid_25_49')])
+        ws2.append(['rows with 50-74% of the columns valid', self.valid_rows_stats.get('valid_50_74')])
+        ws2.append(['rows with 75-99% of the columns valid', self.valid_rows_stats.get('valid_75_99')])
+        ws2.append(['rows with 100% of the columns valid', self.valid_rows_stats.get('valid_100')])
         
         chart1 = BarChart()
         chart1.type = 'bar'

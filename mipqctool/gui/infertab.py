@@ -1,13 +1,10 @@
 import os
-import csv
-import json
-from tkinter import ttk
+from threading import Thread
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 from mipqctool.controller import InferSchema
 from mipqctool.gui.inferoptionsframe import InferOptionsFrame
-from mipqctool.exceptions import TableReportError
 from mipqctool.config import LOGGER
 
 
@@ -47,7 +44,7 @@ class InferTab(tk.Frame):
                                                   variable=self.schema_output,
                                                   value=2)
         self.save_button = tk.Button(self.output_frame, text='Save Schema',
-                                     command=self.save_schema)
+                                     command=self.threaded_save_schema)
 
     def __packing(self):
 
@@ -68,7 +65,13 @@ class InferTab(tk.Frame):
         self.frictionless_radiobutton.pack(anchor='w')
         self.save_button.pack(side='left', padx=4, anchor='se')
 
+    def threaded_save_schema(self):
+        t1=Thread(target=self.save_schema)
+        t1.start()
+
+
     def save_schema(self):
+        self.save_button.config(state='disabled')
 
         if self.schema_output.get() == 1:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
@@ -126,6 +129,7 @@ class InferTab(tk.Frame):
                         title='Status info',
                         message='Schema file has been created successully'
                     )
+        self.save_button.config(state='normal')
 
 
     def loaddatasetfile(self):

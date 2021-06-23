@@ -41,7 +41,7 @@ def debug(debug_on=True):
 
 
 # force level=Warning
-debug(True)
+debug(False)
 
 # Global constants
 DC_DOMAIN = 'http://dc.hbp.link:8086'

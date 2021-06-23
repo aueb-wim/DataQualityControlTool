@@ -1,5 +1,6 @@
 import os
 import getpass
+from threading import Thread
 
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
@@ -48,7 +49,7 @@ class DicomTab(tk.Frame):
 
         # Button for creating the report
         self.btn_exec = tk.Button(self, text='Create Report',
-                                  command=self.createreport)
+                                  command=self.threaded_createreport)
 
     def __packing(self):
         self.tblabelframe.pack(fill='x', ipadx=4, ipady=4,
@@ -80,7 +81,12 @@ class DicomTab(tk.Frame):
             self.__rootfolder = rootfolder
             self.lbl_root_f.config(text=rootfolder)
 
+    def threaded_createreport(self):
+        t1 = Thread(target=self.createreport)
+        t1.start()
+
     def createreport(self):
+        self.btn_exec.config(state='disabled')
         if not self.__rootfolder:
             tkmessagebox.showwarning('Can not create Report',
                                      'Please select DICOM folder first')
@@ -94,3 +100,4 @@ class DicomTab(tk.Frame):
                 report.reorganizefiles(self.__exportfolder)
             tkmessagebox.showinfo(title='Status info',
                                   message='Reports have been created successully')
+            self.btn_exec.config(state='normal')
