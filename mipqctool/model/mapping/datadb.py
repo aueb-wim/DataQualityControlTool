@@ -1,0 +1,2 @@
+class DataDB(object):
+    pass

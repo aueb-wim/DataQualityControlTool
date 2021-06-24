@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import pytest
 import json
-from mipqctool.qcfrictionless import FrictionlessFromDC
+from mipqctool.model.qcfrictionless import FrictionlessFromDC
 from mipqctool.config import ERROR
 
 TEST_JSON_PATH1 = 'tests/test_datasets/simple_dc_cdes.json'

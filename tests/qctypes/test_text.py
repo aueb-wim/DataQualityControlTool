@@ -3,13 +3,18 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
 import pytest
 import csv
-from mipqctool import qctypes
+from pathlib import Path
+
+from mipqctool.model import qctypes
 from mipqctool.config import ERROR
 
 # Tests
+TESTS_BASE_DIR = Path(__file__).resolve().parent.parent
 
+TEST_TEXT_PATH = os.path.join(str(TESTS_BASE_DIR), 'test_datasets', 'text.csv')
 
 @pytest.mark.parametrize('value, result', [
     ('NaN', 'nan'),
@@ -22,6 +27,21 @@ from mipqctool.config import ERROR
 def test_infer_text(value, result):
     with pytest.warns(None) as recorded:
         assert qctypes.infer_text(value) == result
+        assert recorded.list == []
+
+@pytest.mark.parametrize('value, result', [
+    ('NaN', 'text'),
+    ('NAN', 'text'),
+    ('NA', 'text'),
+    ('43', 'text'),
+    ('34.34', 'text'),
+    ('', 'nan'),
+    (43, ERROR),
+])
+def test_infer_text_empty_strings_only(value, result):
+    with pytest.warns(None) as recorded:
+        options= {'na_empty_strings_only': True}
+        assert qctypes.infer_text(value, **options) == result
         assert recorded.list == []
 
 
@@ -46,11 +66,11 @@ def test_describe_text(pattern, uniques, result):
 
 
 @pytest.mark.parametrize('path, column, result', [
-    ('data/text.csv', 1,
+    (TEST_TEXT_PATH, 1,
      {'top': 'Germany', 'freq': 17, 'unique': 13, 
       'top5': ['Germany', 'Italy', 'Netherlands', 'Denmark', 'Belgium'],
       'bottom5': ['Austria', 'Albania', 'Ireland', 'Turkey', 'Spain']}),
-    ('data/text.csv', 2,
+    (TEST_TEXT_PATH, 2,
      {'top': '', 'freq': 100, 'unique': 1,
       'top5': [''], 'bottom5': ['']})
 ])

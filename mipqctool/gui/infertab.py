@@ -1,28 +1,17 @@
 import os
-import csv
-import json
-from tkinter import ttk
+from threading import Thread
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
-from ..qcfrictionless import QcSchema, QcTable, FrictionlessFromDC, CdeDict
-from ..inferschema import InferSchema
-from ..exceptions import TableReportError
-from ..config import LOGGER
+from mipqctool.controller import InferSchema
+from mipqctool.gui.inferoptionsframe import InferOptionsFrame
+from mipqctool.config import LOGGER
 
 
 class InferTab(tk.Frame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.thresholdstring = tk.StringVar()
-        self.threshold_validation = self.register(valid_threshold)
-        self.cde_dict = None
-        # validation callback function for entering integer numbers
-        self.int_validation = self.register(only_integers)
-        # sample of rows for schema inferance variable 
-        self.sample_rows = tk.StringVar()
-        # maximum categories for schema inferance variable
-        self.max_categories = tk.StringVar()
+
         # set default option for json metadata type to Frictionless
         self.schema_output = tk.IntVar()
         self.schema_output.set(1)
@@ -40,31 +29,9 @@ class InferTab(tk.Frame):
                                           bg='white', pady=4, width=50)
         self.dload_button = tk.Button(self.datasetframe, text='Select File',
                                       command=self.loaddatasetfile)
-
-        self.opts_lbframe = tk.LabelFrame(self, text='Infer Options') 
-
-        self.categories_label = tk.Label(self.opts_lbframe, text='Maximum Category Levels:')
-        self.sample_rows_label = tk.Label(self.opts_lbframe, text='Sample Rows:')
-        self.categories_entry = tk.Entry(self.opts_lbframe, width=10, 
-                                         validate="key", textvariable=self.max_categories,
-                                         validatecommand=(self.int_validation, '%S'))
-        self.categories_entry.insert(0, '10')
-        self.sample_rows_entry = tk.Entry(self.opts_lbframe, width=10,
-                                          validate='key', textvariable=self.sample_rows,
-                                          validatecommand=(self.int_validation, '%S'))
-        self.sample_rows_entry.insert(0, '100')
-
-        self.cde_dict_separator = ttk.Separator(self.opts_lbframe, orient='vertical')
-        self.cde_dict_label2 = tk.Label(self.opts_lbframe, text='CDE suggestion (Optional)')
-        self.cde_threshold_label = tk.Label(self.opts_lbframe, text='Similarity Threshold (0.0 - 1.0)')
-        self.cde_threshold_entry = tk.Entry(self.opts_lbframe, width=5, 
-                                            validate='key', textvariable=self.thresholdstring,
-                                            validatecommand=(self.threshold_validation, '%P'))
-        self.cde_threshold_entry.insert(0, '0.6')
-        self.cde_dict_label = tk.Label(self.opts_lbframe, text = 'No CDE Dictionary File Selected',
-                                         width = 30, bg='white')
-        self.cde_dict_button = tk.Button(self.opts_lbframe, text='Select file',
-                                         command=self.load_cde_dict_file)
+        
+        self.inf_opt_frame = InferOptionsFrame(self)
+        
         # #### OUTPUT OPTIONS ####
         self.output_frame = tk.Frame(self)
         self.schema_spec_lbframe = tk.LabelFrame(self.output_frame, text='Schema output')
@@ -77,7 +44,7 @@ class InferTab(tk.Frame):
                                                   variable=self.schema_output,
                                                   value=2)
         self.save_button = tk.Button(self.output_frame, text='Save Schema',
-                                     command=self.save_schema)
+                                     command=self.threaded_save_schema)
 
     def __packing(self):
 
@@ -88,17 +55,8 @@ class InferTab(tk.Frame):
 
 
         # #### INFER OPTIONS ####
-        self.opts_lbframe.pack(fill='both', ipadx=2, ipady=2)
-        self.categories_label.grid(row=0, column=0, sticky='e')
-        self.categories_entry.grid(row=0, column=1, sticky='w')
-        self.sample_rows_label.grid(row=1, column=0, sticky='e')
-        self.sample_rows_entry.grid(row=1, column=1, sticky='w')
-        self.cde_dict_separator.grid(row=0, column=2, rowspan=3, padx= 4, sticky="ns")
-        self.cde_dict_label2.grid(row=0, column=3, columnspan=2, pady=4, padx=4)
-        self.cde_threshold_label.grid(row=1, column=3, pady=4, sticky='e')
-        self.cde_threshold_entry.grid(row=1, column=4, sticky='w')        
-        self.cde_dict_label.grid(row=2, column=3, pady=4, padx=4)
-        self.cde_dict_button.grid(row=2, column=4)
+        self.inf_opt_frame.pack(fill='both', ipadx=2, ipady=2)
+        
 
         # #### OUTPUT OPTIONS ####
         self.output_frame.pack(anchor='e')
@@ -107,7 +65,13 @@ class InferTab(tk.Frame):
         self.frictionless_radiobutton.pack(anchor='w')
         self.save_button.pack(side='left', padx=4, anchor='se')
 
+    def threaded_save_schema(self):
+        t1=Thread(target=self.save_schema)
+        t1.start()
+
+
     def save_schema(self):
+        self.save_button.config(state='disabled')
 
         if self.schema_output.get() == 1:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
@@ -123,17 +87,19 @@ class InferTab(tk.Frame):
             if not self.dname:
                 tkmessagebox.showwarning(warningtitle,
                                          'Please, select dataset file')
-            max_categories = int(self.max_categories.get())
-            sample_rows = int(self.sample_rows.get())
-            dataset = QcTable(self.datasetpath, schema=None)
-            if self.cde_dict:
-                infer = InferSchema(dataset, self.dname, 
-                                    sample_rows=sample_rows, maxlevels=max_categories,
-                                    cdedict=self.cde_dict)
-                if self.thresholdstring.get() == '':
+            max_categories = int(self.inf_opt_frame.max_categories.get())
+            sample_rows = int(self.inf_opt_frame.sample_rows.get())
+            na_empty_strings_only = self.inf_opt_frame.na_empty_strings_only.get()
+            if self.inf_opt_frame.cde_dict:
+                infer = InferSchema.from_disc(self.datasetpath, 
+                                              sample_rows=sample_rows,
+                                              maxlevels=max_categories,
+                                              cdedict=self.inf_opt_frame.cde_dict,
+                                              na_empty_strings_only=na_empty_strings_only)
+                if self.inf_opt_frame.thresholdstring.get() == '':
                     threshold = 0.6
                 else:
-                    threshold = float(self.thresholdstring.get())
+                    threshold = float(self.inf_opt_frame.thresholdstring.get())
                 LOGGER.info('CDE similarity threshold: %f' % threshold)
                 infer.suggest_cdes(threshold=threshold)
                 infer.export2excel(output_file)
@@ -144,9 +110,11 @@ class InferTab(tk.Frame):
                     )
   
             else: 
-                infer = InferSchema(dataset, self.dname, 
-                                    sample_rows=sample_rows, maxlevels=max_categories,
-                                    cdedict=None)
+                infer = InferSchema.from_disc(self.datasetpath, 
+                                              sample_rows=sample_rows,
+                                              maxlevels=max_categories,
+                                              cdedict=None,
+                                              na_empty_strings_only=na_empty_strings_only)
                 if self.schema_output.get() == 1:
                     infer.export2excel(output_file)
                     LOGGER.info('Schema file has been created successully')
@@ -161,6 +129,7 @@ class InferTab(tk.Frame):
                         title='Status info',
                         message='Schema file has been created successully'
                     )
+        self.save_button.config(state='normal')
 
 
     def loaddatasetfile(self):
@@ -177,27 +146,4 @@ class InferTab(tk.Frame):
             self.dname = None
             self.datasetpath_label.config(text='Not Selected')
 
-    def load_cde_dict_file (self):
-        filepath = tkfiledialog.askopenfilename(title='select cde dictionary file',
-                                                filetypes=(('xlsx files', '*.xlsx'),
-                                                           ('all files', '*.*')))
-        if filepath:
-            dict_name = os.path.basename(filepath)
-            self.cde_dict_label.config(text=dict_name)
-            self.cde_dict = CdeDict(filepath)
 
-
-def only_integers(char):
-    return char.isdigit()
-
-def valid_threshold(s):
-    if s == '':
-        return True
-    try:
-        num = float(s)
-        if num >= 0.0 and num <= 1.0:
-            return True
-        else:
-            return False
-    except ValueError:
-        return False

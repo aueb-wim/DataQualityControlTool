@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import pytest
 import csv
 from random import randint
-from mipqctool import qctypes
+from mipqctool.model import qctypes
 from mipqctool.config import ERROR
 
 # Tests

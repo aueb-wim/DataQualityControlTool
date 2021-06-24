@@ -1,0 +1,5 @@
+csvFile,name,code,type,values,unit,description,comments,conceptPath,methodology,cde
+default.csv,id,id,integer,,,,,id,,
+default.csv,iq,iq,real,,,,,iq,,
+default.csv,testvar,testvar,real,0-10,,,,testvar,,
+default.csv,testvar2,testvar2,nominal,"{""Cat1"",""Cat1""},{""Cat2"",""Cat2""},{""Anot3"",""Anot3""}",,,,testvar2,,

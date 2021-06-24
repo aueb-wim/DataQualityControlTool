@@ -1,0 +1,37 @@
+label,expression
+Abs,abs(x)
+Append,"append(str1, str2)"
+Ceiling,ceil(x)
+Contains,"contains(str, subStr)"
+ContainCount,"containCount(str, subStr)"
+Cosine,cos(x)
+Current Year,currentYear()
+Date,date()
+DateTime,datetime()
+Exponential,exp(x)
+Floor,floor(x)
+If,"if(cond, trueval, falseval)"
+Index Of,"indexof(str, subStr)"
+Is Not Null,isNotNull(arg)
+Is Null,isNull(arg)
+Is Numeric,isNumeric(str)
+Length,len(str)
+Log,log(x)
+Ln,ln(x)
+Modulus,"mod(x,y)"
+New Id,newId()
+Null,null()
+Power,"pow(x,y)"
+Replace,"replace(str, text1, text2)"
+Round,"round(x,[y])"
+Sine,sin(x)
+Square Root,sqrt(x)
+Substring,"substring(str, start, [end])"
+Tangent,tan(x)
+To Date,"todate(str, pattern)"
+To Double,todouble(x)
+To Integer,toint(x)
+To Lowercase,tolower(str)
+To String,tostring(data)
+To Timestamp,"totimestamp(str, pattern)"
+To Uppercase,toupper(str)

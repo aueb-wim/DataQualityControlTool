@@ -1,2 +1,1 @@
-include mipqctool/data/*
-include mipqctool/html/*
+recursive-include mipqctool/data *.*

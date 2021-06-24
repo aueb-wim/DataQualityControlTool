@@ -6,9 +6,9 @@ from __future__ import unicode_literals
 import pytest
 import os
 import json
-from mipqctool.tablereport import TableReport
-from mipqctool.qcfrictionless import QcTable
-from mipqctool.qcfrictionless import QcSchema
+from mipqctool.controller.tablereport import TableReport
+from mipqctool.model.qcfrictionless import QcTable
+from mipqctool.model.qcfrictionless import QcSchema
 
 
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -60,15 +60,13 @@ TEST_TABLE.infer()
 TEST_TABLE.schema.save(os.path.join(APP_PATH, 'test_datasets/test_dataset2.json'))
 
 
-@pytest.mark.parametrize('datasetpath, schemapath, id_column, result, total_rows', [
-    (DATASET1_PATH, METADATA1_PATH, 1, F_ROWS_PER_COLUMN1, 20)
+@pytest.mark.parametrize('datasetpath, schemapath, result, total_rows', [
+    (DATASET1_PATH, METADATA1_PATH, F_ROWS_PER_COLUMN1, 20)
 ])
-def test_calc_rows_per_column(datasetpath, schemapath, id_column, result, total_rows):
+def test_calc_rows_per_column(datasetpath, schemapath, result, total_rows):
     with open(schemapath) as json_file:
         dict_schema = json.load(json_file)
-    schema = QcSchema(dict_schema)
-    testtable = QcTable(datasetpath, schema=schema)
-    testreport = TableReport(testtable, id_column)
+    testreport = TableReport.from_disc(datasetpath, dict_schema)
     with pytest.warns(None) as recorded:
         assert testreport.total_rows == total_rows
         assert testreport._TableReport__tfilled_columns == result
@@ -89,9 +87,7 @@ def test_valid_headers(datasetpath, schemapath, valid_headers,
                        missing_headers, invalid_headers, isvalid):
     with open(schemapath) as json_file:
         dict_schema = json.load(json_file)
-    schema = QcSchema(dict_schema)
-    testtable = QcTable(datasetpath, schema=schema)
-    testreport = TableReport(testtable, 1)
+    testreport = TableReport.from_disc(datasetpath, dict_schema)
     with pytest.warns(None) as recorded:
         assert testreport.valid_headers == valid_headers
         assert testreport.missing_headers == missing_headers

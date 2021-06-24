@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 import pytest
 from datetime import datetime
-from mipqctool.qcfrictionless import QcField
+from mipqctool.model.qcfrictionless import QcField
 from mipqctool.config import ERROR
 from mipqctool.exceptions import DataTypeError, ConstraintViolationError
 

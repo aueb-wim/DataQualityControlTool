@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import pytest
 import csv
 from datetime import datetime, date
-from mipqctool import qctypes
+from mipqctool.model import qctypes
 from mipqctool.config import ERROR, DEFAULT_DATE_FORMAT
 from mipqctool.config import DEFAULT_MISSING_VALUES
 

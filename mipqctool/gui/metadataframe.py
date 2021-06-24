@@ -7,8 +7,8 @@ import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
-from mipqctool.dcconector import DcConnector
-from mipqctool.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
+from mipqctool.controller import DcConnector
+from mipqctool.model.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
 from mipqctool.config import LOGGER, DC_DOMAIN, DC_SUBDOMAIN_ALLPATHOLOGIES
 
 
@@ -49,7 +49,7 @@ class MetadataFrame(tk.Frame):
                                                command=self._check_lc)
         self.metaname_label = tk.Label(self.lc_frame, text='Not selected',
                                        bg='white', pady=4, width=46)
-
+        self.setfilepath()#call this so as to initialize a couple of objects...
         self.metaload_button = tk.Button(self.lc_frame, text='Select File',
                                          command=self.setmetadatafile)
 
@@ -153,11 +153,29 @@ class MetadataFrame(tk.Frame):
             except tk.TclError:
                 self._enable(child)
 
+    def global_disable(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state='disabled')
+            except tk.TclError:
+                self._enable(child)
+
+    def global_enable(self):
+        for child in self.winfo_children():
+            try:
+                child.config(state='normal')
+            except tk.TclError:
+                self._enable(child)
+
+
     def setmetadatafile(self):
         """Sets the filepath of the  metadata file """
         filepath = tkfiledialog.askopenfilename(title='select metadata file',
                                                 filetypes=(('json files', '*.json'),
                                                            ('all files', '*.*')))
+        self.setfilepath(filepath)
+
+    def setfilepath(self, filepath=None):
         if filepath:
             name = os.path.basename(filepath)
             self.metaname_label.config(text=name)

@@ -26,3 +26,25 @@ class ConstraintViolationError(QCToolException):
 
 class TableReportError(QCToolException):
     pass
+
+class CdeDictError(QCToolException):
+    pass
+class DockerExecError(QCToolException):
+    pass
+
+class MappingError(QCToolException):
+    pass
+class MappingValidationError(MappingError):
+    pass
+
+class FunctionNameError(QCToolException):
+    pass
+
+class ArgsFunctionError(QCToolException):
+    pass
+
+class ExpressionError(QCToolException):
+    pass
+
+class ColumnNameError(QCToolException):
+    pass

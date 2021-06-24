@@ -1,6 +1,6 @@
 import os
-import csv
 import json
+from threading import Thread
 
 from tkinter import ttk
 import tkinter as tk
@@ -8,9 +8,9 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
 from mipqctool.gui.metadataframe import MetadataFrame
-from mipqctool.qcfrictionless import QcSchema, QcTable, FrictionlessFromDC
-from mipqctool.tablereport import TableReport
-from mipqctool.exceptions import TableReportError
+from mipqctool.gui.cleanwindow import CleanWindow
+from mipqctool.controller import TableReport
+from mipqctool.exceptions import QCToolException
 from mipqctool.config import LOGGER
 
 # TODO: make the selection of columnID optional
@@ -21,12 +21,10 @@ class CsvTab(tk.Frame):
         self.float_validation = self.register(is_number)
         # outlier threshold 
         self.outlier_threshold = tk.StringVar()
-        self.__exportfiledir = None
+        self.__reportfilepath = None
         self.__datasetpath = None
         self.dname = None
         self.reportcsv = None
-        self.cleaning = tk.BooleanVar()
-        self.cleaning.set(False)
         # set default option for json metadata type to Frictionless
         self.report_type = tk.IntVar()
         self.report_type.set(1)
@@ -79,14 +77,11 @@ class CsvTab(tk.Frame):
                                       text='Not Selected')
         # Button Select export folder
         self.button_export_folder = tk.Button(self.tblabelframe_output,
-                                              text='Select Folder',
-                                              command=self.setexportdir)
+                                              text='Select Report File',
+                                              command=self.setreportfile)
         #  Execution interface
         self.frame_exec = tk.Frame(self)
-        # Checkbox readable columns in csv
-        self.checkclean = tk.Checkbutton(self.frame_exec,
-                                         text='Perform Data Cleaning?',
-                                         variable=self.cleaning)
+        
         # Checkbox for producing a Latex instead a pdf file
         # self.checklatex = tk.Checkbutton(self.frame_exec,
         #                                 text='No pdf',
@@ -94,7 +89,13 @@ class CsvTab(tk.Frame):
         # Button execution
         self.button_exec = tk.Button(self.frame_exec,
                                      text='Create Report',
-                                     command=self.createreport)
+                                     command=self.threaded_createreport)
+
+        self.show_sugg_button = tk.Button(self.frame_exec,
+                                          text='Show cleaning suggestions',
+                                          command=self.showsugg, state='disabled')
+        self.clean_button = tk.Button(self.frame_exec, text='Perform Cleaning',
+                                      command=self.threaded_cleandata, state='disabled')
 
     def __packing(self):
         # Input dataset frame
@@ -125,14 +126,17 @@ class CsvTab(tk.Frame):
         self.frame_exec.pack(fill='both', expand='yes',
                              padx=4, pady=4)
         self.frame_exec.grid_columnconfigure(0, weight=1)
-        self.checkclean.grid(row=0, column=1, sticky='w')
         self.button_exec.grid(row=0, column=2, pady=4)
+        self.show_sugg_button.grid(row=1, column=1, pady=4)
+        self.clean_button.grid(row=1, column=2, pady=4)
 
     def loaddatasetfile(self):
         """Loads the dataset csv"""
         filepath = tkfiledialog.askopenfilename(title='select dataset file',
                                                 filetypes=(('csv files', '*.csv'),
                                                            ('all files', '*.*')))
+        self.clean_button.config(state='disabled')
+        self.show_sugg_button.config(state='disabled')
         if filepath:
             self.dname = os.path.basename(filepath)
             self.d_datasetpath_label.config(text=self.dname)
@@ -146,17 +150,58 @@ class CsvTab(tk.Frame):
             self.d_datasetpath_label.config(text='Not Selected')
             #self.d_headers_cbox.delete(0, "end")
 
-    def setexportdir(self):
+    def setreportfile(self):
         """Folder path where the reports are stored"""
-        filedir = tkfiledialog.askdirectory(title='Select folder to save report')
-        if filedir:
-            self.__exportfiledir = filedir
-            self.label_export2.config(text=filedir)
+        if self.report_type.get() == 1:
+            reporttype = ('excel files', "*.xlsx")
         else:
-            self.__exportfiledir = None
+            reporttype = ('pdf files', '*.pdf')
+        reportfilepath = tkfiledialog.asksaveasfilename(
+            filetypes=(
+                reporttype, 
+                ("All files", "*.*")
+            )
+        )
+        if reportfilepath:
+            self.__reportfilepath = reportfilepath
+            self.label_export2.config(text=reportfilepath)
+        else:
+            self.__reportfilepath = None
             self.label_export2.config(text='Not Selected')
 
+    def showsugg(self):
+        CleanWindow(self)
+
+    def threaded_cleandata(self):
+        t1 = Thread(target=self.cleandata)
+        t1.start()
+
+    def cleandata(self):
+        self.clean_button.config(state='disabled')
+        correctedcsvfile = tkfiledialog.asksaveasfilename(
+            filetypes=(
+                ("CSV files", "*.csv"), 
+                ("All files", "*.*")
+            )
+        )
+        if correctedcsvfile:
+            self.reportcsv.apply_corrections()
+            self.reportcsv.save_corrected(correctedcsvfile)
+            tkmessagebox.showinfo(
+                    title='Status info',
+                    message='Cleaned dataset has saved successully'
+                )
+        else:
+            tkmessagebox.showwarning('Warning!',
+                                     'Please, select file location!')
+        self.clean_button.config(state='normal')
+
+    def threaded_createreport(self):
+        t1 = Thread(target=self.createreport)
+        t1.start()
+
     def createreport(self):
+        self.button_exec.config(state='disabled')
         LOGGER.info('Checking if the necessary fields are filled in...')
         warningtitle = 'Cannot create report'
         if not self.dname:
@@ -171,10 +216,9 @@ class CsvTab(tk.Frame):
         elif self.md_frame.from_dc.get() and not self.md_frame.dc_json:
             tkmessagebox.showwarning(warningtitle,
                                      'Could not get metadata from Data Cataloge')
-
-        elif not self.__exportfiledir:
+        elif not self.__reportfilepath:
             tkmessagebox.showwarning(warningtitle,
-                                     'Please, select export folder first')
+                                     'Please, select report file first')
         else:
             try:
                 threshold = float(self.outlier_threshold.get())
@@ -184,11 +228,11 @@ class CsvTab(tk.Frame):
                                 Setting it to default value: 3')
                 threshold = 3
             LOGGER.info('Everything looks ok...')
-            filedir = self.__exportfiledir
-            basename = os.path.splitext(self.dname)[0]
-            pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
-            xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
-            correctedcsvfile = os.path.join(filedir, basename + '_corrected.csv')
+            #filedir = self.__exportfiledir
+            #basename = os.path.splitext(self.dname)[0]
+            #pdfreportfile = os.path.join(filedir, basename + '_report.pdf')
+            #xlsxreportfile = os.path.join(filedir, basename + '_report.xlsx')
+            schema_type = 'qc'
 
             if self.md_frame.from_disk.get():
                 LOGGER.info('Retrieving Metadata from localdisk...')
@@ -196,8 +240,8 @@ class CsvTab(tk.Frame):
                 with open(self.md_frame.metafilepath) as json_file:
                     dict_schema = json.load(json_file)
                 if self.md_frame.json_type == 1:
-                    LOGGER.info('Transating from Data Catalogue to Frictionless json format...')
-                    dict_schema = FrictionlessFromDC(dict_schema).qcdescriptor
+                    schema_type = 'dc'
+
             elif self.md_frame.from_dc.get():
                 LOGGER.info('Retrieving Metadata from Data Catalogue...')
                 LOGGER.info('Selected pathology is {}, CDE version: {}'.format(
@@ -205,40 +249,43 @@ class CsvTab(tk.Frame):
                     self.md_frame.selected_version.get())
                 )             
                 dict_schema = self.md_frame.dc_json
-                LOGGER.info('Transating from Data Catalogue to Frictionless json format...')
-                dict_schema = FrictionlessFromDC(dict_schema).qcdescriptor
-
-            schema = QcSchema(dict_schema)
-            dataset = QcTable(self.datasetpath, schema=schema)
+                schema_type = 'dc'
 
             try:
-                self.reportcsv = TableReport(dataset, threshold=threshold)#id_column=self.d_headers_cbox.current())
+                self.reportcsv = TableReport.from_disc(self.datasetpath,
+                                                       dict_schema=dict_schema,
+                                                       schema_type=schema_type,                                                      
+                                                       threshold=threshold)#id_column=self.d_headers_cbox.current())
                 if self.reportcsv.isvalid:
                     LOGGER.info('The dataset has is valid.')
                 else:
                     LOGGER.info('CAUTION! The dataset is invalid!')
 
                 # Perform Data Cleaning?
-                if self.cleaning.get():
-                    self.reportcsv.apply_corrections()
+                #if self.cleaning.get():
+                 #   self.reportcsv.apply_corrections()
 
-                    self.reportcsv.save_corrected(correctedcsvfile)
+                    #self.reportcsv.save_corrected(correctedcsvfile)
 
                 # Create the  report
                 if self.report_type.get() == 1:
-                    self.reportcsv.printexcel(xlsxreportfile)
+                    self.reportcsv.printexcel(self.__reportfilepath)
                 else:
-                    self.reportcsv.printpdf(pdfreportfile)
+                    self.reportcsv.printpdf(self.__reportfilepath)
 
-                self.label_export2.config(text=filedir)
+                #self.label_export2.config(text=filedir)
                 tkmessagebox.showinfo(
                     title='Status info',
                     message='Reports have been created successully'
                 )
 
-            except TableReportError:
+                self.show_sugg_button.config(state='normal')
+                self.clean_button.config(state='normal')
+
+            except QCToolException as e:
                 errortitle = 'Something went wrong!'
-                tkmessagebox.showerror(errortitle, 'Please check metadata json')
+                tkmessagebox.showerror(errortitle, e)
+        self.button_exec.config(state='normal')
 	
 def is_number(s):
     if s == '':
