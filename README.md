@@ -4,16 +4,25 @@
 
 ## Description
 
-This tool is a component developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP) and it developed with 
-The tool has two major functionalities:
-1. Validate data and produce reports with the validation results and with some overall statistics about the data
-2. Perform data cleaning 
-3. Infer a dataset's schema which in in the form of a csv file. 
-The main purpose of this tool is to produce statistical report of a given dataset and its variables (tabular dataset profiling) and propose value corrections for problematic data-entries. Also, the tool has the ability to extract and export meta-data headers of a set of DICOM MRIs.
+This tool is a component developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP) and it main perpose is to provide hospital personel an easy way to explore, validate and transform their data before uploading them into the MIP.
+The tool has the following functionalities:
+1. Validating the hospital EHR data and producing report with validation results and some overall statistics about the data.
+2. Data cleaning capability. 
+3. Inference of a dataset's schema and producing a schema file in [Frictionless](https://frictionlessdata.io/) or Data Catalogue format.
+4. Designing and performing schema mapping of an incoming hospital dataset to a certain Pathology's Common Data Element (CDE) schema.
+5. Producing DICOM MRIs validation and statistical report based on their meta-data headers.
 
-## Installing / Getting started
+## Installation
 
-### Prerequisites
+### Installation Linux (through deb file)
+
+First download the proper deb package for your system version(currently the deb packages are for **ubuntu 16.04, 18.04 and 20.04**) then install the deb package in terminal by giving the below command:
+
+```shell
+sudo dpkg -i path_to_deb_file
+```
+
+### Manual installation Linux
 
 Required installed packages for Debian based distros
 
@@ -40,15 +49,6 @@ Required installed software for Windows
   
 Please refer to the [WeasyPrint's documentation page](https://weasyprint.readthedocs.io/en/latest/install.html#windows) for installing the proper GDK+ version.
 
-### Installation (through deb file)
-
-First download the proper deb package for your system version(currently the deb packages are for **ubuntu 16.04, 18.04 and 20.04**) then install the deb package in terminal by giving the below command:
-
-```shell
-sudo dpkg -i path_to_deb_file
-```
-
-#### Manual installation 
 
 In a terminal we run
 
@@ -60,6 +60,34 @@ source venv/qctool/bin/activate
 pip install --upgrade pip
 sh install.sh
 ```
+
+### Installation Windows with WLS 2
+
+**Prerequisites**
+-  Windows 10
+-  WLS version 2 (Windows Linux Subsystem)
+-  Xming - [X server for Windows](https://sourceforge.net/projects/xming/)
+
+Please refer to Docker Desktop for WLS installation guide [here](https://docs.docker.com/docker-for-windows/wsl/).
+
+Note: The data mapping functionality of the tool won't work without a docker client being installed.
+
+**Procedure**
+1. Download the proper deb package matching the WLS ubuntu version (using **Ubuntu:20.04** is recommended) then install the deb package in WLS terminal by giving the following command:
+
+```shell
+sudo dpkg -i path_to_deb_file
+```
+2. Start the X Server from Windows' Start Menu
+3. Set up the X Server by giving the following command in WLS terminal
+```shell
+export DISPLAY=:0
+```
+4. Launch the application 
+```shell
+qctoolgui
+```
+
 ## Usage
 
 ### Command Line Interface
@@ -211,15 +239,13 @@ This file contains MRI visit information for each patient. This file is necessar
 
 We run `qctoolgui`
 
-![csv image](docs/img/DQCtool_v3_csvtab.png)
-![csv image](docs/img/DQCtool_v3_infertab.png)
-![csv image](docs/img/DQCtool_v3_dicomtab.png)
-
 See **GUI User Guide** section in the wiki for further usage details. 
 
 ## Features
 
 -   Creates a statistical/validation report for the dataset and its variables.
+-   Perform data cleaning based on a given schema.
+-   
 -   Infer the schema of a dataset which is in csv format.
 -   Creates a report with meta-data tags (headers) of each sequence (3D MRI Image) in a DICOM dataset.
 -   Command Line Interface and GUI.
@@ -244,5 +270,5 @@ Special thanks to:
 
 -   **Prof. Vasilis Vassalos** - Athens University of Economics and Business
 -   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candidate
--   **Jacek Manthey** - CHUV
 -   **Abu-Nawwas Laith** - CHUV
+-   **Jacek Manthey** - CHUV
