@@ -7,7 +7,7 @@
 This tool is a component developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP) and it main perpose is to provide hospital personel an easy way to explore, validate and transform their data before uploading them into the MIP.
 The tool has the following functionalities:
 1. Validating the hospital EHR data and producing report with validation results and some overall statistics about the data.
-2. Data cleaning capability. 
+2. Data cleaning capability.
 3. Inference of a dataset's schema and producing a schema file in [Frictionless](https://frictionlessdata.io/) or Data Catalogue format.
 4. Designing and performing schema mapping of an incoming hospital dataset to a certain Pathology's Common Data Element (CDE) schema.
 5. Producing DICOM MRIs validation and statistical report based on their meta-data headers.
@@ -16,10 +16,43 @@ The tool has the following functionalities:
 
 ### Installation Linux (through deb file)
 
-First download the proper deb package for your system version(currently the deb packages are for **ubuntu 16.04, 18.04 and 20.04**) then install the deb package in terminal by giving the below command:
+First download the proper deb package for your system version(currently the deb packages are for **ubuntu 16.04, 18.04 and 20.04**) then install the deb package in terminal by giving the below command (The deb file can be ):
 
 ```shell
+sudo apt-get update
 sudo dpkg -i path_to_deb_file
+```
+
+```shell
+Selecting previously unselected package mipqctool.
+(Reading database ... 32232 files and directories currently installed.)
+Preparing to unpack mipqctool_4.0_amd64_ubuntu_20.04.deb ...
+Unpacking mipqctool (4.0) ...
+dpkg: dependency problems prevent configuration of mipqctool:
+ mipqctool depends on python3-tk; however:
+  Package python3-tk is not installed.
+ mipqctool depends on libcairo2; however:
+  Package libcairo2 is not installed.
+ mipqctool depends on libpango-1.0-0; however:
+  Package libpango-1.0-0 is not installed.
+ mipqctool depends on libpangocairo-1.0-0; however:
+  Package libpangocairo-1.0-0 is not installed.
+ mipqctool depends on libgdk-pixbuf2.0-0; however:
+  Package libgdk-pixbuf2.0-0 is not installed.
+ mipqctool depends on libffi-dev; however:
+  Package libffi-dev is not installed.
+
+dpkg: error processing package mipqctool (--install):
+ dependency problems - leaving unconfigured
+Processing triggers for libc-bin (2.31-0ubuntu9.2) ...
+Errors were encountered while processing:
+ mipqctool
+```
+
+If some dependancies haven't been installed succesfully. 
+```shell
+sudo apt-get update --fix-missing
+sudo apt-get install -f
 ```
 
 ### Manual installation Linux
@@ -35,7 +68,7 @@ To install the above packages, give in a terminal the below commands:
 
 ```shell
 sudo apt-get update
-sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi python3-venv libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi python3-venv python3-tk libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
 ```
 
 In the case were of using the deb file for the installation, the above packages are installed automatically during the installation.
@@ -48,7 +81,6 @@ Required installed software for Windows
 -   GTK+ libraries
   
 Please refer to the [WeasyPrint's documentation page](https://weasyprint.readthedocs.io/en/latest/install.html#windows) for installing the proper GDK+ version.
-
 
 In a terminal we run
 
@@ -65,23 +97,38 @@ sh install.sh
 
 **Prerequisites**
 -  Windows 10
--  WLS version 2 (Windows Linux Subsystem)
+-  [WLS version 2](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (Windows Linux Subsystem) 
+- [Docker Desktop for WLS](https://docs.docker.com/docker-for-windows/wsl/) 
 -  Xming - [X server for Windows](https://sourceforge.net/projects/xming/)
 
-Please refer to Docker Desktop for WLS installation guide [here](https://docs.docker.com/docker-for-windows/wsl/).
+Note: The Data Quality Control tool could be run in Windows with WLS 1 without docker client, but it won't have the data mapping functionality.
 
-Note: The data mapping functionality of the tool won't work without a docker client being installed.
+**Configuration of Xming for WLS 2**
+`WLS 2` and `Xming` combination has some issues. The good news is that WLS version 2 will obtain a native support for linux GUI applications in the near future, so `Xming` won't be necessary for running the DQC tool. Until then, we have to configure the `Xming` properly.
 
-**Procedure**
+1. When installing or running Xming for the first time, in Windows Defender Firewall pop up, please check both boxes, for Private and Public networks.
+![Xming, Windows Defender pop up](https://i.stack.imgur.com/8jLEn.png)
+2. In the Xming shortcut properties, edit the `target` field by adding ` -ac` at the end. An example of the final string maybe will be like this: `"C:\Program Files (x86)\Xming\Xming.exe" :0 -clipboard -multiwindow -ac`
+ ![Xming shortcut properties](docs/img/Screenshot_xming_properties.jpg)
+
+**Installation and running the DQC tool**
+
 1. Download the proper deb package matching the WLS ubuntu version (using **Ubuntu:20.04** is recommended) then install the deb package in WLS terminal by giving the following command:
 
 ```shell
 sudo dpkg -i path_to_deb_file
 ```
+If some dependancies haven't been installed succesfully. 
+```shell
+sudo apt-get update --fix-missing
+sudo apt-get install -f
+```
+
 2. Start the X Server from Windows' Start Menu
 3. Set up the X Server by giving the following command in WLS terminal
 ```shell
-export DISPLAY=:0
+export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0
+export LIBGL_ALWAYS_INDIRECT=1
 ```
 4. Launch the application 
 ```shell
@@ -92,11 +139,6 @@ qctoolgui
 
 ### Command Line Interface
 
-Activate the qctool virtual enviroment
-
-```shell
-source venv/qctool/bin/activate
-```
 
 For profiling/validating a csv dataset:
 
@@ -163,7 +205,7 @@ Options:
 
  The schema could be saved in two formats:
 1. Frictionless spec json
-2. Data Catalogue's spec Excel (xlsx) file, that can be used for creating a new CDE pathology version. 
+2. Data Catalogue's spec Excel (xlsx) file, that can be used for creating a new CDE pathology version.
 
 In the infer option section, we give the number of rows that the tool will based on for the schema inference. Also, we declare the maximum number of categories that a `nominal` MIPType variable can have. 
 
