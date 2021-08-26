@@ -90,9 +90,9 @@ class DockerDB(object):
     def __remove_create_db(self):
         command1 = ['docker', 'exec', '-it', self.__db_cont_name, 'psql']
         arg_1 = ['-U', self.__dbuser, '-d', 'postgres']
-        arg_c_remove = ['-c', '"DROP DATABASE IF EXISTS {};"'.format(self.__mipmapdb)]
+        arg_c_remove = ['-c', 'DROP DATABASE IF EXISTS {};'.format(self.__mipmapdb)]
 
-        arg_c_create = ['-c', '"CREATE DATABASE {};"'.format(self.__mipmapdb)]
+        arg_c_create = ['-c', 'CREATE DATABASE {};'.format(self.__mipmapdb)]
         removeproc = subprocess.run(command1 + arg_1 + arg_c_remove)
         createproc = subprocess.run(command1 + arg_1 + arg_c_create)
 
