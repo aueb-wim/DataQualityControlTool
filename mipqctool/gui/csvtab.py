@@ -13,8 +13,7 @@ from mipqctool.controller import TableReport
 from mipqctool.exceptions import QCToolException
 from mipqctool.config import LOGGER
 
-# TODO: make the selection of columnID optional
-# 
+ 
 class CsvTab(tk.Frame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -239,7 +238,7 @@ class CsvTab(tk.Frame):
                 LOGGER.info('Using metadata file: %s' % self.md_frame.metafilepath)
                 with open(self.md_frame.metafilepath) as json_file:
                     dict_schema = json.load(json_file)
-                if self.md_frame.json_type == 1:
+                if self.md_frame.json_type.get() == 2:
                     schema_type = 'dc'
 
             elif self.md_frame.from_dc.get():
