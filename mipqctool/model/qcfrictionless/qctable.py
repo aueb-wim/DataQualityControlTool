@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 import os
 import re
-from csv import DictReader
+from csv import DictReader, Sniffer
 from collections import OrderedDict
 
 from tableschema import Table
@@ -28,7 +28,14 @@ class QcTable(Table):
         # if csv file get headers (tabulator aka csv file)
         if not self._Table__storage:
             with open(source, 'r') as csv_file:
-                reader = DictReader(csv_file)
+                # find the dialect of the csv file
+                try:
+                    dialect = Sniffer().sniff(csv_file.read(1024))
+                except:
+                    dialect = 'excel'
+                # reset the seeker to the start of the file
+                csv_file.seek(0)
+                reader = DictReader(csv_file, dialect=dialect)
                 self.__actual_headers = reader.fieldnames
         else:
             self.__actual_headers = None

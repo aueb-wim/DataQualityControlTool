@@ -320,13 +320,15 @@ class TableReport(object):
     # private
     def __create_reports(self):
         """Create column reports."""
-        for qcfield in self.__table.schema.fields:
+        for header_name in self.__table.actual_headers:
             try:
+                field_index = self.__table.schema.field_names.index(header_name)
+                qcfield = self.__table.schema.fields[field_index]
                 raw_values = self.__table.column_values(qcfield.name)
                 column_report = ColumnReport(raw_values, qcfield, threshold=self.__threshold)
                 column_report.validate()
                 self.__columnreports[qcfield.name] = column_report
-            except QCToolException:
+            except (ValueError, QCToolException) as e:
                 pass
 
     def __collect_row_stats(self):
