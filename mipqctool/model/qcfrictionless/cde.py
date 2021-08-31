@@ -207,6 +207,7 @@ class CdeVariable(object):
         :param threshold: 0-1 similarity threshold, below that not a cde is suggested
         """
         if self.__enum_dict and self.__mipvalues:
+            value = str(value)
             lower = value.lower()
             l = {cdeval: max([edit_distance_f1(enum, lower) for enum in enums]) for cdeval, enums in self.__enum_dict.items()}
             suggestion = max(l, key=l.get)
