@@ -256,7 +256,7 @@ class CsvTab(tk.Frame):
                                                        schema_type=schema_type,                                                      
                                                        threshold=threshold)#id_column=self.d_headers_cbox.current())
                 if self.reportcsv.isvalid:
-                    LOGGER.info('The dataset has is valid.')
+                    LOGGER.info('The dataset is valid.')
                 else:
                     LOGGER.info('CAUTION! The dataset is invalid!')
 

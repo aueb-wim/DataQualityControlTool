@@ -7,7 +7,7 @@ import sys
 from random import randint
 import mipqctool.config
 from mipqctool.config import ERROR, LOGGER
-
+from mipqctool.model.qcfrictionless.qcschema import Result
 mipqctool.config.debug(True)
 
 THISMODULE = sys.modules[__name__]
@@ -20,7 +20,7 @@ def give_number(pattern=0):
         'd. cm3',
         'd. %',
     ]
-    return 'numerical', patterns[pattern], 2
+    return Result('numerical', patterns[pattern], 2)
 
 
 def give_date(pattern=0):
@@ -30,7 +30,7 @@ def give_date(pattern=0):
         '%m-%B-%Y',
         '%Y %B %d',
     ]
-    return 'date', patterns[pattern], 0
+    return Result('date', patterns[pattern], 0)
 
 
 def give_integer(pattern=0):
@@ -40,15 +40,15 @@ def give_integer(pattern=0):
         'd%',
         'd euro'
     ]
-    return 'integer', patterns[pattern], 1
+    return Result('integer', patterns[pattern], 3)
 
 
 def give_text(pattern=0):
-    return 'text', 'text', 3
+    return Result('text', 'text', 1)
 
 
 def give_nan(pattern=0):
-    return 'text', 'nan', 3
+    return Result('text', 'nan', 1)
 
 
 class ResultMocker(object):

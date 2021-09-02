@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
+from collections import namedtuple
 
 from tableschema import Schema, exceptions
 
@@ -167,6 +168,14 @@ _INFER_PRIORITY = [
     'text'
 ]
 
+_RESOLVE_PRIORITY = {
+    'date':0,
+    'text': 1,
+    'numerical': 2,
+    'integer': 3
+}
+
+Result = namedtuple('Result', ['name', 'pattern', 'priority'])
 
 class _QcTypeGuesser(object):
     """Guess the type for a value returning a tuple of ('type', 'pattern', priority)
@@ -176,8 +185,9 @@ class _QcTypeGuesser(object):
             infer = getattr(qctypes, 'infer_%s' % name)
             options={'na_empty_strings_only': na_empty_strings_only}
             pattern = infer(value, **options)
+            resolve_priority = _RESOLVE_PRIORITY[name]
             if pattern != config.ERROR:
-                return (name, pattern, priority)
+                return Result(name, pattern, resolve_priority)
 
 
 class _QcTypeResolver(object):
@@ -187,8 +197,8 @@ class _QcTypeResolver(object):
         variants = set(results)
         # only one candidate... that's easy.
         if len(variants) == 1:
-            name = results[0][0]
-            pattern = results[0][1]
+            name = results[0].name
+            pattern = results[0].pattern
             describe = getattr(qctypes, 'describe_%s' % name)
             # all are null, special case, infer it as text
             if pattern == 'nan':
@@ -203,9 +213,10 @@ class _QcTypeResolver(object):
                               maxlevels=maxlevels)
         else:
             counts = {}
+            # {(name, pattern, priority):counts}
             for result in results:
                 # filter out the NANs
-                if result[1] == 'nan':
+                if result.pattern == 'nan':
                     continue
                 elif counts.get(result):
                     counts[result] += 1
@@ -213,20 +224,25 @@ class _QcTypeResolver(object):
                     counts[result] = 1
 
             # tuple representation of 'counts' dict sorted by values
+            # outputs a sorted list of tuples [(result:counts)]
             sorted_counts = sorted(counts.items(),
                                    key=lambda item: item[1],
                                    reverse=True)
-            # Allow also counts that are not the max, based on the confidence
-            max_count = sorted_counts[0][1]
-            sorted_counts = filter(lambda item:
-                                   item[1] >= max_count * confidence,
-                                   sorted_counts)
+            
+            #max_count = sorted_counts[0][1]
+            # Allow also counts that are not the max, based on the confidence 
+            # (Not supported because there is no sense at the moment)
+            #sorted_counts = filter(lambda item:
+            #                       item[1] >= max_count * confidence,
+            #                       sorted_counts)
+            # choose the first two
+            sorted_counts = sorted_counts[:2]
             # Choose the most specific data type
             sorted_counts = sorted(sorted_counts,
-                                   key=lambda item: item[0][2])
-            name = sorted_counts[0][0][0]
+                                   key=lambda item: item[0].priority)
+            name = sorted_counts[0][0].name
             describe = getattr(qctypes, 'describe_%s' % name)
-            rv = describe(sorted_counts[0][0][1],
+            rv = describe(sorted_counts[0][0].pattern,
                           uniques=uniques,
                           maxlevels=maxlevels)
         return rv

@@ -62,8 +62,21 @@ def describe_integer(pattern, uniques, maxlevels=10):
             elif len(uniques) <= maxlevels:
                 levels = list(uniques)
                 levels.sort()
-                return {
-                    'type': 'integer',
+                try:
+                    are_integers = [int(enum) for enum in levels]
+                    return {
+                        'type': 'integer',
+                        'format': 'default',
+                        'MIPType': 'nominal',
+                        'constraints': {
+                            'enum': levels
+                        }
+                    }
+                except ValueError:
+                    # there are enumerations with type other than 
+                    # integers, return string type field
+                    return {
+                    'type': 'string',
                     'format': 'default',
                     'MIPType': 'nominal',
                     'constraints': {
@@ -134,7 +147,8 @@ def suggestd_integer(value, **options):
 # Internal
 
 _INT = (r'^(?P<sign>[+-])?\d+'
-        r'(?P<suffix>(\s?[^0-9\s^&!*-+=~,\.`@\"\'\\\/]{1,10}\d{0,3})\)?)?$')
+        r'(?P<suffix>(\s?[^0-9\s^&!*\-_+=~,\.`@\"\'\\\/]{1,5}\d?)\)?)?$')
+
 
 _PAT = (r'^[d]'
-        r'(?P<suffix>(\s?[^0-9\s^&!*-+=~,\.`@\"\'\\\/]{1,10}\d{0,3})\)?)?$')
+        r'(?P<suffix>(\s?[^0-9\s^&!*-+=~,\.`@\"\'\\\/]{1,5}\d{0,3})\)?)?$')

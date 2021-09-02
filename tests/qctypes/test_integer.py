@@ -26,7 +26,8 @@ from mipqctool.config import ERROR
     (32.32, ERROR),
     ('+31 (%)', 'd (%)'),
     ('231 12cm', ERROR),
-    ('123 N/e', ERROR)
+    ('123 N/e', ERROR),
+    ('31-40', ERROR)
 ])
 def test_infer_integer(value, result):
     with pytest.warns(None) as recorded:

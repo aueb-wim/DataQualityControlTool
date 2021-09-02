@@ -31,12 +31,12 @@ def resolver():
 # Tests
 
 @pytest.mark.parametrize('value, result', [
-    ('13', ('integer', 'd', 1)),
+    ('13', ('integer', 'd', 3)),
     (12.2, ('numerical', 'd.', 2)),
-    ('123longsuffix1234', ('text', 'text', 3)),
-    ('N/A', ('text', 'nan', 3)),
+    ('123longsuffix1234', ('text', 'text', 1)),
+    ('N/A', ('text', 'nan', 1)),
     ('12/12/2013', ('date', '%d/%m/%Y', 0)),
-    ('', ('text', 'nan', 3))
+    ('', ('text', 'nan', 1))
 ])
 def test_guesser(guesser, value, result):
     with pytest.warns(None) as recorded:
@@ -56,9 +56,8 @@ def test_guesser(guesser, value, result):
      {'type': 'date', 'format': '%d/%m/%Y',
       'MIPType': 'date'}),
     ({'number': 8, 'text': 10, 'nan': 2200},
-     {'type': 'number', 'format': 'default',
-      'MIPType': 'numerical', 'decimalChar': '.',
-      'bareNumber': True}),
+     {'type': 'string', 'format': 'default',
+      'MIPType': 'text'}),
     ({'number': 8, 'text': 11, 'nan': 202},
      {'type': 'string', 'format': 'default',
       'MIPType': 'text'}),
@@ -66,6 +65,10 @@ def test_guesser(guesser, value, result):
      {'type': 'integer', 'format': 'default',
       'MIPType': 'integer', 'bareNumber': True}),
     ({'number': 1, 'nan': 5200},
+     {'type': 'number', 'format': 'default',
+      'MIPType': 'numerical', 'decimalChar': '.',
+      'bareNumber': True}),
+    ({'number': 1, 'integer': 100},
      {'type': 'number', 'format': 'default',
       'MIPType': 'numerical', 'decimalChar': '.',
       'bareNumber': True}),
@@ -168,9 +171,8 @@ def test_infer(qcshema, data, result):
             'fields': [
                 {'format': 'default', 'name': 'id', 'type': 'integer',
                  'MIPType': 'integer', 'bareNumber': True},
-                {'format': 'default', 'name': 'age', 'type': 'integer',
-                 'MIPType': 'integer', 'bareNumber': False,
-                 'suffix': 'y'},
+                {'format': 'default', 'name': 'age', 'type': 'string',
+                 'MIPType': 'text'},
                 {'format': 'default', 'name': 'name', 'type': 'string',
                  'MIPType': 'text'},
                 {'format': '%d/%m/%Y', 'name': 'birthdate', 'type': 'date',

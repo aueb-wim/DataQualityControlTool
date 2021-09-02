@@ -27,7 +27,8 @@ class QcTable(Table):
         self.__headers_4_mipmap = OrderedDict()
         # if csv file get headers (tabulator aka csv file)
         if not self._Table__storage:
-            with open(source, 'r') as csv_file:
+            # used encoding utf-8-sig to remove the byte order mask (BOM)
+            with open(source, 'r', encoding='utf-8-sig') as csv_file:
                 # find the dialect of the csv file
                 try:
                     dialect = Sniffer().sniff(csv_file.read(1024))
