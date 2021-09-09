@@ -90,7 +90,7 @@ sudo apt-get install build-essential python3-dev python3-pip python3-setuptools 
 In a terminal we run:
 
 ```shell
-git clone https://github.com/aueb-wim/DataQualityControlTool.git
+git clone https://github.com/HBPMedical/DataQualityControlTool.git
 cd DataQualityControlTool
 python3 -m venv venv/qctool
 source venv/qctool/bin/activate
@@ -222,9 +222,38 @@ qctoolgui
 ### Prerequisites
 
 - [Docker Desktop](https://docs.docker.com/desktop/mac/install/)
-- Brew Package Manager
+- HomeBrew Package Manager
 - Python 3.6 or newer
 - Git
+- Pango and libffi packages
+
+For installing `Docker Desktop` please refer to [Official Docker documentation page](https://docs.docker.com/desktop/mac/install/)
+
+To install `HomeBrew` open a terminal and give the following command:
+
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+For installing the prerequisites packages, in terminal we give:
+
+```shell
+brew install python3 pango libffi git
+```
+
+### Manual installation
+
+In a terminal we run:
+
+```shell
+git clone https://github.com/HBPMedical/DataQualityControlTool.git
+cd DataQualityControlTool
+python3 -m venv venv/qctool
+source venv/qctool/bin/activate
+pip install --upgrade pip
+sh install.sh
+```
+
 
 ## Usage
 
