@@ -6,15 +6,29 @@
 
 This tool is a component developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP) and it main perpose is to provide hospital personel an easy way to explore, validate and transform their data before uploading them into the MIP.
 The tool has the following functionalities:
+
 1. Validating the hospital EHR data and producing report with validation results and some overall statistics about the data.
 2. Data cleaning capability.
-3. Inference of a dataset's schema and producing a schema file in [Frictionless](https://frictionlessdata.io/) or Data Catalogue format.
+3. Inference of a dataset's schema and producing a schema file in [Frictionless json](https://frictionlessdata.io/) or Data Catalogue's excel format.
 4. Designing and performing schema mapping of an incoming hospital dataset to a certain Pathology's Common Data Element (CDE) schema.
 5. Producing DICOM MRIs validation and statistical report based on their meta-data headers.
 
-## Installation
+## Installation Linux
 
-### Installation Linux (through deb file)
+### **Prerequisites**
+
+- Ubuntu 18.04 or newer
+- docker version 19 or newer
+- docker-compose 1.22 or newer
+
+**Note**: The User **MUST** be in the user group `docker`. Do do that:
+
+```shell
+sudo gpasswd -a $USER docker
+```
+
+
+### **Installation through deb file**
 
 First download the proper deb package for your system version(currently the deb packages are for **ubuntu 16.04, 18.04 and 20.04**) then install the deb package in terminal by giving the below command (The deb file can be ):
 
@@ -49,40 +63,31 @@ Errors were encountered while processing:
  mipqctool
 ```
 
-If some dependancies haven't been installed succesfully. 
+If some dependancies haven't been installed succesfully.
+
 ```shell
 sudo apt-get update --fix-missing
 sudo apt-get install -f
 ```
 
-### Manual installation Linux
+### **Manual Installation**
 
 Required installed packages for Debian based distros
 
--   python3, python3-pip, python3-tk
--   cairo
--   Pango
--   GDK-PixBuf
+- python3, python3-pip, python3-tk
+- cairo
+- Pango
+- GDK-PixBuf
+- Git
 
 To install the above packages, give in a terminal the below commands:
 
 ```shell
 sudo apt-get update
-sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi python3-venv python3-tk libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+sudo apt-get install build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi python3-venv python3-tk libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info git
 ```
 
-In the case were of using the deb file for the installation, the above packages are installed automatically during the installation.
-
-
-Required installed software for Windows
-
--   [python version 3](https://www.python.org/downloads/)
-
--   GTK+ libraries
-  
-Please refer to the [WeasyPrint's documentation page](https://weasyprint.readthedocs.io/en/latest/install.html#windows) for installing the proper GDK+ version.
-
-In a terminal we run
+In a terminal we run:
 
 ```shell
 git clone https://github.com/aueb-wim/DataQualityControlTool.git
@@ -93,52 +98,137 @@ pip install --upgrade pip
 sh install.sh
 ```
 
-### Installation Windows with WLS 2
+## Installation on Windows (with WLS 2)
 
-**Prerequisites**
--  Windows 10
--  [WLS version 2](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (Windows Linux Subsystem) 
-- [Docker Desktop for WLS](https://docs.docker.com/docker-for-windows/wsl/) 
--  Xming - [X server for Windows](https://sourceforge.net/projects/xming/)
+A native windows version of DQC tool does not exist at the moment, but there is a hybrid solution by taking advantage the Windows Linux Subsystem (`WLS`). The `WLS` allows to run native Linux applications in Windows smootly. Although, currently the Windows 10 and `WLS` does not support Graphical applications out of the box, there are some walk around solutions by using the `GWLS` or the `Xming` software. The good news is that `WLS` version 2 will obtain a native support for Linux GUI applications in the near future, so it won't be necessery to use neither `GWLS` or `Xming`.
 
-Note: The Data Quality Control tool could be run in Windows with WLS 1 without docker client, but it won't have the data mapping functionality.
+### **Prerequisites**
 
-**Configuration of Xming for WLS 2**
-`WLS 2` and `Xming` combination has some issues. The good news is that WLS version 2 will obtain a native support for linux GUI applications in the near future, so `Xming` won't be necessary for running the DQC tool. Until then, we have to configure the `Xming` properly.
+- Windows 10, version 1903 or higher.
+- [WLS version 2](https://docs.microsoft.com/en-us/windows/wsl/install-win10) (Windows Linux Subsystem).
+- Ubuntu 20.03  - Installation through the Microsoft Store.
+- [Docker Desktop for WLS](https://docs.docker.com/docker-for-windows/wsl/).
+- GWSL app - Installation through the Microsoft Store.
+- Xming (an alternative to GWSL - not recommended) - [X server for Windows](https://sourceforge.net/projects/xming/).
+
+Note: The Data Quality Control tool could be run in Windows with WLS 1 without docker client, but it won't have the `data mapping` functionality.
+
+### **Setup WLS**
+
+#### Step 1 - Enable the Windows Subsystem for Linux
+
+Open PowerShell as Administrator and run:
+
+```Powershell
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+If you wish to only install WSL 1, you can now restart your machine and move on to Step 6 - Install your Linux distribution of choice
+
+#### Step 2 - Check requirements for running WSL 2
+
+To update to WSL 2, you must be running Windows 10.
+
+- For x64 systems: Version 1903 or higher, with Build 18362 or higher.
+- For ARM64 systems: Version 2004 or higher, with Build 19041 or higher.
+- Builds lower than 18362 do not support WSL 2. Use the Windows Update Assistant to update your version of Windows.
+
+To check your version and build number, select **Windows logo key+ R**, type `winver`, select `OK`.
+
+#### Step 3 - Enable Virtual Machine feature
+
+Open PowerShell as Administrator and run:
+
+```Powershell
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+```
+
+Restart your machine to complete the WSL install and update to WSL 2.
+
+#### Step 4 - Download the Linux kernel update package
+
+1. Download the latest package: [WSL2 Linux kernel update package for x64 machines](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
+2. Run the update package downloaded in the previous step. (Double-click to run - you will be prompted for elevated permissions, select ‘yes’ to approve this installation.)
+
+#### Step 5 - Set WSL 2 as your default version
+
+Open PowerShell as Administrator and run:
+
+```Powershell
+wsl --set-default-version 2
+```
+
+#### Step 6 - Install Ubuntu 20.04 LTS distribution
+
+1. Open the Microsoft Store and install Ubuntu 20.04 LTS Linux distribution.
+2. Set your distribution version to WLS 2
+
+Open PowerShell as Administrator and run:
+
+```Powershell
+wsl --set-version Ubuntu-20.04 2
+```
+
+The above instuctions are taken from the [Official Microsoft site](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Please, refer to it for more details or troubleshooting.
+
+### **Setup GWLS**
+
+1. Install the application through the Microsoft Store
+2. When installing, in Windows Defender Firewall pop up, please check both boxes for Private and Public networks.
+3. In GWSL click the `GWSL Distro Tools` and select the previously installed Ubuntu distro and select the Display/audio auto-exporting option.
+4. In the same distro menu, click the `Reboot` option, so the changes would take effect.
+
+### **Setup Xming (case of not using the GWLS)**
 
 1. When installing or running Xming for the first time, in Windows Defender Firewall pop up, please check both boxes, for Private and Public networks.
 ![Xming, Windows Defender pop up](https://i.stack.imgur.com/8jLEn.png)
 2. In the Xming shortcut properties, edit the `target` field by adding ` -ac` at the end. An example of the final string maybe will be like this: `"C:\Program Files (x86)\Xming\Xming.exe" :0 -clipboard -multiwindow -ac`
  ![Xming shortcut properties](docs/img/Screenshot_xming_properties.jpg)
 
-**Installation and running the DQC tool**
+### **Setup of Docker Desktop**
 
-1. Download the proper deb package matching the WLS ubuntu version (using **Ubuntu:20.04** is recommended) then install the deb package in WLS terminal by giving the following command:
+1. Start Docker Desktop from the Windows Start menu.
+2. From the Docker menu, select **Settings > General**. 
+3. Select `Use WLS2 based engine` check box.
+4. Click `Apply & Restart`.
+5. When Docker Desktop restarts, go to **Settings>Resources>WLS Integration**. The Docker-WSL integration will be enabled on your default WSL distribution.
+6. Add your ubuntu user to the `docker` user group. To do that, open an Ubuntu terminal and give `sudo gpasswd -a $USER docker`
 
-```shell
-sudo dpkg -i path_to_deb_file
-```
-If some dependancies haven't been installed succesfully. 
-```shell
-sudo apt-get update --fix-missing
-sudo apt-get install -f
-```
+For more details or troobleshooting, please refer to the [official docker webpage](https://docs.docker.com/desktop/windows/wsl/).
 
-2. Start the X Server from Windows' Start Menu
-3. Set up the X Server by giving the following command in WLS terminal
+### **Installing the DQC tool**
+
+Please refer to the Linux Installation section, ignoring the prerequisites.
+
+### **Running the DQC tool**
+
+1. Start the GWLS (or Xming) from Windows' Start Menu
+2. (Case of Xming) Set up the X Server by giving the following command in WLS terminal
+
 ```shell
 export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0
 export LIBGL_ALWAYS_INDIRECT=1
 ```
-4. Launch the application 
+
+3. Launch the application by giving in the Ubuntu terminal the command:
+
 ```shell
 qctoolgui
 ```
 
+
+## Installation on MacOS
+
+### Prerequisites
+
+- [Docker Desktop](https://docs.docker.com/desktop/mac/install/)
+- Brew Package Manager
+- Python 3.6 or newer
+- Git
+
 ## Usage
 
 ### Command Line Interface
-
 
 For profiling/validating a csv dataset:
 
@@ -168,7 +258,6 @@ Options:
 **outlier threshold** input field is related with the outlier detection for numerical variables of the incoming dataset. The way that the Data Quality Control tool handles the outlier detection of a certain numerical variable, is that first calculates the **mean** and the **standard deviation** based on the valid values of that column and then calculates the upper and the lower limit by the formula: `upper_limit = mean + outlier threshold * standard deviation`, `lower_limit = mean - outlier threshold * standard deviation`. If any value is outside those limits then it is considered as an outlier. 
 
 The report file will be saved in the folder where the incoming dataset file is located.
-
 
 #### Data Cleaning
 
@@ -204,10 +293,11 @@ Options:
 ```
 
  The schema could be saved in two formats:
+
 1. Frictionless spec json
 2. Data Catalogue's spec Excel (xlsx) file, that can be used for creating a new CDE pathology version.
 
-In the infer option section, we give the number of rows that the tool will based on for the schema inference. Also, we declare the maximum number of categories that a `nominal` MIPType variable can have. 
+In the infer option section, we give the number of rows that the tool will based on for the schema inference. Also, we declare the maximum number of categories that a `nominal` MIPType variable can have.
 
 If we choose the Data Catalogue's excel as an output, the tool offers the option of suggesting CDE variables for each column of the incoming dataset. This option is possible, only when a CDE dictionary is provided. This dictionary is an excel file that contains information for all the CDE variables that are included or will be included in the MIP (this dictionary will be available in the Data Catalogue in the near future). The tool calculates a similarity measure for each column based on the column name similarity (80%) and the value range similarity (20%). The similarity measure takes values between 0 and 1. With the option **similarity threshold** we can define the minimum similarity measure between an incoming column and a CDE variable that need to be met in order the tool to suggest that CDE variable as a possible correspondence. The tool stores those CDE suggestions in the excel file in the column named **CDE** and  also stores the corresponding concept path under the column **conceptPath**.
 
@@ -237,6 +327,7 @@ The tool creates in the `<report folder>`, a pdf report file (`dicom_report.pdf`
 -   mri_visits.csv
 
 The above files are created even if no valid/invalid sequences/dicoms files have been found. In such case, the files will be empty.
+
 ### validsequences.csv
 
 If there are valid sequences then the tool will create this csv file. A sequence is 'valid' if it meets the minimum requirements found [here](https://hbpmedical.github.io/deployment/data/). This file contains all the valid MRI sequences that found in given DICOM folder with the following headers discribing each sequence:
@@ -262,7 +353,7 @@ If there are invalid dicoms in the DICOM dataset, the tool will create this csv 
 
 `Folder`, `File`, `PatientID`, `StudyID`, `SeriesNumber`, `InstanceNumber`, `MissingTags`
 
--   `MissingTags` is a list of the missing mandatory DICOM tags.
+- `MissingTags` is a list of the missing mandatory DICOM tags.
 
 ### notprocessed.csv
 
@@ -276,21 +367,11 @@ This file contains MRI visit information for each patient. This file is necessar
 
 `PATIENT_ID`, `VISIT_ID`, `VISIT_DATE`
 
-
 ### GUI
 
 We run `qctoolgui`
 
 See **GUI User Guide** section in the wiki for further usage details. 
-
-## Features
-
--   Creates a statistical/validation report for the dataset and its variables.
--   Perform data cleaning based on a given schema.
--   
--   Infer the schema of a dataset which is in csv format.
--   Creates a report with meta-data tags (headers) of each sequence (3D MRI Image) in a DICOM dataset.
--   Command Line Interface and GUI.
 
 ## Versioning
 
@@ -298,7 +379,7 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## Authors
 
--   Iosif Spartalis - AUEB/RC Data Science Team
+- Iosif Spartalis - AUEB/RC Data Science Team
 
 ## License
 
