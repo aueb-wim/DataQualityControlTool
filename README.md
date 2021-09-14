@@ -422,5 +422,5 @@ Special thanks to:
 
 -   **Prof. Vasilis Vassalos** - Athens University of Economics and Business
 -   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candidate
--   **Abu-Nawwas Laith** - CHUV
+-   **Abu-Nawwas Laith** - CHUV @lanawwas
 -   **Jacek Manthey** - CHUV
