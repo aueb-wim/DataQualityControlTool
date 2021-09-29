@@ -145,6 +145,6 @@ dmypy.json
 .pyre/
 
 # pdf files
-.pdf
+*.pdf
 
 # End of https://www.gitignore.io/api/linux,python
