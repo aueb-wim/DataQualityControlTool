@@ -408,7 +408,7 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## Authors
 
-- Iosif Spartalis - AUEB/RC Data Science Team
+- Iosif Spartalis - AUEB/RC Data Science Team @iosifsp
 
 ## License
 
@@ -421,6 +421,6 @@ This work is part of SP8 of the Human Brain Project (SGA2).
 Special thanks to:
 
 -   **Prof. Vasilis Vassalos** - Athens University of Economics and Business
--   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candidate
+-   **Kostis Karozos** - AUEB/RC Data Science Team, Ph.D candidate @Kostis-K
 -   **Abu-Nawwas Laith** - CHUV @lanawwas
 -   **Jacek Manthey** - CHUV
