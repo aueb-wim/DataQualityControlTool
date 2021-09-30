@@ -93,7 +93,7 @@ def csv(input_csv, schema_json, clean,
 def dicom(ctx, dicom_folder, report_folder, loris_folder=None):
     """This command produces a validation report for MRIs in <dicom folder>.
 
-    All MRI dcm files belogning to the same Patient MUST
+    All MRI dcm files belonging to the same Patient MUST
     be in the same subfolder in <dicom folder>.
     
     The validation report files are stored in <report folder>.
