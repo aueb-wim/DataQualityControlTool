@@ -20,6 +20,14 @@ The tabular (csv) **data validation** functionality has the option of downloadin
 
 The **schema mapping** functionality is performed by the [MIPMap](https://github.com/HBPMedical/MIPMap) engine packaged in a **Docker container** which runs in the background. Please note, this option **is not available in the CLI version**.
 
+## Suported OS
+
+- Linux (tested for Ubuntu)
+- Windows 10 with WLS 2
+- MacOS
+
+Please refer to the [Installation Wiki Section](https://github.com/aueb-wim/DataQualityControlTool/wiki/Installation) for further details. 
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.
