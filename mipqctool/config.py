@@ -44,7 +44,7 @@ def debug(debug_on=True):
 debug(False)
 
 # Global constants
-DC_DOMAIN = 'http://dc.hbp.link:8086'
+DC_DOMAIN = 'http://datacatalogue.hbpmip.link:4200'
 DC_SUBDOMAIN_ALLPATHOLOGIES = '/pathology/allPathologies'
 
 MIPMAP_DB_CONTAINER = 'mipmap_postgres'
