@@ -71,7 +71,7 @@ PANDAS_NANS = ['', '#N/A', '#N/A N/A', '#NA', '-1.#IND',
 DC_HEADERS = [
     'csvFile', 'name', 'code', 'type', 'values',
     'unit', 'description', 'comments', 'conceptPath',
-    'methodology', 'cde'
+    'methodology', 'canBeNull'
     ]
 
 DC_TYPES = ['real', 'integer', 'nominal', 'ordinal', 'date', 'text']
