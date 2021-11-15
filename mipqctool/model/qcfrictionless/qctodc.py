@@ -72,7 +72,7 @@ class QctoDCVariable(object):
             'comments': '',
             'conceptPath': self.__conceptpath,
             'methodology': '',
-            'cde': self.__cde
+            'canBeNull': ''
         }
         return d
 
