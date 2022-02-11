@@ -148,3 +148,7 @@ dmypy.json
 *.pdf
 
 # End of https://www.gitignore.io/api/linux,python
+lib64
+pyvenv.cfg
+bin/
+share/
