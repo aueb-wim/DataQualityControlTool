@@ -72,6 +72,8 @@ class InferTab(tk.Frame):
 
     def save_schema(self):
         self.save_button.config(state='disabled')
+        if self.inf_opt_frame.cde_dict:
+            self.schema_output.set(1)
 
         if self.schema_output.get() == 1:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',

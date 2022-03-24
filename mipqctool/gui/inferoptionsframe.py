@@ -48,10 +48,12 @@ class InferOptionsFrame(tk.Frame):
                                             validatecommand=(self.threshold_validation, '%P'))
         self.cde_threshold_entry.insert(0, '0.6')
         self.cde_dict_label = tk.Label(self.opts_lbframe, text = 'No CDE Dictionary File Selected',
-                                         width = 30, bg='white')
+                                         width = 25, bg='white')
         self.cde_dict_button = tk.Button(self.opts_lbframe, text='Select file',
                                          command=self.load_cde_dict_file)
 
+        self.cde_clear_dict_button = tk.Button(self.opts_lbframe, text='Clear',
+                                               command=self.clear_cde_dict)
         
 
     def __packing(self):
@@ -67,6 +69,7 @@ class InferOptionsFrame(tk.Frame):
         self.cde_threshold_entry.grid(row=1, column=4, sticky='w')        
         self.cde_dict_label.grid(row=2, column=3, pady=4, padx=4)
         self.cde_dict_button.grid(row=2, column=4)
+        self.cde_clear_dict_button.grid(row=2, column=5)
 
     def load_cde_dict_file (self):
         filepath = tkfiledialog.askopenfilename(title='select cde dictionary file',
@@ -76,6 +79,10 @@ class InferOptionsFrame(tk.Frame):
             dict_name = os.path.basename(filepath)
             self.cde_dict_label.config(text=dict_name)
             self.cde_dict = CdeDict(filepath)
+
+    def clear_cde_dict(self):
+        self.cde_dict = None
+        self.cde_dict_label.config(text='No CDE Dictionary File Selected')
 
     
 def only_integers(char):
