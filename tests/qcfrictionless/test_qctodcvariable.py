@@ -39,7 +39,7 @@ NUMERICAL_DC = {
     'comments': '',
     'conceptPath': '/root',
     'methodology': '',
-    'cde': None
+    'canBeNull': ''
     }
 
 NOMINAL_DC = {
@@ -53,7 +53,7 @@ NOMINAL_DC = {
     'comments': '',
     'conceptPath': '/root',
     'methodology': '',
-    'cde': None
+    'canBeNull': ''
     }
 
 @pytest.mark.parametrize('qcdesc, result', [

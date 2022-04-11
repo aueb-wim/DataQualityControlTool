@@ -82,6 +82,14 @@ class QcTable(Table):
         """Returns an ordered dict {original header: mipmap header}."""
         return list(self.__headers_4_mipmap.values())
 
+    @property
+    def invalid_nominals(self) -> dict:
+        """Returns nominal fields with invalid enumrations.
+        An enumration is invalid if it is an SQL keyword or is 
+        a string and starts with a digit.
+        """
+        return self._Table__schema.invalid_nominals
+
     def infer(self, limit=100, maxlevels=10, confidence=0.75, na_empty_strings_only=False):
         """Tries to infer the table schema only for csv file.
         Arguments:

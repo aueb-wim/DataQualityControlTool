@@ -12,7 +12,7 @@ from tableschema import Schema, exceptions
 from mipqctool.model.qcfrictionless import QcField
 from mipqctool.model import qctypes
 from mipqctool import config
-from mipqctool.config import LOGGER
+from mipqctool.config import LOGGER, SQL_KEYWORDS
 
 config.debug(True)
 
@@ -31,6 +31,7 @@ class QcSchema(Schema):
     def __init__(self, descriptor={}, strict=False):
         super().__init__(descriptor, strict)
         self.__infered = False
+        self.__invalid_nominals = {}
 
         # overide __build and replace Fields objects
         # with QcFields ones
@@ -43,6 +44,14 @@ class QcSchema(Schema):
             str[]: an array of field names
         """
         return [field.name for field in self.fields]
+
+    @property
+    def invalid_nominals(self) -> dict:
+        """Returns nominal fields with invalid enumrations.
+        An enumration is invalid if it is an SQL keyword or is 
+        a string and starts with a digit.
+        """
+        return self.__invalid_nominals
 
     def infer(self, rows, headers=1,
               confidence=0.75, maxlevels=10,
@@ -143,6 +152,29 @@ class QcSchema(Schema):
 
     # Private methods
 
+    def __check_nominals(self):
+        invalid_nominals = {}
+        for field in self.fields:
+            if field.miptype == 'nominal':
+                invalid_enums = []
+                try:
+                    enumerations = field.constraints['enum']
+                    for enum in enumerations:
+                        LOGGER.debug('{} is type {}'.format(enum, type(enum)))
+                        if isinstance(enum, str):
+                            # if a enum is an integer number do nothing
+                            if _checkInt(enum):
+                                continue
+                            # check if an enum is a sql keyword or starts with digit or is float
+                            elif enum.upper() in SQL_KEYWORDS or enum[0].isdigit():
+                                invalid_enums.append(enum)
+                except KeyError:
+                    pass
+
+                if len(invalid_enums) > 0:
+                    invalid_nominals[field.name] = invalid_enums
+        self.__invalid_nominals = invalid_nominals
+
     def __build(self):
         self._Schema__build()
         # Repopulate fields witn QcField objects
@@ -157,6 +189,7 @@ class QcSchema(Schema):
                 else:
                     field = False
             self._Schema__fields.append(field)
+        self.__check_nominals()
 
 
 # Internal
@@ -246,3 +279,11 @@ class _QcTypeResolver(object):
                           uniques=uniques,
                           maxlevels=maxlevels)
         return rv
+
+def _checkInt(str):
+    try:
+        int(str)
+        return True
+    except ValueError:
+        return False
+

@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import os
 from threading import Thread
 import tkinter as tk
@@ -98,6 +99,13 @@ class InferTab(tk.Frame):
                                               maxlevels=max_categories,
                                               cdedict=self.inf_opt_frame.cde_dict,
                                               na_empty_strings_only=na_empty_strings_only)
+                if len(infer.invalid_nominals) > 0:
+                    for key, value in infer.invalid_nominals.items():
+                        LOGGER.info('Column {} contains invalid code enumerations {}'.format(key, value))
+                    tkmessagebox.showerror('Invalid nominal codes',
+                                           'The file contains columns with invalid nominal codes. \n For more info please see at the console below')
+                    return
+
                 if self.inf_opt_frame.thresholdstring.get() == '':
                     threshold = 0.6
                 else:
@@ -117,6 +125,12 @@ class InferTab(tk.Frame):
                                               maxlevels=max_categories,
                                               cdedict=None,
                                               na_empty_strings_only=na_empty_strings_only)
+                if len(infer.invalid_nominals) > 0:
+                    for key, value in infer.invalid_nominals.items():
+                        LOGGER.info('Column {} contains invalid code enumerations {}'.format(key, value))
+                    tkmessagebox.showerror('Invalid nominal codes',
+                                           'The file contains columns with invalid nominal codes. \n For more info please see at the console below')
+                    return
                 if self.schema_output.get() == 1:
                     infer.export2excel(output_file)
                     LOGGER.info('Schema file has been created successully')
@@ -143,6 +157,7 @@ class InferTab(tk.Frame):
             self.dname = os.path.basename(filepath)
             self.datasetpath_label.config(text=self.dname)
             self.datasetpath = filepath
+            self.save_button.config(state='normal')
 
         else:
             self.dname = None

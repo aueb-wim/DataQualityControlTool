@@ -28,6 +28,14 @@ class InferSchema(object):
     def tablereport(self):
         return self.__tablereport
 
+    @property
+    def invalid_nominals(self) -> dict:
+        """Returns nominal fields with invalid enumrations.
+        An enumration is invalid if it is an SQL keyword or is 
+        a string and starts with a digit.
+        """
+        return self.__table.invalid_nominals
+
     def suggest_cdes(self, threshold):
         """Arguments:
         :param threshold: 0-1 similarity threshold, below that not a cde is suggested """
