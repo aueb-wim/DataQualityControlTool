@@ -84,7 +84,8 @@ def test_validate_row_dublicate(row, result):
         ['4', 'lisa', 'AD'],
     ]
     profiler.validate(rows, headers)
-    assert profiler._validate_row(row, check_uniques=True)[3] == result
+    test_result = set(profiler._validate_row(row, check_uniques=True)[3])
+    assert test_result == set(result)
 
 
 @pytest.mark.parametrize('path, schema, valid, rows_with_invalids', [

@@ -19,8 +19,10 @@ def test_invalid_nominal(variable, result):
 
 
 @pytest.mark.parametrize('filename, result', [
-    (DC_EXCEL_PATH, set(['IN', '1.5T', '2,4']))
+    (DC_EXCEL_PATH, {'variable_2': set(['IN']), 'variable_3': set(['1.5T', '2,4'])})
 ])
 def test_invalid_enums(filename, result):
     test = DcExcel(filename)
-    assert set(test.invalid_enums) == result
+    test_results = {var: set(inval) for (var, inval) in test.invalid_enums.items()}
+
+    assert test_results == result

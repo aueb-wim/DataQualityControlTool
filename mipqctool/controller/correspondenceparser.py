@@ -6,8 +6,8 @@ from mipqctool.exceptions import ExpressionError, FunctionNameError, ArgsFunctio
 
 class CorrespondenceParser():
  
-    PARENTH_REG = '([a-zA-Z_]{1}[a-zA-Z_\d]*\s?)\(([a-zA-Z\d\_,\(\)\s]*)\)'
-    TABLE_DOT_COL_REG = '([a-zA-Z_\d]*)\.([a-zA-Z_\d]*)'
+    PARENTH_REG = r'([a-zA-Z_]{1}[a-zA-Z_\d]*\s?)\(([a-zA-Z\d\_,\(\)\s]*)\)'
+    TABLE_DOT_COL_REG = r'([a-zA-Z_\d]*)\.([a-zA-Z_\d]*)'
 
     #Doing a syntax check without actually running the mipmap-Engine. Returns False if there is a problem.
     """@staticmethod
