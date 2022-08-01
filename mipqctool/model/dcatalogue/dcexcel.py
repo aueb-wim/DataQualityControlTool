@@ -64,12 +64,16 @@ class DcExcel(object):
         return self.__invalid_enums
 
     @property
+    def validation_errors(self) -> dict:
+        return self.__validation_errors
+
+    @property
     def doubl_conceptpaths(self) -> dict:
         return self.__doublicates_cpaths
 
     @property
     def is_valid(self):
-        if (len(self.__doublicates_cpaths) + len( self.__invalid_enums)) == 0:
+        if (len(self.__validation_errors)) == 0:
             return True
         else:
             return False
