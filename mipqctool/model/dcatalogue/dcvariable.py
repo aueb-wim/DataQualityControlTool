@@ -17,6 +17,7 @@ class DcVariable(object):
         # common variable info
         self.__code = self.__descriptor.get('code', '')
         self.__label = self.__descriptor.get('label', '')
+        
         self.__description = self.__descriptor.get('description', '')
         self.__sql_type = self.__descriptor.get('sql_type', 'text')
         self.__type = self.__descriptor.get('type', 'text')
