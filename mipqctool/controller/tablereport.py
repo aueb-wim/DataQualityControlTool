@@ -282,38 +282,39 @@ class TableReport(object):
         center_alignment = Alignment(horizontal='center')                     
         start_col = 1
         for name, colreport in self.__columnreports.items():
-            end_col = start_col + 1
-            ws4.column_dimensions[get_column_letter(start_col)].width = 15
-            ws4.column_dimensions[get_column_letter(end_col)].width = 15
+            if len(colreport.all_corrections) > 0:
+                end_col = start_col + 1
+                ws4.column_dimensions[get_column_letter(start_col)].width = 15
+                ws4.column_dimensions[get_column_letter(end_col)].width = 15
 
-            # merge the two cells in the first row and put the variable name as title
-            ws4.merge_cells(start_row=1, start_column=start_col, end_row=1, end_column=end_col)
-            header = ws4.cell(row=1,column=start_col, value=colreport.qcfield.name)
-            header.border = header_border
-            header.alignment = center_alignment
-            header.font = Font(bold=True)
-            # add also the subtitlles
-            ws4.cell(row=2, column=start_col, value='Invalid Value').border = left_border
-            ws4.cell(row=2, column=end_col, value='Corrected Value').border = right_border
-            # collect all the correction suggestions for invalid values
-            # constraint violations
-            corrections = list(colreport.ccorrections)
-            ctonulls = [(value, 'Null') for value in colreport.cnulls]
-            # datatype violations
-            corrections.extend(list(colreport.dcorrections))
-            dtonulss = [(value, 'Null') for value in colreport.dnulls]
-            # append null sugestions to corrections
-            corrections.extend(ctonulls)
-            corrections.extend(dtonulss)
-            # now start filling the rows for that variable 
-            start_row = 3
-            for pair in corrections:
-                left = ws4.cell(row=start_row, column=start_col, value=pair[0])
-                left.border = left_border
-                right = ws4.cell(row=start_row, column=end_col, value=pair[1])
-                right.border = right_border
-                start_row += 1
-            start_col += 2       
+                # merge the two cells in the first row and put the variable name as title
+                ws4.merge_cells(start_row=1, start_column=start_col, end_row=1, end_column=end_col)
+                header = ws4.cell(row=1,column=start_col, value=colreport.qcfield.name)
+                header.border = header_border
+                header.alignment = center_alignment
+                header.font = Font(bold=True)
+                # add also the subtitlles
+                ws4.cell(row=2, column=start_col, value='Invalid Value').border = left_border
+                ws4.cell(row=2, column=end_col, value='Corrected Value').border = right_border
+                # collect all the correction suggestions for invalid values
+                # constraint violations
+                corrections = list(colreport.ccorrections)
+                ctonulls = [(value, 'Null') for value in colreport.cnulls]
+                # datatype violations
+                corrections.extend(list(colreport.dcorrections))
+                dtonulss = [(value, 'Null') for value in colreport.dnulls]
+                # append null sugestions to corrections
+                corrections.extend(ctonulls)
+                corrections.extend(dtonulss)
+                # now start filling the rows for that variable 
+                start_row = 3
+                for pair in corrections:
+                    left = ws4.cell(row=start_row, column=start_col, value=pair[0])
+                    left.border = left_border
+                    right = ws4.cell(row=start_row, column=end_col, value=pair[1])
+                    right.border = right_border
+                    start_row += 1
+                start_col += 2       
 
         wb.save(filepath)
 
