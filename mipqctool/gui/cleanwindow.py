@@ -15,8 +15,9 @@ class CleanWindow():
     def __init(self):
         self.main_frame = tk.Frame(master=self.master, padx=2, pady=2)
         self.label1= tk.Label(self.main_frame, text='Select Column:')
+        columns_with_corrections = [key  for key, columnreport in self.parent.reportcsv.columnreports.items() if len(columnreport.all_corrections) > 0]
         self.columns_cbox = ttk.Combobox(self.main_frame, width=35,                                    
-                                         values=list(self.parent.reportcsv.columnreports.keys()))
+                                         values=columns_with_corrections)
         self.columns_cbox.bind("<<ComboboxSelected>>", self.on_select_column)
 
 
