@@ -98,29 +98,34 @@ class ValidateDcExcelTab(tk.Frame):
             self.dcexcel_label.config(text='Not Selected')
 
     def validate_excel(self):
-        self.__excelvalidator = DcExcel(self.dcexcel_path)
-        if self.__excelvalidator.is_valid:
-            tkmessagebox.showinfo('Validation Result', 'Everything looks ok.')
-            self._enable(self.dc2jsonframe)
+        if self.dcexcel_path:
+            LOGGER.info("Validating file: {}".format(self.dname))
+            self.__excelvalidator = DcExcel(self.dcexcel_path)
+            if self.__excelvalidator.is_valid:
+                LOGGER.info('File "{}" is valid'.format(self.dname))
+                tkmessagebox.showinfo('Validation Result', 'Everything looks ok.')
+                self._enable(self.dc2jsonframe)
 
+            else:
+                if self.__excelvalidator.invalid_enums:
+                    LOGGER.info("<--------Invalid enumerations-------->")
+                    for var, enums in self.__excelvalidator.invalid_enums.items():
+                        LOGGER.info("Variable {} has invalid enumerations: \n {}".format(var, enums))
+                if self.__excelvalidator.doubl_conceptpaths:
+                    LOGGER.info("<--------Dublicate Concept Paths-------->")
+                    for var, conceptpath in self.__excelvalidator.doubl_conceptpaths.items():
+                        LOGGER.info("Variable {} has doublicate concept path: \n {}".format(var, conceptpath))
+                LOGGER.info("<--------General errors---------->")
+                for var, errors in self.__excelvalidator.validation_errors.items():
+                    errors_string = '\n' + '\n'.join(errors)
+                    LOGGER.info('Variable "{}" has the following validation errors: {}'.format(var, errors_string))
+
+                    self._disable(self.dc2jsonframe)
+                    self.__excelvalidator = None
+
+                tkmessagebox.showerror('Validation Result','Invalid file. For more info please look at the console')
         else:
-            if self.__excelvalidator.invalid_enums:
-                LOGGER.info("<--------Invalid enumerations-------->")
-                for var, enums in self.__excelvalidator.invalid_enums.items():
-                    LOGGER.info("Variable {} has invalid enumerations: {}".format(var, enums))
-            if self.__excelvalidator.doubl_conceptpaths:
-                LOGGER.info("<--------Dublicate Concept Paths-------->")
-                for var, conceptpath in self.__excelvalidator.doubl_conceptpaths.items():
-                    LOGGER.info("Variable {} has doublicate concept path: {}".format(var, conceptpath))
-            LOGGER.info("<--------General errors---------->")
-            for var, errors in self.__excelvalidator.validation_errors.items():
-                errors_string = '\n' + '\n'.join(errors)
-                LOGGER.info = 'Variable {} has the following validation errors: {}'.format(var, errors_string) 
-
-            self._disable(self.dc2jsonframe)
-            self.__excelvalidator = None
-
-            tkmessagebox.showerror('Validation Result','Invalid file. For more info please look at the console')
+            tkmessagebox.showerror('Error','Please select file, first.')
 
     def _disable(self, frame):
         for child in frame.winfo_children():

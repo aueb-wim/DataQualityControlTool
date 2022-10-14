@@ -235,19 +235,23 @@ class ExcelVariable(object):
         for m in matches:
             items = re.findall(r'"[^"]*"', m)
             # remove the double quotes
-            enum_pair = {
-                'code': items[0].replace('\"','').strip(),
-                'label': items[1].replace('\"','').strip()
-            }
-            #remove left and right spaces from each enum and convert to lowercase   
-            all_enums.append(enum_pair)
+            try:
+                enum_pair = {
+                    'code': items[0].replace('\"','').strip(),
+                    'label': items[1].replace('\"','').strip()
+                }
+                #remove left and right spaces from each enum and convert to lowercase   
+                all_enums.append(enum_pair)
+            except IndexError:
+                error = u"There is an invalid character in enumerations ie \u201c, \u201f or \u201d"
+                self.__errors.append(error)
         return all_enums
 
     def __is_valid_enum(self, value):
         if value in SQL_KEYWORDS:
             return False
         # Check if the value start with number
-        elif value[:1].isdigit():
+        elif value[:1].isdigit() and not value.isnumeric() :
             return False
         else:
             return True
