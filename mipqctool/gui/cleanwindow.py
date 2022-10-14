@@ -50,6 +50,7 @@ class CleanWindow():
 
     def __update_col_sugg(self, column):
         columnreport = self.parent.reportcsv.columnreports.get(column)
+        self.sugg_listbox.delete(0,tk.END)
         all_corr = columnreport.all_corrections
         for item in all_corr:
             self.sugg_listbox.insert(all_corr.index(item), item)
