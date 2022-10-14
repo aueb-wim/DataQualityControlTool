@@ -34,9 +34,9 @@ class ValidateDcExcelTab(tk.Frame):
                                          command=self.validate_excel)
 
         self.dc2jsonframe = tk.LabelFrame(self, text='DC-excel 2 DC-json Conversion Menu')
-        self.dataset_code_label = tk.Label(self.dc2jsonframe, text='Dataset Code:')
-        self.dataset_name_label = tk.Label(self.dc2jsonframe, text='Dataset Name:')
-        self.dataset_version_label = tk.Label(self.dc2jsonframe, text='Dataset Version:')
+        self.dataset_code_label = tk.Label(self.dc2jsonframe, text='Pathology Code:')
+        self.dataset_name_label = tk.Label(self.dc2jsonframe, text='Pathology Name:')
+        self.dataset_version_label = tk.Label(self.dc2jsonframe, text='Pathology Version:')
         self.dataset_code_input = tk.Entry(self.dc2jsonframe, width=15, textvariable=self.dataset_code)
         self.dataset_name_input = tk.Entry(self.dc2jsonframe, width=15, textvariable=self.dataset_name)
         self.dataset_version_input = tk.Entry(self.dc2jsonframe, width=5, textvariable=self.dataset_version)
