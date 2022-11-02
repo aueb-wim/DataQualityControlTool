@@ -23,6 +23,7 @@ from mipqctool.helpers.html import list2parag, tupples2table
 
 config.debug(True)
 
+Suggestion = namedtuple('Suggestion', 'row, value, newvalue')
 
 class ColumnReport(object):
     """This class is used to hold statistical and validation data of values
@@ -273,6 +274,62 @@ class ColumnReport(object):
         self.__calc_stats()
         return True
 
+    def update_correction(self, value, newvalue):
+        """Update given correction"""
+        self.__reset_sugg_stats()
+        # check if the incoming new value is NULL 
+        # and replace it with the default missing value
+        if newvalue == "NULL":
+            newvalue = self.__missing_values[0]
+
+        new_csuggestions = [Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=newvalue) 
+                            if sugg.value==value else
+                            Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=sugg.newvalue)
+                            for sugg in self.__csuggestions]
+
+        new_dsuggestions = [Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=newvalue) 
+                            if sugg.value==value else
+                            Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=sugg.newvalue)
+                            for sugg in self.__dsuggestions]
+
+        self.__csuggestions = new_csuggestions
+        self.__dsuggestions = new_dsuggestions
+        self.__calc_stats()
+
+    def delete_correction(self, value):
+        """Delete given correction"""
+        self.__reset_sugg_stats()
+
+        new_csuggestions = [Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=sugg.value) 
+                            if sugg.value==value else
+                            Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=sugg.newvalue)
+                            for sugg in self.__csuggestions]
+
+        new_dsuggestions = [Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=sugg.value) 
+                            if sugg.value==value else
+                            Suggestion(sugg.row,
+                                       value=sugg.value,
+                                       newvalue=sugg.newvalue)
+                            for sugg in self.__dsuggestions]
+
+        self.__csuggestions = new_csuggestions
+        self.__dsuggestions = new_dsuggestions
+        self.__calc_stats()
+
     def apply_corrections(self):
         """Apply the suggested corrections for both types of violations"""
         # NOTE corrections may include null values as suggestions
@@ -406,7 +463,7 @@ class ColumnReport(object):
     def __suggest_corrections(self):
         """Try to suggest corrections for the violeted values."""
         self.__reset_sugg_stats()
-        Suggestion = namedtuple('Suggestion', 'row, value, newvalue')
+
         dsuggestions = [Suggestion(row=pair[0],
                                    value=pair[1],
                                    newvalue=self.__suggestd(pair[1]))

@@ -185,6 +185,37 @@ def test_suggestions_c(descriptor, values, result):
         assert totest == result
         assert recorded.list == []
 
+@pytest.mark.parametrize('descriptor, values, current_value, new_value, result', [
+    (INTEGER_DESC, INTEGER_VALUES, '2', '0', ['', '0', '']),
+    (INTEGER_DESC, INTEGER_VALUES, '1', '4', ['4', '', '']),
+])
+def test_update_suggestion_c(descriptor, values, current_value, new_value, result):
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
+    testcolumn.validate()
+    testcolumn.update_correction(current_value, new_value)
+    totest = [sugestion.newvalue
+              for sugestion in testcolumn._ColumnReport__csuggestions]
+    with pytest.warns(None) as recorded:
+        assert totest == result
+        assert recorded.list == []
+
+@pytest.mark.parametrize('descriptor, values, current_value, result', [
+    (INTEGER_DESC, INTEGER_VALUES, '2', ['', '2', '']),
+    (INTEGER_DESC, INTEGER_VALUES, '1',  ['1', '', '']),
+])
+def test_delete_suggestion_c(descriptor, values, current_value, result):
+    testfield = QcField(descriptor)
+    testcolumn = ColumnReport(values, testfield)
+    testcolumn.validate()
+    testcolumn.delete_correction(current_value)
+    totest = [sugestion.newvalue
+              for sugestion in testcolumn._ColumnReport__csuggestions]
+    with pytest.warns(None) as recorded:
+        assert totest == result
+        assert recorded.list == []
+
+
 
 @pytest.mark.parametrize('descriptor, values, result', [
     (INTEGER_DESC, INTEGER_VALUES, [4, 1]),

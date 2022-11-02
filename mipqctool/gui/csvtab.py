@@ -7,6 +7,8 @@ import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.messagebox as tkmessagebox
 
+from tableschema.exceptions import CastError
+
 from mipqctool.gui.metadataframe import MetadataFrame
 from mipqctool.gui.cleanwindow import CleanWindow
 from mipqctool.controller import TableReport
@@ -184,11 +186,17 @@ class CsvTab(tk.Frame):
             )
         )
         if correctedcsvfile:
-            self.reportcsv.apply_corrections()
-            self.reportcsv.save_corrected(correctedcsvfile)
-            tkmessagebox.showinfo(
-                    title='Status info',
-                    message='Cleaned dataset has saved successully'
+            try:
+                self.reportcsv.apply_corrections()
+                self.reportcsv.save_corrected(correctedcsvfile)
+                tkmessagebox.showinfo(
+                        title='Status info',
+                        message='Cleaned dataset has saved successully'
+                    )
+            except CastError as e:
+                tkmessagebox.showerror(
+                    title='Error found!',
+                    message = str(e)
                 )
         else:
             tkmessagebox.showwarning('Warning!',
