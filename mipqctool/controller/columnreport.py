@@ -7,12 +7,14 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import sys
 from pathlib import Path
 from collections import namedtuple, OrderedDict
 
 # for testing htlm2pdf columnreport template
-from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
+if sys.platform != 'win32':
+    from jinja2 import Environment, FileSystemLoader
+    from weasyprint import HTML
 
 from mipqctool.model.qcfrictionless import QcField
 from mipqctool.model import qctypes

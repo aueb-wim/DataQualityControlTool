@@ -2,6 +2,7 @@
 """ Command Line Interface for MIP Quality Control Tool
 """
 import os
+import sys
 import click
 import getpass
 import json
@@ -80,7 +81,10 @@ def csv(input_csv, schema_json, clean,
 
     # export the report 
     if report == 'pdf':
-        datasetreport.printpdf(pdfreportfile)
+        if sys.platform != 'win32':
+            datasetreport.printpdf(pdfreportfile)
+        else:
+            print('pdf report is not supported for Windows OS')
     elif report == 'xls':
         datasetreport.printexcel(xlsxreportfile)
 

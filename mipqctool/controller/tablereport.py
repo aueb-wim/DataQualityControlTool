@@ -7,14 +7,17 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import sys
 import csv
 from datetime import datetime
 from pathlib import Path
 from collections import OrderedDict
 
 import pandas as pd
-from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
+
+if sys.platform != 'win32':
+    from jinja2 import Environment, FileSystemLoader
+    from weasyprint import HTML
 from openpyxl import Workbook
 from openpyxl.chart import BarChart, Series, Reference
 from openpyxl.styles import Font, Border, Side, Alignment
