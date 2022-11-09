@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 import time
 import threading
 import logging
@@ -104,7 +105,8 @@ class Application(tk.Frame):
         self.tabframe = CsvTab()
         self.tabframe2 = DicomTab()
         self.tabframe3 = InferTab()
-        self.tabframe4 = MappingTab()
+        if sys.platform != 'win32':
+            self.tabframe4 = MappingTab()
         self.tabframe5 = ValidateDcExcelTab()
 
         # add the tab for tabular quality control into the main frame
@@ -112,7 +114,8 @@ class Application(tk.Frame):
         self.tabcontrol.add(self.tabframe3, text='Infer Dataset Schema')
         self.tabcontrol.add(self.tabframe5, text = 'Validate DC Excel')
         self.tabcontrol.add(self.tabframe2, text='Dicom QC')
-        self.tabcontrol.add(self.tabframe4, text='Data Mapping')
+        if sys.platform != 'win32':
+            self.tabcontrol.add(self.tabframe4, text='Data Mapping')
 
         self.__packing()
 
