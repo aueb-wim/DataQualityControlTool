@@ -9,14 +9,15 @@ from __future__ import unicode_literals
 import datetime
 import time
 import os
+import sys
 import shutil
 import json
 import csv
 import multiprocessing as mp
 from multiprocessing import Pool
-
-from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML
+if sys.platform != 'win32':
+    from jinja2 import Environment, FileSystemLoader
+    from weasyprint import HTML
 import pydicom
 
 from mipqctool.config import LOGGER

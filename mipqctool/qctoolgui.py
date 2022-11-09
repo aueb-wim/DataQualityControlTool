@@ -103,9 +103,10 @@ class Application(tk.Frame):
         self.tabcontrol = ttk.Notebook(self.master)
         # Create the tab for tabular datasets processing
         self.tabframe = CsvTab()
-        self.tabframe2 = DicomTab()
+        
         self.tabframe3 = InferTab()
         if sys.platform != 'win32':
+            self.tabframe2 = DicomTab()
             self.tabframe4 = MappingTab()
         self.tabframe5 = ValidateDcExcelTab()
 
@@ -113,7 +114,8 @@ class Application(tk.Frame):
         self.tabcontrol.add(self.tabframe, text='Tabular QC')
         self.tabcontrol.add(self.tabframe3, text='Infer Dataset Schema')
         self.tabcontrol.add(self.tabframe5, text = 'Validate DC Excel')
-        self.tabcontrol.add(self.tabframe2, text='Dicom QC')
+        if sys.platform != 'win32':
+            self.tabcontrol.add(self.tabframe2, text='Dicom QC')
         if sys.platform != 'win32':
             self.tabcontrol.add(self.tabframe4, text='Data Mapping')
 
