@@ -72,6 +72,8 @@ class CsvTab(tk.Frame):
         self.threshold_entry1 = tk.Entry(self.tblabelframe_output, width=5,
                                          validate="key", textvariable=self.outlier_threshold,
                                          validatecommand=(self.float_validation, '%P'))
+        if sys.platform == 'win32':
+            self.report_tblabelframe.config(state='disabled')
         self.threshold_entry1.insert(0, '3')
 
         self.label_export2 = tk.Label(self.tblabelframe_output,
