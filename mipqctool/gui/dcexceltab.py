@@ -107,6 +107,10 @@ class ValidateDcExcelTab(tk.Frame):
                 self._enable(self.dc2jsonframe)
 
             else:
+                if self.__excelvalidator.invalid_names:
+                    LOGGER.info("<--------Invalid variable codes-------->")
+                    for name in self.__excelvalidator.invalid_names:
+                        LOGGER.info('Variable {} has invalid code.\nCode must contain only alphanumerical chars and underscores'.format(name))
                 if self.__excelvalidator.invalid_enums:
                     LOGGER.info("<--------Invalid enumerations-------->")
                     for var, enums in self.__excelvalidator.invalid_enums.items():

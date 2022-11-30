@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 
 import os
 import sys
+import re
 from pathlib import Path
 from collections import namedtuple, OrderedDict
 

@@ -190,3 +190,32 @@ def test_infer(qcshema, data, result):
 def test_infer_na(qcshema, data, result):
     qcshema.infer(data, maxlevels=3, na_empty_strings_only=True)
     assert qcshema.descriptor == result
+
+
+
+
+@pytest.mark.parametrize('data, result', [
+        ([
+          ['id', '1age', 'name', 'birthdate_fd', 'iq', 'gender'],
+          ['1', '39y', 'Paul', '12/1/1945', '32.2', '1'],
+          ['2', '23y', 'Jimmy', '11/5/2001', '0.5', '0'],
+          ['3', '36y', 'Jane', '15/11/1955', '2.55', '1'],
+          ['4', 'NA', 'Judy', '25/7/1961', '55.23', '1'],
+          ['5', '41y', 'NA', '11/12/1951', '3.1', '0'],
+         ], 
+         ['1age', 'birthdate_fd']
+        )
+])
+def test_invalid_headers_names(qcshema, data, result):
+    qcshema.infer(data, headers=1, maxlevels=3, na_empty_strings_only=True)
+    assert qcshema.invalid_header_names == result
+
+
+@pytest.mark.parametrize('headers, result', [
+        (['1age', 'normal', 'hello-kitty', 'hello_world'], ['1age', 'hello-kitty']),
+        (['11age', 'n13ormal', 'hello%kitty', 'helloworld^'], ['11age', 'hello%kitty','helloworld^']),
+
+])
+def test_invalid_headers_names(qcshema, headers, result):
+    qcshema._QcSchema__check_header_names(headers)
+    assert qcshema.invalid_header_names == result

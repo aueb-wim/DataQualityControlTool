@@ -7,6 +7,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from collections import namedtuple
 
+import re
+
 from tableschema import Schema, exceptions
 
 from mipqctool.model.qcfrictionless import QcField
@@ -32,6 +34,7 @@ class QcSchema(Schema):
         super().__init__(descriptor, strict)
         self.__infered = False
         self.__invalid_nominals = {}
+        self.__invalid_header_names = []
 
         # overide __build and replace Fields objects
         # with QcFields ones
@@ -44,6 +47,10 @@ class QcSchema(Schema):
             str[]: an array of field names
         """
         return [field.name for field in self.fields]
+
+    @property
+    def invalid_header_names(self):
+        return self.__invalid_header_names
 
     @property
     def invalid_nominals(self) -> dict:
@@ -66,6 +73,9 @@ class QcSchema(Schema):
                     break
         elif not isinstance(headers, list):
             headers = []
+
+        if len(headers) > 0:
+            self.__check_header_names(headers)
 
         # Get descriptor
         guesser = _QcTypeGuesser()
@@ -174,6 +184,17 @@ class QcSchema(Schema):
                 if len(invalid_enums) > 0:
                     invalid_nominals[field.name] = invalid_enums
         self.__invalid_nominals = invalid_nominals
+
+    def __check_header_names(self, headers):
+        self.__invalid_header_names = [name for name in headers if not self.__is_valid_header_name(name)]
+
+
+    def __is_valid_header_name(self, name):
+        regex_patern = r'^[a-zA-Z_][a-zA-Z0-9_]*$'
+        if re.match(regex_patern, name):
+            return True
+        else:
+            return False
 
     def __build(self):
         self._Schema__build()

@@ -131,6 +131,11 @@ class InferTab(tk.Frame):
                     tkmessagebox.showerror('Invalid nominal codes',
                                            'The file contains columns with invalid nominal codes. \n For more info please see at the console below')
                     return
+                if len(infer.invalid_header_names) > 0:
+                    for name in infer.invalid_header_names:
+                        LOGGER.info('Column {} has an invalid name.'.format(name))
+                    tkmessagebox.showerror('Invalid column names',
+                                           'The file contain columns with invalid names. For more info please see at the console below')
                 if self.schema_output.get() == 1:
                     infer.export2excel(output_file)
                     LOGGER.info('Schema file has been created successully')

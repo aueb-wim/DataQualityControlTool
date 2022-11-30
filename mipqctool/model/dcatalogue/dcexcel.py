@@ -25,6 +25,7 @@ class DcExcel(object):
         self.__doublicates_cpaths = {}
         self.__invalid_enums = {}
         self.__validation_errors = {}
+        self.__invalid_names = []
         wb = load_workbook(filepath)
         ws = wb.active
         for row in ws.iter_rows(min_row=1, max_row=1):
@@ -43,6 +44,8 @@ class DcExcel(object):
             excelvar = ExcelVariable(rowdata)
             if excelvar.invalid_enums:
                 self.__invalid_enums[code] = excelvar.invalid_enums
+            if excelvar.invalid_code:
+                self.__invalid_names.append(excelvar.code)
             if len(excelvar.errors) > 0:
                 self.__validation_errors[code] = excelvar.errors
 
@@ -62,6 +65,10 @@ class DcExcel(object):
     @property
     def invalid_enums(self) -> dict:
         return self.__invalid_enums
+
+    @property
+    def invalid_names(self) -> list:
+        return self.__invalid_names 
 
     @property
     def validation_errors(self) -> dict:
@@ -92,6 +99,7 @@ class ExcelVariable(object):
         """
         self.__variable_dict = None
         self.__errors = []
+        self.__invalid_code = False
         self.__enum_regx = '{(?P<list>[^\{]*)}'
         self.__code = rowdata.get('code')
         if not self.__code or self.__code == '':
@@ -114,6 +122,7 @@ class ExcelVariable(object):
         self.__invalid_enums = []
         self.__validate_types(rowdata.get('type', ''))
         self.__validate_concepthpath()
+        self.__validate_code()
         if self.__type == 'nominal':
             self.__validate_enums()
             self.__iscategorical = True
@@ -142,6 +151,10 @@ class ExcelVariable(object):
     @property
     def invalid_enums(self):
         return self.__invalid_enums
+
+    @property
+    def invalid_code(self):
+        return self.__invalid_code
     
     @property
     def errors(self):
@@ -211,7 +224,7 @@ class ExcelVariable(object):
                 continue
             else:
                 self.__invalid_enums.append(enum)
-                self.__errors.append('Invalid Enumerations!')
+                self.__errors.append('Variable has invalid enumerations')
 
     def __get_enums_codes(self, enumstr) -> set:
         all_enums_codes= []
@@ -282,6 +295,14 @@ class ExcelVariable(object):
             else:
                 self.__minValue= _r[0]
                 self.__maxValue = _r[1]
+
+    def __validate_code(self):
+        regex_patern = r'^[a-zA-Z_][a-zA-Z0-9_]*$'
+        if re.match(regex_patern, self.code):
+            self.__invalid_code = False
+        else:
+            self.__errors.append("Variable {} has invalid name.".format(self.__code))
+            self.__invalid_code = True
 
 
     def __find_parent(self):
