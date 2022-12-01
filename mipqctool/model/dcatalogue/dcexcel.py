@@ -104,6 +104,8 @@ class ExcelVariable(object):
         self.__code = rowdata.get('code')
         if not self.__code or self.__code == '':
             self.__errors.append('Variable does not have a code')
+        else:
+            self.__validate_code()
         # if name is empty use code as label
         self.__label = rowdata.get('name', self.__code)
         self.__type = None
@@ -122,7 +124,6 @@ class ExcelVariable(object):
         self.__invalid_enums = []
         self.__validate_types(rowdata.get('type', ''))
         self.__validate_concepthpath()
-        self.__validate_code()
         if self.__type == 'nominal':
             self.__validate_enums()
             self.__iscategorical = True
