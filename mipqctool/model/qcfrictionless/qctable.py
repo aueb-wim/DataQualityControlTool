@@ -89,6 +89,11 @@ class QcTable(Table):
         a string and starts with a digit.
         """
         return self._Table__schema.invalid_nominals
+    
+    @property
+    def invalid_header_names(self):
+        """Returns header names containg invalid characters"""
+        return self._Table__schema.invalid_header_names
 
     def infer(self, limit=100, maxlevels=10, confidence=0.75, na_empty_strings_only=False):
         """Tries to infer the table schema only for csv file.

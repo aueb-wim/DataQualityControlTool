@@ -15,6 +15,7 @@ class InferSchema(object):
          :param maxlevel: number of unique values in order to one infered variable to be considered as nominal(categorical)
                           above that number the variable will be considered as a text data type.
          :param cdedict: A CdeDict object containg info about all CDE variables
+         :param na_empty_strings_only: boolean to infer only empty strings as NAs
         """
         self.__table = table
         self.__csvname = csvname
@@ -27,6 +28,21 @@ class InferSchema(object):
     @property
     def tablereport(self):
         return self.__tablereport
+    
+    @property
+    def missing_longitudinal_headers(self) -> list:
+        long_headers = ['SubjectID', 'VisitID']
+        missing_headers = []
+        for header in long_headers:
+            if header not in self.__table.actual_headers:
+                missing_headers.append(header)
+        return missing_headers
+    
+    @property
+    def invalid_header_names(self):
+        """Returns header names containg invalid characters"""
+        return self.__table.invalid_header_names
+
 
     @property
     def invalid_nominals(self) -> dict:

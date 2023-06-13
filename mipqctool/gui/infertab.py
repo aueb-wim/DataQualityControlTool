@@ -93,6 +93,7 @@ class InferTab(tk.Frame):
             max_categories = int(self.inf_opt_frame.max_categories.get())
             sample_rows = int(self.inf_opt_frame.sample_rows.get())
             na_empty_strings_only = self.inf_opt_frame.na_empty_strings_only.get()
+            is_longitudinal = self.inf_opt_frame.is_long_dataset.get()
             if self.inf_opt_frame.cde_dict:
                 infer = InferSchema.from_disc(self.datasetpath, 
                                               sample_rows=sample_rows,
@@ -131,11 +132,27 @@ class InferTab(tk.Frame):
                     tkmessagebox.showerror('Invalid nominal codes',
                                            'The file contains columns with invalid nominal codes. \n For more info please see at the console below')
                     return
+                
                 if len(infer.invalid_header_names) > 0:
                     for name in infer.invalid_header_names:
                         LOGGER.info('Column {} has an invalid name.'.format(name))
                     tkmessagebox.showerror('Invalid column names',
                                            'The file contain columns with invalid names. For more info please see at the console below')
+                    return
+                
+                if is_longitudinal:
+                    missing_headers = infer.missing_longitudinal_headers
+                    if missing_headers:
+                        LOGGER.info('Dataset contains longitudinal data')
+                        for name in missing_headers:
+                            LOGGER.info('Longidutinal Column {} does not exit'.format(name))
+                        
+                        missing_str = ', '.join(missing_headers)
+                        error_message = 'The file contains longitutinal data and columns' + \
+                           '"' + missing_str + '"' + ' is/are not found among the headers'
+                        tkmessagebox.showerror('Missing headers', error_message)
+                        return 
+        
                 if self.schema_output.get() == 1:
                     infer.export2excel(output_file)
                     LOGGER.info('Schema file has been created successully')

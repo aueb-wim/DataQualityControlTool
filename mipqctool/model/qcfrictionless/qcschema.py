@@ -50,6 +50,7 @@ class QcSchema(Schema):
 
     @property
     def invalid_header_names(self):
+        """Returns header names containg invalid characters"""
         return self.__invalid_header_names
 
     @property
