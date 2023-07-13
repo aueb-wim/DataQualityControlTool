@@ -171,7 +171,7 @@ class QcSchema(Schema):
                 try:
                     enumerations = field.constraints['enum']
                     for enum in enumerations:
-                        LOGGER.debug('{} is type {}'.format(enum, type(enum)))
+                        #LOGGER.debug('{} is type {}'.format(enum, type(enum)))
                         if isinstance(enum, str):
                             # if a enum is an integer number do nothing
                             if _checkInt(enum):

@@ -31,7 +31,7 @@ class InferSchema(object):
     
     @property
     def missing_longitudinal_headers(self) -> list:
-        long_headers = ['SubjectID', 'VisitID']
+        long_headers = ['subjectid', 'visitid']
         missing_headers = []
         for header in long_headers:
             if header not in self.__table.actual_headers:

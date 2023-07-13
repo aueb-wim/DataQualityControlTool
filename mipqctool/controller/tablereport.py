@@ -51,6 +51,7 @@ class TableReport(object):
         self.__missing_headers = []
         self.__valid_headers = []
         self.__invalid_headers = []
+        self.__longnitudinal_columns = ['subjectid', 'visitid']
 
         # check if table has a schema else infer
         if not table.schema:
@@ -87,6 +88,8 @@ class TableReport(object):
         self.__total_rows = None
         self.__rows_only_id = None
         self.__rows_no_id = None
+        self.__rows_with_dublicates_long = []
+        self.__total_dublicates_long = None
         self.__tvalid_columns = None
         self.__tfilled_columns = None
         self.__corrected = False
@@ -222,6 +225,7 @@ class TableReport(object):
         wb1.append(['Missing columns'] + self.missing_headers)
         wb1.append(['Extra columns'] + self.invalid_headers)
         wb1.append(['Invalid rows', self.__total_invalid_rows])
+        wb1.append(['Rows with dublicate longitudinal data', self.__total_dublicates_long])
 
         ws2 = wb.create_sheet("Row Statistics")
         col2 = ws2.column_dimensions['A']
@@ -317,7 +321,12 @@ class TableReport(object):
                     right = ws4.cell(row=start_row, column=end_col, value=pair[1])
                     right.border = right_border
                     start_row += 1
-                start_col += 2       
+                start_col += 2  
+        # Longitudinal data dublicate rows
+        ws4 = wb.create_sheet('Rows with dublicate longitudinal data')
+        ws4.append(['Row number']) 
+        for row_num in self.__rows_with_dublicates_long:
+            ws4.append([row_num])
 
         wb.save(filepath)
 
@@ -386,6 +395,24 @@ class TableReport(object):
         self.__tfilled_columns = self.__calc_rows_per_columns(dict(filled_counter))
         self.__valid_rows_stats = self.__calc_rstat_dict(columns='valid')
         self.__filled_rows_stats = self.__calc_rstat_dict(columns='filled')
+        if set(self.__longnitudinal_columns) <= set(self.table.actual_headers):
+            self.__rows_with_dublicates_long = self.__calc_dublicate_rows_long()
+            self.__total_dublicates_long = len(self.__rows_with_dublicates_long)
+
+    def __calc_dublicate_rows_long(self):
+        """Calcs which rows has doublicates pairs of SubjectID and VisitID"""
+        try:
+            df = pd.read_csv(str(self.table.source))
+        except:
+            return []
+        
+        are_dublicate = df.duplicated(subset=self.__longnitudinal_columns, keep=False)
+        rows_num = [i for i in range(1, len(are_dublicate) + 1)]
+
+        df_rows = pd.DataFrame({'row_num': pd.Series(rows_num), 'dublicates': are_dublicate})
+
+        return df_rows[df_rows['dublicates'] == True].row_num.to_list()
+        
 
     def __calc_columns_quantiles(self):
         """Calcs which column number corresponds to which quantile. """
@@ -468,7 +495,8 @@ class TableReport(object):
             #'no_ids_perc': round(len(self.__rows_no_id) / self.total_rows * 100, 2),
             'total_columns': self.total_columns,
             'total_rows': self.total_rows,
-            'total_invalid_rows': self.__total_invalid_rows
+            'total_invalid_rows': self.__total_invalid_rows,
+            'total_dublicate_long_rows': self.__calc_dublicate_rows_long
         }
 
         html_vars.update(self.filled_rows_stats)
@@ -527,6 +555,12 @@ class TableReport(object):
         df = pd.DataFrame.from_dict(d)
         headers = ['name', 'type', 'filled %', 'invalid values'] + COLUMN_STAT_HEADERS
         return df[headers]
+
+    def __check_longitudinal(self):
+        df = pd.read_csv(self.table.source())
+        doublicates = sum(df.duplicated(subset=['SubjectID', 'VisitID'], keep=False))
+        self.__doublicate_long
+
 
     @classmethod
     def from_disc(cls, csvpath, dict_schema, schema_type='qc', id_column=1, threshold=3):

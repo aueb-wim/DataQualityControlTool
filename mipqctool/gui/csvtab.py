@@ -249,7 +249,16 @@ class CsvTab(tk.Frame):
                 LOGGER.info('Retrieving Metadata from localdisk...')
                 LOGGER.info('Using metadata file: %s' % self.md_frame.metafilepath)
                 with open(self.md_frame.metafilepath) as json_file:
-                    dict_schema = json.load(json_file)
+                    try:
+                        dict_schema = json.load(json_file)
+                    except json.decoder.JSONDecodeError as e:
+                        tkmessagebox.showerror(
+                            title='Invalid JSON!',
+                            message = str(e)
+                        )
+                        self.button_exec.config(state='normal')
+                        return
+
                 if self.md_frame.json_type.get() == 2:
                     schema_type = 'dc'
 
@@ -296,6 +305,9 @@ class CsvTab(tk.Frame):
             except QCToolException as e:
                 errortitle = 'Something went wrong!'
                 tkmessagebox.showerror(errortitle, e)
+                self.button_exec.config(state='normal')
+                return
+
         self.button_exec.config(state='normal')
 	
 def is_number(s):
