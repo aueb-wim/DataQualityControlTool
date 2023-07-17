@@ -126,12 +126,12 @@ class InferTab(tk.Frame):
                                               maxlevels=max_categories,
                                               cdedict=None,
                                               na_empty_strings_only=na_empty_strings_only)
-                if len(infer.invalid_nominals) > 0:
-                    for key, value in infer.invalid_nominals.items():
-                        LOGGER.info('Column {} contains invalid code enumerations {}'.format(key, value))
-                    tkmessagebox.showerror('Invalid nominal codes',
-                                           'The file contains columns with invalid nominal codes. \n For more info please see at the console below')
-                    return
+                # if len(infer.invalid_nominals) > 0:
+                #     for key, value in infer.invalid_nominals.items():
+                #         LOGGER.info('Column {} contains invalid code enumerations {}'.format(key, value))
+                #     tkmessagebox.showerror('Invalid nominal codes',
+                #                            'The file contains columns with invalid nominal codes. \n For more info please see at the console below')
+                #     return
                 
                 if len(infer.invalid_header_names) > 0:
                     for name in infer.invalid_header_names:

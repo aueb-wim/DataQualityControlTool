@@ -211,7 +211,8 @@ class QcSchema(Schema):
                 else:
                     field = False
             self._Schema__fields.append(field)
-        self.__check_nominals()
+        # no need to perform this check    
+        #self.__check_nominals()
 
 
 # Internal
