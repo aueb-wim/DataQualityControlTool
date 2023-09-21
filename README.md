@@ -16,7 +16,7 @@ MIP-DQC Tool GUI version has the following functionalities:
 4. Designing and performing schema mapping of an incoming hospital dataset to a certain Pathology's Common Data Element (CDE) schema.
 5. Producing DICOM MRIs validation and statistical report based on their meta-data headers.
 
-The tabular (csv) **data validation** functionality has the option of downloading pathologies CDE metadata directly from the [MIP Data Catalogue's API](datacatalogue.mip.ebrains.eu). Please note, this option **is not available in the CLI version**. 
+The tabular (csv) **data validation** functionality has the option of downloading pathologies CDE metadata directly from the [MIP Data Catalogue's API](http://datacatalogue.hbpmip.link:4200). Please note, this option **is not available in the CLI version**. 
 
 The **schema mapping** functionality is performed by the [MIPMap](https://github.com/HBPMedical/MIPMap) engine packaged in a **Docker container** which runs in the background. Please note, this option **is not available in the CLI version**.
 
