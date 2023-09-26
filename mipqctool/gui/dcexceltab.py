@@ -71,6 +71,7 @@ class ValidateDcExcelTab(tk.Frame):
                 tkmessagebox.showwarning('Warning', 'Please fill dataset info!')
         else:
             filepath = tkfiledialog.asksaveasfilename(title='enter file name',
+                                                  defaultextension='.json',
                                                   filetypes=(('json files', '*.json'),
                                                              ('all files', '*.*')))           
         

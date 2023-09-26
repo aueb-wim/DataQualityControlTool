@@ -78,12 +78,13 @@ class InferTab(tk.Frame):
 
         if self.schema_output.get() == 1:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
-                                                        filetypes=(('excel files', '*.xlsx'),
-                                                                    ('all files', '*.*')))
+                                                        defaultextension='.xlsx',
+                                                        filetypes=(('excel files', '*.xlsx')))
         else:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
-                                                        filetypes=(('json files', '*.json'),
-                                                                    ('all files', '*.*')))
+                                                         defaultextension='.json',
+                                                        filetypes=(('json files', '*.json')))
+                                                                    
 
         if output_file:
             warningtitle = 'Can not save the schema'

@@ -159,11 +159,14 @@ class CsvTab(tk.Frame):
         """Folder path where the reports are stored"""
         if self.report_type.get() == 1:
             reporttype = ('excel files', "*.xlsx")
+            default_extension = '.xlsx'
         else:
             reporttype = ('pdf files', '*.pdf')
+            default_extension = '.pdf'
         reportfilepath = tkfiledialog.asksaveasfilename(
+            defaultextension=default_extension,
             filetypes=(
-                reporttype, 
+                reporttype,
                 ("All files", "*.*")
             )
         )
@@ -184,6 +187,7 @@ class CsvTab(tk.Frame):
     def cleandata(self):
         self.clean_button.config(state='disabled')
         correctedcsvfile = tkfiledialog.asksaveasfilename(
+            defaultextension='.csv',
             filetypes=(
                 ("CSV files", "*.csv"), 
                 ("All files", "*.*")

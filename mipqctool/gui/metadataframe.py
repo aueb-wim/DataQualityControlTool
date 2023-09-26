@@ -212,6 +212,7 @@ class MetadataFrame(tk.Frame):
     def save_2_disc(self):
         if self.dc_json:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
+                                                         defaultextension='.json',
                                                          filetypes=(('json files', '*.json'),
                                                                     ('all files', '*.*')))
             if output_file:
