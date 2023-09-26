@@ -12,6 +12,7 @@ class InferOptionsFrame(tk.Frame):
         super().__init__(parent)
         self.thresholdstring = tk.StringVar()
         self.na_empty_strings_only=tk.BooleanVar()
+        self.is_long_dataset = tk.BooleanVar()
         self.threshold_validation = self.register(valid_threshold)
         self.cde_dict = None
         # validation callback function for entering integer numbers
@@ -39,6 +40,8 @@ class InferOptionsFrame(tk.Frame):
 
         self.na_option_chbutton = tk.Checkbutton(self.opts_lbframe, text='Only infer empty strings as NAs',
                                                  var=self.na_empty_strings_only)
+        self.long_option_chbutton = tk.Checkbutton(self.opts_lbframe, text='Longitudinal dataset?',
+                                                   var=self.is_long_dataset)
 
         self.cde_dict_separator = ttk.Separator(self.opts_lbframe, orient='vertical')
         self.cde_dict_label2 = tk.Label(self.opts_lbframe, text='CDE suggestion (Optional)')
@@ -62,8 +65,9 @@ class InferOptionsFrame(tk.Frame):
         self.categories_entry.grid(row=0, column=1, sticky='w')
         self.sample_rows_label.grid(row=1, column=0, sticky='e')
         self.sample_rows_entry.grid(row=1, column=1, sticky='w')
-        self.na_option_chbutton.grid(row=2, column=0, sticky='e')
-        self.cde_dict_separator.grid(row=0, column=2, rowspan=3, padx= 4, sticky="ns")
+        self.na_option_chbutton.grid(row=2, column=0, sticky='w')
+        self.long_option_chbutton.grid(row=3, column=0, sticky='w')
+        self.cde_dict_separator.grid(row=0, column=2, rowspan=4, padx= 4, sticky="ns")
         self.cde_dict_label2.grid(row=0, column=3, columnspan=2, pady=4, padx=4)
         self.cde_threshold_label.grid(row=1, column=3, pady=4, sticky='e')
         self.cde_threshold_entry.grid(row=1, column=4, sticky='w')        

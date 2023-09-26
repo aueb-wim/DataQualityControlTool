@@ -50,6 +50,7 @@ class QcSchema(Schema):
 
     @property
     def invalid_header_names(self):
+        """Returns header names containg invalid characters"""
         return self.__invalid_header_names
 
     @property
@@ -170,7 +171,7 @@ class QcSchema(Schema):
                 try:
                     enumerations = field.constraints['enum']
                     for enum in enumerations:
-                        LOGGER.debug('{} is type {}'.format(enum, type(enum)))
+                        #LOGGER.debug('{} is type {}'.format(enum, type(enum)))
                         if isinstance(enum, str):
                             # if a enum is an integer number do nothing
                             if _checkInt(enum):
@@ -210,7 +211,8 @@ class QcSchema(Schema):
                 else:
                     field = False
             self._Schema__fields.append(field)
-        self.__check_nominals()
+        # no need to perform this check    
+        #self.__check_nominals()
 
 
 # Internal

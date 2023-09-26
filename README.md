@@ -41,8 +41,7 @@ We use [SemVer](http://semver.org/) for versioning.
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgements
-This project/research received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under the Framework Partnership Agreement No. 650003 (HBP FPA).
-This work is part of SP8 of the Human Brain Project (SGA2).
+This project/research received funding from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under the Framework Partnership Agreement No. 650003 (HBP FPA) as part of SP8 of the Human Brain Project (SGA2), and under the Specific Grant Agreement No. 945539 (Human Brain Project SGA3).
 
 The app logo is based on a design by the user `Eucalyp`, from [Flaticon website](https://www.flaticon.com/)
 
