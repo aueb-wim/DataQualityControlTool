@@ -38,6 +38,15 @@ class QcTable(Table):
                 csv_file.seek(0)
                 reader = DictReader(csv_file, dialect=dialect)
                 self.__actual_headers = reader.fieldnames
+                # reset the seeker to the start of the file
+                csv_file.seek(0)
+                # assuming the first row is dedicated for the headers
+                total_rows = len(list(reader.reader)) - 1 
+                if total_rows >= 0:
+                    self.__total_rows = total_rows
+                # case there are no rows 
+                else:
+                    self.__total_rows = 0
         else:
             self.__actual_headers = None
 
@@ -67,6 +76,10 @@ class QcTable(Table):
     @property
     def raw_rows(self):
         return [row for row in self.iter(cast=False)]
+    
+    @property
+    def total_rows(self):
+        return self.__total_rows
 
     @property
     def with_metadata(self):

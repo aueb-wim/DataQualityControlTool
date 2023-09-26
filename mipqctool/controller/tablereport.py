@@ -52,22 +52,12 @@ class TableReport(object):
         self.__valid_headers = []
         self.__invalid_headers = []
         self.__longnitudinal_columns = ['subjectid', 'visitid']
+        
+        self.__total_rows = table.total_rows
 
         # check if table has a schema else infer
         if not table.schema:
             table.infer()
-
-        # check if id_column number exist and get its column name
-        try:
-
-            self.__id_column = table.schema.fields_names[id_column-1]
-            self.__id_index = id_column - 1
-
-        # id column does not exist
-        except IndexError:
-            self.__id_column = None
-            self.__id_index = None
-            raise QCToolException("Could not find any columns in the csv. Please check the seperator.")
 
 
         self.__table = table
@@ -85,7 +75,6 @@ class TableReport(object):
         # list to hold ColumnReport objects
         self.__columnreports = OrderedDict()
 
-        self.__total_rows = None
         self.__rows_only_id = None
         self.__rows_no_id = None
         self.__rows_with_dublicates_long = []
@@ -345,31 +334,14 @@ class TableReport(object):
                 pass
 
     def __collect_row_stats(self):
-        # get the rows with no id
-        # get the report of id column
-        id_column_report = self.__columnreports.get(self.__id_column)
-        rows_with_no_id = id_column_report.null_row_numbers
-
-        # find rows with only id filled in and the total row number
-        # find total nulls and invalid
-        rows_with_only_id = id_column_report.filled_row_numbers
-        total_rows = id_column_report.total_rows
-
+       
+        total_rows = self.__total_rows
         rows_invalid = []
         rows_nulls = []
         # for each column
         for name, report in self.__columnreports.items():
             rows_invalid.extend(list(report.invalid_rows))
             rows_nulls.extend(list(report.null_row_numbers))
-            if report.qcfield.name == self.__id_column:
-                continue
-            else:
-                # substract the row numbers that have filled values 
-                # at the end of the loop only the rows with only id filled will remain
-                rows_with_only_id = rows_with_only_id - report.filled_row_numbers
-                # this if statement cover the case where there are rows with missing id 
-                if report.total_rows > total_rows:
-                    total_rows = report.total_rows
 
         total_invalid_rows = len(set(rows_invalid))
         invalid_counter = Counter(rows_invalid)
@@ -389,8 +361,6 @@ class TableReport(object):
         self.__total_rows = total_rows
         self.__total_invalid_rows = total_invalid_rows
 
-        self.__rows_only_id = rows_with_no_id
-        self.__rows_no_id = rows_with_only_id
         self.__tvalid_columns = self.__calc_rows_per_columns(dict(valid_counter))
         self.__tfilled_columns = self.__calc_rows_per_columns(dict(filled_counter))
         self.__valid_rows_stats = self.__calc_rstat_dict(columns='valid')
@@ -489,10 +459,6 @@ class TableReport(object):
             'csvfilepath': self.__table.source,
             'use_metadata': use_metadata,
             'applied_corrections': applied_corrections,
-            #'only_ids': len(self.__rows_only_id),
-            #'only_ids_perc': round(len(self.__rows_only_id) / self.total_rows * 100, 2),
-            #'no_ids': len(self.__rows_no_id),
-            #'no_ids_perc': round(len(self.__rows_no_id) / self.total_rows * 100, 2),
             'total_columns': self.total_columns,
             'total_rows': self.total_rows,
             'total_invalid_rows': self.__total_invalid_rows,
