@@ -79,11 +79,13 @@ class InferTab(tk.Frame):
         if self.schema_output.get() == 1:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
                                                         defaultextension='.xlsx',
-                                                        filetypes=(('excel files', '*.xlsx')))
+                                                        filetypes=[('excel files', '*.xlsx'),
+                                                                   ("All Files", "*.*")])
         else:
             output_file = tkfiledialog.asksaveasfilename(title='enter file name',
                                                          defaultextension='.json',
-                                                        filetypes=(('json files', '*.json')))
+                                                        filetypes=[('json files', '*.json'),
+                                                                   ("All Files", "*.*")])
                                                                     
 
         if output_file:
