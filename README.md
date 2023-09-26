@@ -6,7 +6,7 @@
 
 ![MIP DQCT logo](docs/img/dqctlogo_v2_100x55.png)
 
-MIP Data Quality Control Tool (MIP-DQC Tool) is a software developed for the [Human Brain Project Medical Informatics Platform](https://www.humanbrainproject.eu/en/medicine/medical-informatics-platform/) (HBP-MIP) and it main perpose is to provide hospital personel an easy way to explore, validate and transform their data before uploading them into the MIP. MIP-DQC Tool has both, a Command Line Interface (CLI) and a Graphical User Interface (GUI) but only the latter one has the full set of tool's functionalities.
+MIP Data Quality Control Tool (MIP-DQC Tool) is a software developed for the [Human Brain Project Medical Informatics Platform](https://mip.ebrains.eu/) (HBP-MIP) and it main perpose is to provide hospital personel an easy way to explore, validate and transform their data before uploading them into the MIP. MIP-DQC Tool has both, a Command Line Interface (CLI) and a Graphical User Interface (GUI) but only the latter one has the full set of tool's functionalities.
 
 MIP-DQC Tool GUI version has the following functionalities:
 
@@ -16,7 +16,7 @@ MIP-DQC Tool GUI version has the following functionalities:
 4. Designing and performing schema mapping of an incoming hospital dataset to a certain Pathology's Common Data Element (CDE) schema.
 5. Producing DICOM MRIs validation and statistical report based on their meta-data headers.
 
-The tabular (csv) **data validation** functionality has the option of downloading pathologies CDE metadata directly from the [MIP Data Catalogue's API](datacatalogue.mip.ebrains.eu). Please note, this option **is not available in the CLI version**. 
+The tabular (csv) **data validation** functionality has the option of downloading pathologies CDE metadata directly from the [MIP Data Catalogue's API](http://datacatalogue.hbpmip.link:4200). Please note, this option **is not available in the CLI version**. 
 
 The **schema mapping** functionality is performed by the [MIPMap](https://github.com/HBPMedical/MIPMap) engine packaged in a **Docker container** which runs in the background. Please note, this option **is not available in the CLI version**.
 
